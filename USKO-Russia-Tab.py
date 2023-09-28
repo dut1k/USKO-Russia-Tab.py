@@ -966,30 +966,40 @@ class MenuWindow(QWidget, Ui_Form0):
         comboBox_name.setEnabled(True)
 
     def calcTab(self, name, comboBox_name):
-        comboBox_name.clear()
-        if name == self.ui_kataQual.name_red_1:
-            n = self.ui_kataQual.comboBox_age.currentText()
-            jj = self.ui_kataQual.matchName1
-        elif name == self.ui_kataQual.name_white_1:
-            n = self.ui_kataQual.comboBox_age.currentText()
-            jj = self.ui_kataQual.matchName1
-        elif name == self.ui_kataFinal.name_red_1:
-            n = self.ui_kataFinal.comboBox_age.currentText()
-            jj = self.ui_kataFinal.matchName1
-        elif name == self.ui_kataFinal.name_white_1:
-            n = self.ui_kataFinal.comboBox_age.currentText()
-            jj = self.ui_kataFinal.matchName1
-        a2 = {k: v for k, v in
-              # zip(sorted(list(self.TempSet)), sorted([self.sportsmans_ages_dict[x] for x in self.TempSet]))}
-              zip((self.TempSet), [self.sportsmans_ages_dict[x] for x in self.TempSet])}
-        self.x = list(self.sportsmans_ages_dict.keys()).index(list(a2.keys())[list(a2.values()).index(n)])
-        if self.tatamiName == "":
-            jj.setText('Татами №#, ' + self.matchName[list(self.matchName.keys())[self.x]])
-        else:
-            jj.setText(self.tatamiName + ', ' + self.matchName[list(self.matchName.keys())[self.x]])
-        name.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 12px;")
-        comboBox_name.addItems(sorted(self.df_Single_list[self.x]))
-        comboBox_name.setEnabled(True)
+        try:
+            comboBox_name.clear()
+            if name == self.ui_kataQual.name_red_1:
+                n = self.ui_kataQual.comboBox_age.currentText()
+                jj = self.ui_kataQual.matchName1
+            elif name == self.ui_kataQual.name_white_1:
+                n = self.ui_kataQual.comboBox_age.currentText()
+                jj = self.ui_kataQual.matchName1
+            elif name == self.ui_kataFinal.name_red_1:
+                n = self.ui_kataFinal.comboBox_age.currentText()
+                jj = self.ui_kataFinal.matchName1
+            elif name == self.ui_kataFinal.name_white_1:
+                n = self.ui_kataFinal.comboBox_age.currentText()
+                jj = self.ui_kataFinal.matchName1
+            a2 = {k: v for k, v in
+                  # zip(sorted(list(self.TempSet)), sorted([self.sportsmans_ages_dict[x] for x in self.TempSet]))}
+                  zip((self.TempSet), [self.sportsmans_ages_dict[x] for x in self.TempSet])}
+            self.x = list(self.sportsmans_ages_dict.keys()).index(list(a2.keys())[list(a2.values()).index(n)])
+            try:
+                if self.tatamiName == "":
+                    jj.setText('Татами №#, ' + self.matchName[list(self.matchName.keys())[self.x]])
+                else:
+                    jj.setText(self.tatamiName + ', ' + self.matchName[list(self.matchName.keys())[self.x]])
+            except Exception as e:
+                print(e)
+                if self.tatamiName == "":
+                    jj.setText('Татами №#, ')
+                else:
+                    jj.setText(self.tatamiName)
+            name.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 12px;")
+            comboBox_name.addItems(sorted(self.df_Single_list[self.x]))
+            comboBox_name.setEnabled(True)
+        except Exception as e:
+            print(e)
 
     def setLabelRed(self):
         name = self.df_Single_list[self.x].get(self.ui_kataQual.comboBox_name_red_1.currentText())
@@ -1010,6 +1020,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataQual.lineEdit_name_white_1.setText(''.join([name.replace('a12', '').split('a13')[0],
                                                                 ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
         self.ui_kataQual.lineEdit_region_white_1.setText(name.split('a11')[1])
+
 
     # def setLabelRedKumite(self):
     #     name = self.df_Single_list[self.x].get(self.ui_kumite.comboBox_name_red_1.currentText())
