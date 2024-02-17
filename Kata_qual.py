@@ -111,12 +111,6 @@ class KataQual_SecondWindow_Ui(object):
         self.label_region_red_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_region_red_2.setObjectName("label_region_red_2")
 
-        self.label_name_white_2.setGeometry(QtCore.QRect(20, 0, 1800, 250))
-        self.label_name_white_2.setStyleSheet(
-            "background-color: none; font-family: Gotham-Bold; font-size: 250px; ")
-        self.label_name_white_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_name_white_2.setObjectName("label_name_white_2")
-
         self.label_winner.hide()
         self.label_winner.setGeometry(QtCore.QRect(0, 150, 1920, 200))
         self.label_winner.setStyleSheet(
@@ -216,6 +210,14 @@ class Frame_Header(QWidget):
         }
         """
 
+        self.font_l_13 = QtGui.QFont()
+        self.font_l_13.setFamily("Gotham-Light")
+        self.font_l_13.setPixelSize(13)
+
+        self.font_l_22 = QtGui.QFont()
+        self.font_l_22.setFamily("Gotham-Light")
+        self.font_l_22.setPixelSize(22)
+
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
@@ -246,10 +248,7 @@ class Frame_Header(QWidget):
         self.combo = QtWidgets.QComboBox(self.frame_combo)
         self.combo.setGeometry(0, 4, 147, 24)
         self.combo.addItems(["Главное меню", "Ката финал", "Кумите"])
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.combo.setFont(font)
+        self.combo.setFont(self.font_l_13)
 
         self.frame_btn = QtWidgets.QFrame(self)
         self.frame_btn.setFixedSize(51, 31)
@@ -259,18 +258,12 @@ class Frame_Header(QWidget):
         self.btn_showMinimized = QtWidgets.QPushButton("_", self.frame_btn)
         self.btn_showMinimized.setGeometry(QtCore.QRect(0, 4, 24, 24))
         self.btn_showMinimized.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.btn_showMinimized.setFont(font)
+        self.btn_showMinimized.setFont(self.font_l_13)
         self.btn_showMinimized.clicked.connect(self.btn_showMinimized_clicked)
 
         self.btn_closeWin = QtWidgets.QPushButton("×", self.frame_btn)
         self.btn_closeWin.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(22)
-        self.btn_closeWin.setFont(font)
+        self.btn_closeWin.setFont(self.font_l_22)
         self.btn_closeWin.setGeometry(QtCore.QRect(23, 4, 24, 24))
 
         self.layout.addWidget(self.frame_title)
@@ -351,6 +344,11 @@ class KataQual_MainWindow_Ui(QWidget):
         self.winnerRed = QtWidgets.QRadioButton("Победил АКА", self.frame_winner)
         self.winnerWhite = QtWidgets.QRadioButton("Победил СИРО", self.frame_winner)
 
+        self.frame_pyatnov = QtWidgets.QFrame(self.Form21)
+
+        self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
+        self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
+
         self.btn_style_1 = """
             QPushButton {
                 border: 2px solid #3e6ae1;
@@ -416,6 +414,22 @@ class KataQual_MainWindow_Ui(QWidget):
                 }
         """
 
+        self.font_l_12 = QtGui.QFont()
+        self.font_l_12.setFamily("Gotham-Light")
+        self.font_l_12.setPixelSize(12)
+
+        self.font_l_13 = QtGui.QFont()
+        self.font_l_13.setFamily("Gotham-Light")
+        self.font_l_13.setPixelSize(13)
+
+        self.font_m_13 = QtGui.QFont()
+        self.font_m_13.setFamily("Gotham-Medium")
+        self.font_m_13.setPixelSize(13)
+
+        self.font_l_20 = QtGui.QFont()
+        self.font_l_20.setFamily("Gotham-Light")
+        self.font_l_20.setPixelSize(20)
+
         self.frame_bottom = QtWidgets.QFrame(self.Form21)
         self.frame_left = QtWidgets.QFrame(self.Form21)
         self.frame_right = QtWidgets.QFrame(self.Form21)
@@ -440,10 +454,7 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.matchName1.setGeometry(QtCore.QRect(0, 25, 500, 30))
         self.matchName1.setStyleSheet(self.LEdit_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.matchName1.setFont(font)
+        self.matchName1.setFont(self.font_l_20)
         self.matchName1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.matchName1.setObjectName("matchName1")
 
@@ -482,26 +493,17 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.btn_clearData.setGeometry(QtCore.QRect(530, 360, 120, 50))
         self.btn_clearData.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_clearData.setFont(font)
+        self.btn_clearData.setFont(self.font_m_13)
         self.btn_clearData.setObjectName("btn_clearData")
 
         self.btn_NewCategory.setGeometry(QtCore.QRect(775, 365, 100, 45))
         self.btn_NewCategory.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_NewCategory.setFont(font)
+        self.btn_NewCategory.setFont(self.font_m_13)
         self.btn_NewCategory.setObjectName("btn_NewCategory")
 
         self.btn_showData.setGeometry(QtCore.QRect(390, 360, 120, 50))
         self.btn_showData.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_showData.setFont(font)
+        self.btn_showData.setFont(self.font_m_13)
         self.btn_showData.setToolTip('Показать номер татами, ФИО и регион')
 
         self.btn_showData.setObjectName("btn_showData")
@@ -535,26 +537,17 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.comboBox_age.setEnabled(False)
         self.comboBox_age.setGeometry(QtCore.QRect(490, 20, 110, 22))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.comboBox_age.setFont(font)
+        self.comboBox_age.setFont(self.font_l_13)
         self.comboBox_age.setObjectName("comboBox_age")
 
         self.comboBox_name_red_1.setEnabled(False)
         self.comboBox_name_red_1.setGeometry(QtCore.QRect(470, 70, 390, 25))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(12)
-        self.comboBox_name_red_1.setFont(font)
+        self.comboBox_name_red_1.setFont(self.font_l_12)
         self.comboBox_name_red_1.setObjectName("comboBox_name_red_1")
 
         self.comboBox_name_white_1.setEnabled(False)
         self.comboBox_name_white_1.setGeometry(QtCore.QRect(40, 70, 390, 25))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(12)
-        self.comboBox_name_white_1.setFont(font)
+        self.comboBox_name_white_1.setFont(self.font_l_12)
         self.comboBox_name_white_1.setObjectName("comboBox_name_white_1")
 
         self.name_red_1.setGeometry(QtCore.QRect(470, 50, 390, 16))
@@ -575,37 +568,25 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.lineEdit_name_red_1.setGeometry(QtCore.QRect(30, 170, 340, 30))
         self.lineEdit_name_red_1.setStyleSheet(self.LEdit_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.lineEdit_name_red_1.setFont(font)
+        self.lineEdit_name_red_1.setFont(self.font_l_20)
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(50, 210, 300, 30))
         self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.lineEdit_region_red_1.setFont(font)
+        self.lineEdit_region_red_1.setFont(self.font_l_20)
         self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
 
         self.lineEdit_name_white_1.setGeometry(QtCore.QRect(30, 170, 340, 30))
         self.lineEdit_name_white_1.setStyleSheet(self.LEdit_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.lineEdit_name_white_1.setFont(font)
+        self.lineEdit_name_white_1.setFont(self.font_l_20)
         self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
 
         self.lineEdit_region_white_1.setGeometry(QtCore.QRect(50, 210, 300, 30))
         self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.lineEdit_region_white_1.setFont(font)
+        self.lineEdit_region_white_1.setFont(self.font_l_20)
         self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
 
@@ -622,6 +603,20 @@ class KataQual_MainWindow_Ui(QWidget):
         self.winnerWhite.setGeometry(QtCore.QRect(0, 0, 200, 25))
         self.winnerWhite.setStyleSheet("font-family: Gotham-Light; font-size: 20px;")
         self.winnerWhite.setObjectName("winnerWhite")
+
+        self.frame_pyatnov.setGeometry(QtCore.QRect(0, 420, 900, 95))
+        self.frame_pyatnov.setStyleSheet("background-color: none;")
+        self.frame_pyatnov.setObjectName("frame_pyatnov")
+
+        self.pyatnov_name.setEnabled(False)
+        self.pyatnov_name.setGeometry(QtCore.QRect(270, 15, 390, 25))
+        self.pyatnov_name.setFont(self.font_l_12)
+        self.pyatnov_name.setObjectName("pyatnov_name")
+
+        self.pyatnov_label.setGeometry(QtCore.QRect(150, 15, 110, 25))
+        self.pyatnov_label.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_label.setObjectName("pyatnov_label")
 
         self.KataQual_SecondWindow = KataQual_SecondWindow()
 
@@ -640,9 +635,18 @@ class KataQual_MainWindow_Ui(QWidget):
         self.KataQual_SecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
         self.KataQual_SecondWindow.show()
         self.show()
-        coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
-        coord_y1 = display_coord_y1 + (display_height - self.size().height())//2
-        self.move(coord_x1, coord_y1)
+        self.calc_display_move(display_coord_x1, display_coord_y1, display_width, display_height)
+        # coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
+        # coord_y1 = display_coord_y1 + (display_height - self.size().height())//2
+        # self.move(coord_x1, coord_y1)
+
+    def calc_display_move(self, display_coord_x1, display_coord_y1, display_width, display_height):
+        try:
+            coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
+            coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2
+            self.move(coord_x1, coord_y1)
+        except Exception as e:
+            print('calc_display_move  ', e)
 
     def closeSecondWin(self):
         self.KataQual_SecondWindow.close()

@@ -7,6 +7,40 @@ from datetime import datetime, timedelta
 
 
 class KumiteSWindow_Ui(object):
+    def __init__(self):
+        self.font_b_60 = QtGui.QFont()
+        self.font_b_60.setFamily("Gotham-Bold")
+        self.font_b_60.setPixelSize(60)
+
+        self.font_m_60 = QtGui.QFont()
+        self.font_m_60.setFamily("Gotham-Medium")
+        self.font_m_60.setPixelSize(60)
+
+        self.font_m_100 = QtGui.QFont()
+        self.font_m_100.setFamily("Gotham-Medium")
+        self.font_m_100.setPixelSize(100)
+
+        self.font_m_530 = QtGui.QFont()
+        self.font_m_530.setFamily("Gotham-Medium")
+        self.font_m_530.setPixelSize(530)
+
+        self.font_l_150 = QtGui.QFont()
+        self.font_l_150.setFamily("Gotham-Light")
+        self.font_l_150.setPixelSize(150)
+
+        self.font_l_190 = QtGui.QFont()
+        self.font_l_190.setFamily("Gotham-Light")
+        self.font_l_190.setPixelSize(190)
+
+        self.font_b_250 = QtGui.QFont()
+        self.font_b_250.setFamily("Gotham-Bold")
+        self.font_b_250.setPixelSize(250)
+
+        self.frame_red2_std = QtCore.QRect(40, 200, 880, 800)
+        self.frame_white2_std = QtCore.QRect(1000, 200, 880, 800)
+        self.frame_red2_win = QtCore.QRect(520, 220, 880, 800)
+        self.frame_white2_win = QtCore.QRect(520, 220, 880, 800)
+
     def setupUi2(self, Form):
         Form.setObjectName("Form22")
         Form.setEnabled(True)
@@ -18,7 +52,11 @@ class KumiteSWindow_Ui(object):
         self.matchName21 = QtWidgets.QLabel(Form)
         # self.matchName22 = QtWidgets.QLabel(Form)
         self.lcd2 = QtWidgets.QLCDNumber(Form)
-        self.line2 = QtWidgets.QFrame(Form)
+        # self.line2 = QtWidgets.QFrame(Form)
+
+        self.frame_sportsman = QtWidgets.QFrame(Form)
+        self.label_name_white_2 = QtWidgets.QLabel(self.frame_sportsman)
+        self.label_name_red_2 = QtWidgets.QLabel(self.frame_sportsman)
 
         self.frame_red2 = QtWidgets.QFrame(Form)
         self.label_score21 = QtWidgets.QLabel(self.frame_red2)
@@ -59,7 +97,8 @@ class KumiteSWindow_Ui(object):
         self.j_w3 = QtWidgets.QLabel(self.frame_j_white)
 
         self.matchName21.setGeometry(QtCore.QRect(20, 10, 1880, 100))
-        self.matchName21.setStyleSheet("font-family: Gotham-Medium; font-size: 100px; color: grey;")
+        self.matchName21.setFont(self.font_m_100)
+        self.matchName21.setStyleSheet("color: grey;")
         self.matchName21.setAlignment(QtCore.Qt.AlignCenter)
         self.matchName21.setObjectName("matchName21")
 
@@ -71,35 +110,35 @@ class KumiteSWindow_Ui(object):
         self.label_winner = QtWidgets.QLabel(Form)
         self.label_winner.hide()
         self.label_winner.setGeometry(QtCore.QRect(0, 150, 550, 50))
-        self.label_winner.setStyleSheet(
-            "background-color: none; font-family: Gotham-Medium; font-size: 60px; ")
+        self.label_winner.setFont(self.font_m_60)
+        self.label_winner.setStyleSheet("background-color: none;")
         self.label_winner.setAlignment(QtCore.Qt.AlignCenter)
         self.label_winner.setObjectName("label_winner")
 
         # self.lcd2.setGeometry(QtCore.QRect(580, 150, 760, 280))
-        self.lcd2.setGeometry(QtCore.QRect(580, 225, 760, 280))
+        self.lcd2.setGeometry(QtCore.QRect(580, 275, 760, 280))
         self.lcd2.setStyleSheet("background-color: None; border: None")
 
-        self.line2.setGeometry(QtCore.QRect(957, 580, 6, 460))
-        self.line2.setLineWidth(1)
-        self.line2.setMidLineWidth(6)
-        self.line2.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line2.setObjectName("line")
+        # self.line2.setGeometry(QtCore.QRect(957, 580, 6, 460))
+        # self.line2.setLineWidth(1)
+        # self.line2.setMidLineWidth(6)
+        # self.line2.setFrameShape(QtWidgets.QFrame.VLine)
+        # self.line2.setFrameShadow(QtWidgets.QFrame.Sunken)
+        # self.line2.setObjectName("line")
 
         self.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
-        self.label_score21.setStyleSheet(
-            "background-color: none; font-family: Gotham-Medium; color: white; font-size: 530px;")
+        self.label_score21.setFont(self.font_m_530)
+        self.label_score21.setStyleSheet("background-color: none; color:white;")
         self.label_score21.setAlignment(QtCore.Qt.AlignCenter)
         self.label_score21.setObjectName("label_score1")
 
         self.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
-        self.label_score22.setStyleSheet(
-            "background-color: none; font-family: Gotham-Medium; font-size: 530px; ")
+        self.label_score22.setFont(self.font_m_530)
+        self.label_score22.setStyleSheet("background-color: none;")
         self.label_score22.setAlignment(QtCore.Qt.AlignCenter)
         self.label_score22.setObjectName("label_score2")
 
-        self.frame_red2.setGeometry(QtCore.QRect(40, 150, 880, 850))
+        # self.frame_red2.setGeometry(QtCore.QRect(40, 150, 880, 850))
         self.frame_red2.setStyleSheet("background-color: None; ")
         self.frame_red2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_red2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -112,70 +151,89 @@ class KumiteSWindow_Ui(object):
         self.background_red21.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_red21.setObjectName("background_red21")
 
-        self.background_red22.setGeometry(QtCore.QRect(0, 430, 880, 420))
+        self.background_red22.setGeometry(QtCore.QRect(0, 430, 880, 350))
         self.background_red22.setStyleSheet("background-color: white; border-radius: 15px;"
                                             "border: 2px solid grey")
         self.background_red22.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_red22.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_red22.setObjectName("background_red22")
 
-        self.frame_hm_red.setGeometry(QtCore.QRect(0, 430, 880, 190))
+        self.frame_sportsman.setGeometry(QtCore.QRect(40, 120, 1840, 80))
+        self.frame_sportsman.setStyleSheet("background-color: none;")
+
+        self.label_name_white_2.setGeometry(QtCore.QRect(940, 0, 900, 80))
+        self.label_name_white_2.setFont(self.font_b_250)
+        self.label_name_white_2.setStyleSheet("background-color: none; color: grey; align-self: flex-end;")
+        self.label_name_white_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
+        self.label_name_white_2.setObjectName("label_name_white_2")
+
+        self.label_name_red_2.setGeometry(QtCore.QRect(0, 0, 900, 80))
+        self.label_name_red_2.setFont(self.font_b_250)
+        self.label_name_red_2.setStyleSheet("background-color: none; color: grey;")
+        self.label_name_red_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
+        self.label_name_red_2.setObjectName("label_name_white_2")
+
+        self.frame_hm_red.setGeometry(QtCore.QRect(0, 435, 880, 170))
         self.frame_hm_red.setStyleSheet("background-color: None;")
         self.frame_hm_red.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_hm_red.setObjectName("frame_hm_red")
 
-        self.label_kum_hmr0.setGeometry(QtCore.QRect(400, 0, 480, 120))
-        self.label_kum_hmr0.setStyleSheet("background-color: None; font-family: Gotham-Medium; font-size: 100px;")
+        self.label_kum_hmr0.setGeometry(QtCore.QRect(400, 0, 480, 100))
+        self.label_kum_hmr0.setFont(self.font_m_100)
+        # self.label_kum_hmr0.setStyleSheet("background-color: None; color: grey;")
         self.label_kum_hmr0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_hmr0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmr0.setObjectName("label_kum_hmr0")
 
-        self.label_kum_hmr1.setGeometry(QtCore.QRect(0, 20, 400, 190))
-        self.label_kum_hmr1.setStyleSheet("font-family: Gotham-Light; font-size: 190px;")
+        self.label_kum_hmr1.setGeometry(QtCore.QRect(0, 0, 400, 170))
+        self.label_kum_hmr1.setFont(self.font_l_190)
+        self.label_kum_hmr1.setStyleSheet("background-color: None; color: grey;")
         self.label_kum_hmr1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmr1.setObjectName("label_kum_hmr1")
 
-        self.hm_r1.setGeometry(QtCore.QRect(475, 125, 60, 60))
+        self.hm_r1.setGeometry(QtCore.QRect(475, 93, 60, 60))
         self.hm_r1.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_r1.setObjectName("hm_r1")
 
-        self.hm_r2.setGeometry(QtCore.QRect(610, 125, 60, 60))
+        self.hm_r2.setGeometry(QtCore.QRect(610, 93, 60, 60))
         self.hm_r2.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_r2.setObjectName("hm_r2")
 
-        self.hm_r3.setGeometry(QtCore.QRect(745, 125, 60, 60))
+        self.hm_r3.setGeometry(QtCore.QRect(745, 93, 60, 60))
         self.hm_r3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_r3.setObjectName("hm_r3")
 
-        self.frame_j_red.setGeometry(QtCore.QRect(0, 620, 880, 190))
+        self.frame_j_red.setGeometry(QtCore.QRect(0, 600, 880, 170))
         self.frame_j_red.setStyleSheet("background-color: None;")
         self.frame_j_red.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_j_red.setObjectName("frame_j_red")
 
-        self.label_kum_jr0.setGeometry(QtCore.QRect(400, 0, 480, 120))
-        self.label_kum_jr0.setStyleSheet("background-color: None;font-family: Gotham-Medium; font-size: 100px;")
+        self.label_kum_jr0.setGeometry(QtCore.QRect(400, 0, 480, 100))
+        self.label_kum_jr0.setFont(self.font_m_100)
+        # self.label_kum_jr0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jr0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_jr0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jr0.setObjectName("label_kum_jr0")
 
-        self.label_kum_jr1.setGeometry(QtCore.QRect(0, 20, 400, 190))
-        self.label_kum_jr1.setStyleSheet("font-family: Gotham-Light; font-size: 190px;")
+        self.label_kum_jr1.setGeometry(QtCore.QRect(0, 0, 400, 170))
+        self.label_kum_jr1.setFont(self.font_l_190)
+        self.label_kum_jr1.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jr1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jr1.setObjectName("label_kum_jr1")
 
-        self.j_r1.setGeometry(QtCore.QRect(475, 125, 60, 60))
+        self.j_r1.setGeometry(QtCore.QRect(475, 93, 60, 60))
         self.j_r1.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.j_r1.setObjectName("j_r1")
 
-        self.j_r2.setGeometry(QtCore.QRect(610, 125, 60, 60))
+        self.j_r2.setGeometry(QtCore.QRect(610, 93, 60, 60))
         self.j_r2.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.j_r2.setObjectName("j_r2")
 
-        self.j_r3.setGeometry(QtCore.QRect(745, 125, 60, 60))
+        self.j_r3.setGeometry(QtCore.QRect(745, 93, 60, 60))
         self.j_r3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.j_r3.setObjectName("j_r3")
 
-        self.frame_white2.setGeometry(QtCore.QRect(1000, 150, 880, 850))
+        # self.frame_white2.setGeometry(QtCore.QRect(1000, 150, 880, 850))
         self.frame_white2.setStyleSheet("background-color: None;")
         self.frame_white2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_white2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -188,70 +246,160 @@ class KumiteSWindow_Ui(object):
         self.background_white21.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_white21.setObjectName("background_white21")
 
-        self.background_white22.setGeometry(QtCore.QRect(0, 430, 880, 420))
+        self.background_white22.setGeometry(QtCore.QRect(0, 430, 880, 350))
         self.background_white22.setStyleSheet("background-color: white; border-radius: 15px;"
                                               "border: 2px solid grey")
         self.background_white22.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_white22.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_white22.setObjectName("background_white22")
 
-        self.frame_hm_white.setGeometry(QtCore.QRect(0, 430, 880, 190))
+        self.frame_hm_white.setGeometry(QtCore.QRect(0, 435, 880, 170))
         self.frame_hm_white.setStyleSheet("background-color: None;")
         self.frame_hm_white.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_hm_white.setObjectName("frame_hm_white")
 
-        self.label_kum_hmw0.setGeometry(QtCore.QRect(400, 0, 480, 120))
-        self.label_kum_hmw0.setStyleSheet("background-color: None;font-family: Gotham-Medium; font-size: 100px;")
+        self.label_kum_hmw0.setGeometry(QtCore.QRect(400, 0, 480, 100))
+        self.label_kum_hmw0.setFont(self.font_m_100)
+        # self.label_kum_hmw0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_hmw0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_hmw0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmw0.setObjectName("label_kum_hmw0")
 
-        self.label_kum_hmw1.setGeometry(QtCore.QRect(0, 20, 400, 190))
-        self.label_kum_hmw1.setStyleSheet("font-family: Gotham-Light; font-size: 190px;")
+        self.label_kum_hmw1.setGeometry(QtCore.QRect(0, 0, 400, 170))
+        self.label_kum_hmw1.setFont(self.font_l_190)
+        self.label_kum_hmw1.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_hmw1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmw1.setObjectName("label_kum_hmw1")
 
-        self.hm_w1.setGeometry(QtCore.QRect(475, 125, 60, 60))
+        self.hm_w1.setGeometry(QtCore.QRect(475, 93, 60, 60))
         self.hm_w1.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_w1.setObjectName("hm_w1")
 
-        self.hm_w2.setGeometry(QtCore.QRect(610, 125, 60, 60))
+        self.hm_w2.setGeometry(QtCore.QRect(610, 93, 60, 60))
         self.hm_w2.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_w2.setObjectName("hm_w2")
 
-        self.hm_w3.setGeometry(QtCore.QRect(745, 125, 60, 60))
+        self.hm_w3.setGeometry(QtCore.QRect(745, 93, 60, 60))
         self.hm_w3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_w3.setObjectName("hm_w3")
 
-        self.frame_j_white.setGeometry(QtCore.QRect(0, 620, 880, 190))
+        self.frame_j_white.setGeometry(QtCore.QRect(0, 600, 880, 170))
         self.frame_j_white.setStyleSheet("background-color: None;")
         self.frame_j_white.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_j_white.setObjectName("frame_j_white")
 
-        self.label_kum_jw0.setGeometry(QtCore.QRect(400, 0, 480, 120))
-        self.label_kum_jw0.setStyleSheet("background-color: None;font-family: Gotham-Medium; font-size: 100px;")
+        self.label_kum_jw0.setGeometry(QtCore.QRect(400, 0, 480, 100))
+        self.label_kum_jw0.setFont(self.font_m_100)
+        # self.label_kum_jw0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jw0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_jw0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jw0.setObjectName("label_kum_jw0")
 
-        self.label_kum_jw1.setGeometry(QtCore.QRect(0, 20, 400, 190))
-        self.label_kum_jw1.setStyleSheet("font-family: Gotham-Light; font-size: 190px;")
+        self.label_kum_jw1.setGeometry(QtCore.QRect(0, 0, 400, 170))
+        self.label_kum_jw1.setFont(self.font_l_190)
+        self.label_kum_jw1.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jw1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jw1.setObjectName("label_kum_jw1")
 
-        self.j_w1.setGeometry(QtCore.QRect(475, 125, 60, 60))
+        self.j_w1.setGeometry(QtCore.QRect(475, 93, 60, 60))
         self.j_w1.setStyleSheet("border-radius: 30px; border: 4px solid black;")
         self.j_w1.setObjectName("j_w1")
 
-        self.j_w2.setGeometry(QtCore.QRect(610, 125, 60, 60))
+        self.j_w2.setGeometry(QtCore.QRect(610, 93, 60, 60))
         self.j_w2.setStyleSheet("border-radius: 30px; border: 4px solid black;")
         self.j_w2.setObjectName("j_w2")
 
-        self.j_w3.setGeometry(QtCore.QRect(745, 125, 60, 60))
+        self.j_w3.setGeometry(QtCore.QRect(745, 93, 60, 60))
         self.j_w3.setStyleSheet("border-radius: 30px; border: 4px solid black;")
         self.j_w3.setObjectName("j_w3")
-        
-        self.line2.raise_()
+
+        # Экран для отображения ФИО спортсменов
+        self.sportsman_screen = QtWidgets.QFrame(Form)
+        self.screen_frame_white = QtWidgets.QFrame(self.sportsman_screen)
+        self.screen_background_white_1 = QtWidgets.QFrame(self.screen_frame_white)
+        self.screen_background_white_2 = QtWidgets.QFrame(self.screen_frame_white)
+        self.screen_label_name_white = QtWidgets.QLabel(self.screen_frame_white)
+        self.screen_label_region_white = QtWidgets.QLabel(self.screen_frame_white)
+
+        self.screen_frame_red = QtWidgets.QFrame(self.sportsman_screen)
+        self.screen_background_red_1 = QtWidgets.QFrame(self.screen_frame_red)
+        self.screen_background_red_2 = QtWidgets.QFrame(self.screen_frame_red)
+        self.screen_label_name_red = QtWidgets.QLabel(self.screen_frame_red)
+        self.screen_label_region_red = QtWidgets.QLabel(self.screen_frame_red)
+
+        self.sportsman_screen.setGeometry(QtCore.QRect(0, 120, 1920, 900))
+        self.sportsman_screen.setStyleSheet("background-color: white;")
+        self.sportsman_screen.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.sportsman_screen.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.sportsman_screen.setObjectName("sportsman_screen")
+
+        self.screen_frame_white.setGeometry(QtCore.QRect(40, 450, 1840, 400))
+        self.screen_frame_white.setStyleSheet("background-color: None;")
+        self.screen_frame_white.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_frame_white.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_frame_white.setObjectName("screen_frame_white")
+
+        self.screen_background_white_1.setGeometry(QtCore.QRect(0, 0, 1840, 280))
+        self.screen_background_white_1.setStyleSheet("background-color: None; border-top-left-radius: 15px;"
+                                                     "border-top-right-radius: 15px; border: 2px solid grey")
+        self.screen_background_white_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_background_white_1.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_background_white_1.setObjectName("screen_background_white_1")
+
+        self.screen_background_white_2.setGeometry(QtCore.QRect(0, 250, 1840, 150))
+        self.screen_background_white_2.setStyleSheet("background-color: white; border-radius: 15px;"
+                                                     "border: 2px solid grey")
+        self.screen_background_white_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_background_white_2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_background_white_2.setObjectName("screen_background_white_2")
+
+        self.screen_label_name_white.setGeometry(QtCore.QRect(20, 0, 1800, 250))
+        self.screen_label_name_white.setFont(self.font_b_250)
+        self.screen_label_name_white.setStyleSheet("background-color: none;")
+        self.screen_label_name_white.setAlignment(QtCore.Qt.AlignCenter)
+        self.screen_label_name_white.setObjectName("screen_label_name_white")
+
+        self.screen_label_region_white.setGeometry(QtCore.QRect(20, 250, 1800, 150))
+        self.screen_label_region_white.setFont(self.font_l_150)
+        self.screen_label_region_white.setStyleSheet("background-color: none;")
+        self.screen_label_region_white.setAlignment(QtCore.Qt.AlignCenter)
+        self.screen_label_region_white.setObjectName("screen_label_region_white")
+
+        self.screen_frame_red.setGeometry(QtCore.QRect(40, 00, 1840, 400))
+        self.screen_frame_red.setStyleSheet("background-color: None; ")
+        self.screen_frame_red.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_frame_red.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_frame_red.setObjectName("screen_frame_red")
+
+        self.screen_background_red_1.setGeometry(QtCore.QRect(0, 0, 1840, 280))
+        self.screen_background_red_1.setStyleSheet("background-color: rgb(255, 95, 95); border-top-left-radius: 15px;"
+                                                   "border-top-right-radius: 15px; border: 2px solid grey")
+        self.screen_background_red_1.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_background_red_1.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_background_red_1.setObjectName("screen_background_red_1")
+
+        self.screen_background_red_2.setGeometry(QtCore.QRect(0, 250, 1840, 150))
+        self.screen_background_red_2.setStyleSheet("background-color: white; border-radius: 15px;"
+                                                   "border: 2px solid grey")
+        self.screen_background_red_2.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.screen_background_red_2.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.screen_background_red_2.setObjectName("screen_background_red_2")
+
+        self.screen_label_name_red.setGeometry(QtCore.QRect(20, 0, 1800, 250))
+        self.screen_label_name_red.setFont(self.font_b_250)
+        self.screen_label_name_red.setStyleSheet("background-color: none; color: white;")
+        self.screen_label_name_red.setAlignment(QtCore.Qt.AlignCenter)
+        self.screen_label_name_red.setObjectName("screen_label_name_red")
+
+        self.screen_label_region_red.setGeometry(QtCore.QRect(20, 250, 1800, 150))
+        self.screen_label_region_red.setFont(self.font_l_150)
+        self.screen_label_region_red.setStyleSheet("background-color: none;")
+        self.screen_label_region_red.setAlignment(QtCore.Qt.AlignCenter)
+        self.screen_label_region_red.setObjectName("screen_label_region_red")
+
+        self.sportsman_screen.hide()
+
+        # self.line2.raise_()
         self.lcd2.raise_()
 
         self.frame_red2.raise_()
@@ -282,6 +430,17 @@ class KumiteSWindow_Ui(object):
         self.label_kum_jr1.raise_()
         self.label_kum_hmr1.raise_()
 
+        self.sportsman_screen.raise_()
+        self.screen_frame_white.raise_()
+        self.screen_background_white_1.raise_()
+        self.screen_background_white_2.raise_()
+        self.screen_label_name_white.raise_()
+        self.screen_label_region_white.raise_()
+        self.screen_background_red_1.raise_()
+        self.screen_background_red_2.raise_()
+        self.screen_label_name_red.raise_()
+        self.screen_label_region_red.raise_()
+
         self.label_winner.raise_()
 
         self.retranslateUi(Form)
@@ -303,6 +462,8 @@ class KumiteSWindow_Ui(object):
         self.matchName21.setText(_translate("Form", "Татами №#, Возраст"))
         # self.matchName22.setText(_translate("Form", "Возраст"))
         self.label_winner.setText(_translate("Form", "ПОБЕДИТЕЛЬ"))
+        self.label_name_white_2.setText(_translate("Form", ""))
+        self.label_name_red_2.setText(_translate("Form", ""))
 
 
 class KumiteSecondWindow(QWidget, KumiteSWindow_Ui):
@@ -377,6 +538,14 @@ class Frame_Header(QWidget):
         }
         """
 
+        self.font_l_13 = QtGui.QFont()
+        self.font_l_13.setFamily("Gotham-Light")
+        self.font_l_13.setPixelSize(13)
+
+        self.font_l_22 = QtGui.QFont()
+        self.font_l_22.setFamily("Gotham-Light")
+        self.font_l_22.setPixelSize(22)
+
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
@@ -407,10 +576,7 @@ class Frame_Header(QWidget):
         self.combo = QtWidgets.QComboBox(self.frame_combo)
         self.combo.setGeometry(0, 4, 147, 24)
         self.combo.addItems(["Главное меню", "Ката отбороч.", "Ката финал"])
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.combo.setFont(font)
+        self.combo.setFont(self.font_l_13)
 
         self.frame_btn = QtWidgets.QFrame(self)
         self.frame_btn.setFixedSize(51, 31)
@@ -420,18 +586,12 @@ class Frame_Header(QWidget):
         self.btn_showMinimized = QtWidgets.QPushButton("_", self.frame_btn)
         self.btn_showMinimized.setGeometry(QtCore.QRect(0, 4, 24, 24))
         self.btn_showMinimized.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.btn_showMinimized.setFont(font)
+        self.btn_showMinimized.setFont(self.font_l_13)
         self.btn_showMinimized.clicked.connect(self.btn_showMinimized_clicked)
 
         self.btn_closeWin = QtWidgets.QPushButton("×", self.frame_btn)
         self.btn_closeWin.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(22)
-        self.btn_closeWin.setFont(font)
+        self.btn_closeWin.setFont(self.font_l_22)
         self.btn_closeWin.setGeometry(QtCore.QRect(23, 4, 24, 24))
 
         self.layout.addWidget(self.frame_title)
@@ -472,7 +632,7 @@ class KumiteMainWindow_Ui(QWidget):
         QWidget.setWindowTitle(self, "Кумите. Судейское окно")
 
         self.Form2 = QtWidgets.QFrame(self)
-        self.Form2.setFixedSize(900, 500)
+        # self.Form2.setFixedSize(900, 500)
         self.Form2.setStyleSheet("background-color: white;")
 
         self.frame_matchName = QtWidgets.QFrame(self.Form2)
@@ -565,19 +725,27 @@ class KumiteMainWindow_Ui(QWidget):
         self.name_red_1 = QtWidgets.QLabel("Выберите спортсмена", self.frame_sportsmans)
         self.name_white_1 = QtWidgets.QLabel("Выберите спортсмена", self.frame_sportsmans)
 
-        self.frame_bottom2 = QtWidgets.QFrame(self.frame_sportsmans)
-        self.frame_left2 = QtWidgets.QFrame(self.frame_sportsmans)
-        self.frame_right2 = QtWidgets.QFrame(self.frame_sportsmans)
+        self.frm_spman_red = QtWidgets.QFrame(self.Form2)
+        self.frm_spman_white = QtWidgets.QFrame(self.Form2)
 
-        self.frame_bottom2.setGeometry(QtCore.QRect(0, 49, 900, 1))
-        self.frame_bottom2.setStyleSheet("background-color: grey;")
-        self.frame_bottom2.setObjectName("frame_bottom")
-        self.frame_left2.setGeometry(QtCore.QRect(0, 0, 1, 50))
-        self.frame_left2.setStyleSheet("background-color: grey;")
-        self.frame_left2.setObjectName("frame_left")
-        self.frame_right2.setGeometry(QtCore.QRect(899, 0, 1, 50))
-        self.frame_right2.setStyleSheet("background-color: grey;")
-        self.frame_right2.setObjectName("frame_right")
+        self.btn_show_screen = QtWidgets.QPushButton("Показать\nэкран ФИО", self.Form2)
+
+        self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.frm_spman_red,
+                                                       placeholderText="АКА. Введите имя спортсмена")
+        self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.frm_spman_red, placeholderText="АКА. Введите регион")
+        self.label_name_red_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_red)
+        self.label_region_red_1 = QtWidgets.QLabel("регион", self.frm_spman_red)
+
+        self.lineEdit_name_white_1 = QtWidgets.QLineEdit(self.frm_spman_white,
+                                                         placeholderText="СИРО. Введите имя спортсмена")
+        self.lineEdit_region_white_1 = QtWidgets.QLineEdit(self.frm_spman_white, placeholderText="СИРО. Введите регион")
+        self.label_name_white_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_white)
+        self.label_region_white_1 = QtWidgets.QLabel("регион", self.frm_spman_white)
+
+        self.frame_pyatnov = QtWidgets.QFrame(self.Form2)
+
+        self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
+        self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
         self.btn_style_1 = """
             QPushButton {
@@ -757,21 +925,88 @@ class KumiteMainWindow_Ui(QWidget):
         }
         """
 
+        self.LEdit_style_2 = """
+            QLineEdit {
+                border: none;
+                border-radius: none;
+                border-bottom: 1px solid grey;
+                background-color: white;
+                color: #555B6E;
+                }
+            QLineEdit:hover {
+                border-bottom: 2px solid #3e6ae1;
+                background-color: #fdfdfd;
+                color: black;
+                }
+        """
+
+        self.font_l_10 = QtGui.QFont()
+        self.font_l_10.setFamily("Gotham-Light")
+        self.font_l_10.setPixelSize(10)
+
+        self.font_l_12 = QtGui.QFont()
+        self.font_l_12.setFamily("Gotham-Light")
+        self.font_l_12.setPixelSize(12)
+
+        self.font_l_13 = QtGui.QFont()
+        self.font_l_13.setFamily("Gotham-Light")
+        self.font_l_13.setPixelSize(13)
+
+        self.font_m_13 = QtGui.QFont()
+        self.font_m_13.setFamily("Gotham-Medium")
+        self.font_m_13.setPixelSize(13)
+
+        self.font_b_13 = QtGui.QFont()
+        self.font_b_13.setFamily("Gotham-Bold")
+        self.font_b_13.setPixelSize(13)
+
+        self.font_l_16 = QtGui.QFont()
+        self.font_l_16.setFamily("Gotham-Light")
+        self.font_l_16.setPixelSize(16)
+
+        self.font_m_16 = QtGui.QFont()
+        self.font_m_16.setFamily("Gotham-Medium")
+        self.font_m_16.setPixelSize(16)
+
+        self.font_l_20 = QtGui.QFont()
+        self.font_l_20.setFamily("Gotham-Light")
+        self.font_l_20.setPixelSize(20)
+
+        self.font_m_20 = QtGui.QFont()
+        self.font_m_20.setFamily("Gotham-Medium")
+        self.font_m_20.setPixelSize(20)
+
+        self.font_m_33 = QtGui.QFont()
+        self.font_m_33.setFamily("Gotham-Medium")
+        self.font_m_33.setPixelSize(33)
+
+        self.font_l_40 = QtGui.QFont()
+        self.font_l_40.setFamily("Gotham-Light")
+        self.font_l_40.setPixelSize(40)
+
+        self.font_l_46 = QtGui.QFont()
+        self.font_l_46.setFamily("Gotham-Light")
+        self.font_l_46.setPixelSize(46)
+
         self.frame_bottom = QtWidgets.QFrame(self.Form2)
         self.frame_bottom1 = QtWidgets.QFrame(self.Form2)
+        self.frame_bottom3 = QtWidgets.QFrame(self.Form2)
         self.frame_left = QtWidgets.QFrame(self.Form2)
         self.frame_right = QtWidgets.QFrame(self.Form2)
 
-        self.frame_bottom.setGeometry(QtCore.QRect(0, 499, 900, 1))
+        self.frame_bottom.setGeometry(QtCore.QRect(0, 559, 900, 1))
         self.frame_bottom.setStyleSheet("background-color: grey;")
         self.frame_bottom.setObjectName("frame_bottom")
-        self.frame_bottom1.setGeometry(QtCore.QRect(25, 499, 850, 1))
+        self.frame_bottom1.setGeometry(QtCore.QRect(25, 559, 850, 1))
         self.frame_bottom1.setStyleSheet("background-color: grey;")
         self.frame_bottom1.setObjectName("frame_bottom1")
-        self.frame_left.setGeometry(QtCore.QRect(0, 0, 1, 500))
+        self.frame_bottom3.setGeometry(QtCore.QRect(0, 669, 900, 1))
+        self.frame_bottom3.setStyleSheet("background-color: grey;")
+        self.frame_bottom3.setObjectName("frame_bottom1")
+        self.frame_left.setGeometry(QtCore.QRect(0, 0, 1, 669))
         self.frame_left.setStyleSheet("background-color: grey;")
         self.frame_left.setObjectName("frame_left")
-        self.frame_right.setGeometry(QtCore.QRect(899, 0, 1, 500))
+        self.frame_right.setGeometry(QtCore.QRect(899, 0, 1, 669))
         self.frame_right.setStyleSheet("background-color: grey;")
         self.frame_right.setObjectName("frame_right")
 
@@ -780,40 +1015,30 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.btn_showData.setGeometry(QtCore.QRect(50, 10, 120, 50))
         self.btn_showData.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_showData.setFont(font)
+        self.btn_showData.setFont(self.font_m_13)
         self.btn_showData.setObjectName("btn_showData")
+        self.btn_showData.setToolTip('Отобразить на Большом экране ФИО, номер татами и категорию')
 
         self.btn_clearData.setGeometry(QtCore.QRect(730, 10, 120, 50))
         self.btn_clearData.setStyleSheet(self.btn_style_2)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_clearData.setFont(font)
+        self.btn_clearData.setFont(self.font_m_13)
         self.btn_clearData.setObjectName("btn_clearData")
 
         self.label_matchName1.setGeometry(QtCore.QRect(210, 0, 480, 25))
-        self.label_matchName1.setStyleSheet("font-family: Gotham-Light; color: black; font-size: 20px;")
+        self.label_matchName1.setFont(self.font_l_20)
+        self.label_matchName1.setStyleSheet("color: black;")
         self.label_matchName1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_matchName1.setObjectName("label_matchName1")
 
         self.matchName11.setGeometry(QtCore.QRect(210, 25, 150, 30))
         self.matchName11.setStyleSheet(self.LEdit_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.matchName11.setFont(font)
+        self.matchName11.setFont(self.font_l_20)
         self.matchName11.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.matchName11.setObjectName("matchName11")
 
         self.matchName12.setGeometry(QtCore.QRect(370, 25, 320, 30))
         self.matchName12.setStyleSheet(self.LEdit_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(20)
-        self.matchName12.setFont(font)
+        self.matchName12.setFont(self.font_l_20)
         self.matchName12.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.matchName12.setObjectName("matchName12")
 
@@ -884,66 +1109,66 @@ class KumiteMainWindow_Ui(QWidget):
         self.winnerWhite.setStyleSheet(self.Radio_style_1)
         self.winnerWhite.setObjectName("winnerWhite")
 
-        self.frame_red1.setGeometry(QtCore.QRect(460, 140, 415, 350))
+        self.frame_red1.setGeometry(QtCore.QRect(460, 140, 415, 270))
         # self.frame_red1.setStyleSheet("background-color: none; border-radius: 15px;  border: 1px solid #FF4546")
         self.frame_red1.setStyleSheet("border-left: 1px solid #FF4546")
         self.frame_red1.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_red1.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_red1.setObjectName("frame_red")
 
-        self.label_score11.setGeometry(QtCore.QRect(150, 20, 100, 200))
+        self.label_score11.setGeometry(QtCore.QRect(150, 15, 100, 120))
         self.label_score11.setStyleSheet("background-color: None; border: none;"
                                          "font-family: Gotham-Light; font-size: 135px;")
         self.label_score11.setAlignment(QtCore.Qt.AlignCenter)
         self.label_score11.setObjectName("label_score1")
 
         # self.score_red_0.setGeometry(QtCore.QRect(10, 8, 40, 25))
-        self.score_red_0.setGeometry(QtCore.QRect(10, 206, 40, 25))
+        self.score_red_0.setGeometry(QtCore.QRect(10, 135, 40, 25))
         self.score_red_0.setStyleSheet(self.Radio_style_2)
         self.score_red_0.setChecked(True)
         self.score_red_0.setObjectName("score_red_0")
 
         # self.score_red_1.setGeometry(QtCore.QRect(10, 41, 40, 25))
-        self.score_red_1.setGeometry(QtCore.QRect(70, 206, 40, 25))
+        self.score_red_1.setGeometry(QtCore.QRect(70, 135, 40, 25))
         self.score_red_1.setStyleSheet(self.Radio_style_2)
         self.score_red_1.setObjectName("score_red_1")
 
         # self.score_red_2.setGeometry(QtCore.QRect(10, 74, 40, 25))
-        self.score_red_2.setGeometry(QtCore.QRect(130, 206, 40, 25))
+        self.score_red_2.setGeometry(QtCore.QRect(130, 135, 40, 25))
         self.score_red_2.setStyleSheet(self.Radio_style_2)
         self.score_red_2.setObjectName("score_red_2")
 
         # self.score_red_3.setGeometry(QtCore.QRect(10, 107, 40, 25))
-        self.score_red_3.setGeometry(QtCore.QRect(190, 206, 40, 25))
+        self.score_red_3.setGeometry(QtCore.QRect(190, 135, 40, 25))
         self.score_red_3.setStyleSheet(self.Radio_style_2)
         self.score_red_3.setObjectName("score_red_3")
 
         # self.score_red_4.setGeometry(QtCore.QRect(10, 140, 40, 25))
-        self.score_red_4.setGeometry(QtCore.QRect(250, 206, 40, 25))
+        self.score_red_4.setGeometry(QtCore.QRect(250, 135, 40, 25))
         self.score_red_4.setStyleSheet(self.Radio_style_2)
         self.score_red_4.setObjectName("score_red_4")
 
         # self.score_red_5.setGeometry(QtCore.QRect(10, 173, 40, 25))
-        self.score_red_5.setGeometry(QtCore.QRect(310, 206, 40, 25))
+        self.score_red_5.setGeometry(QtCore.QRect(310, 135, 40, 25))
         self.score_red_5.setStyleSheet(self.Radio_style_2)
         self.score_red_5.setObjectName("score_red_5")
 
-        # self.score_red_6.setGeometry(QtCore.QRect(10, 206, 40, 25))
-        self.score_red_6.setGeometry(QtCore.QRect(370, 206, 40, 25))
+        # self.score_red_6.setGeometry(QtCore.QRect(10, 135, 40, 25))
+        self.score_red_6.setGeometry(QtCore.QRect(370, 135, 40, 25))
         self.score_red_6.setStyleSheet(self.Radio_style_2)
         self.score_red_6.setObjectName("score_red_6")
 
-        self.horizon_line_red.setGeometry(QtCore.QRect(10, 240, 395, 1))
+        self.horizon_line_red.setGeometry(QtCore.QRect(10, 165, 395, 1))
         self.horizon_line_red.setStyleSheet("background-color: #FF4546;")
 
-        self.frame_white1.setGeometry(QtCore.QRect(25, 140, 415, 350))
+        self.frame_white1.setGeometry(QtCore.QRect(25, 140, 415, 270))
         # self.frame_white1.setStyleSheet("background-color: none; border-radius: 15px; border: 1px solid grey;")
         self.frame_white1.setStyleSheet("border-left: 1px solid grey")
         self.frame_white1.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_white1.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.frame_white1.setObjectName("frame_white")
+        self.frame_white1.setObjectName("frame_white1")
 
-        self.label_score12.setGeometry(QtCore.QRect(150, 20, 100, 200))
+        self.label_score12.setGeometry(QtCore.QRect(150, 15, 100, 120))
         self.label_score12.setStyleSheet("background-color: None; border: none; font-family: Gotham-Light;"
                                          "font-size: 135px;")
         self.label_score12.setAlignment(QtCore.Qt.AlignCenter)
@@ -981,23 +1206,23 @@ class KumiteMainWindow_Ui(QWidget):
         self.slider.setValue(3)
 
         self.label_1min.setGeometry(QtCore.QRect(2, 40, 35, 14))
-        self.label_1min.setStyleSheet("font-family: Gotham-Light; font-size: 10px;")
+        self.label_1min.setFont(self.font_l_10)
         self.label_1min.setObjectName("label_1min")
 
         self.label_15min.setGeometry(QtCore.QRect(35, 40, 45, 14))
-        self.label_15min.setStyleSheet("font-family: Gotham-Light; font-size: 10px;")
+        self.label_15min.setFont(self.font_l_10)
         self.label_15min.setObjectName("label_15min")
 
         self.label_2min.setGeometry(QtCore.QRect(80, 40, 40, 14))
-        self.label_2min.setStyleSheet("font-family: Gotham-Light; font-size: 10px;")
+        self.label_2min.setFont(self.font_l_10)
         self.label_2min.setObjectName("label_2min")
 
         self.label_3min.setGeometry(QtCore.QRect(120, 40, 35, 14))
-        self.label_3min.setStyleSheet("font-family: Gotham-Light; font-size: 10px;")
+        self.label_3min.setFont(self.font_l_10)
         self.label_3min.setObjectName("label_3min")
 
         self.label_5min.setGeometry(QtCore.QRect(155, 40, 34, 14))
-        self.label_5min.setStyleSheet("font-family: Gotham-Light; font-size: 10px;")
+        self.label_5min.setFont(self.font_l_10)
         self.label_5min.setObjectName("label_5min")
 
         self.lcd1.setGeometry(QtCore.QRect(350, 5, 180, 60))
@@ -1013,71 +1238,60 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.btn_reset.setGeometry(QtCore.QRect(580, 15, 120, 40))
         self.btn_reset.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_reset.setFont(font)
+        self.btn_reset.setFont(self.font_m_13)
         self.btn_reset.setToolTip('Сбросить всё')
-        self.btn_showData.setToolTip('Отобразить на Большом экране номер татами и категорию')
-
         self.btn_reset.setObjectName("btn_reset")
 
         self.btn_pause.setGeometry(QtCore.QRect(725, 20, 150, 30))
         self.btn_pause.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_pause.setFont(font)
+        self.btn_pause.setFont(self.font_m_13)
         self.btn_pause.setToolTip('Сбросить только секундомер')
         self.btn_pause.setObjectName("btn_pause")
 
         self.btn_start.setGeometry(QtCore.QRect(230, 10, 115, 50))
         self.btn_start.setStyleSheet(self.btn_style_1)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(16)
-        self.btn_start.setFont(font)
+        self.btn_start.setFont(self.font_m_16)
         self.btn_start.setObjectName("btn_start")
 
-        self.score_white_0.setGeometry(QtCore.QRect(10, 206, 40, 25))
+        self.score_white_0.setGeometry(QtCore.QRect(10, 135, 40, 25))
         self.score_white_0.setChecked(True)
         self.score_white_0.setStyleSheet(self.Radio_style_1)
         self.score_white_0.setObjectName("score_white_0")
 
-        self.score_white_1.setGeometry(QtCore.QRect(70, 206, 40, 25))
+        self.score_white_1.setGeometry(QtCore.QRect(70, 135, 40, 25))
         self.score_white_1.setStyleSheet(self.Radio_style_1)
         self.score_white_1.setObjectName("score_white_1")
 
-        self.score_white_2.setGeometry(QtCore.QRect(130, 206, 40, 25))
+        self.score_white_2.setGeometry(QtCore.QRect(130, 135, 40, 25))
         self.score_white_2.setStyleSheet(self.Radio_style_1)
         self.score_white_2.setObjectName("score_white_2")
 
-        self.score_white_3.setGeometry(QtCore.QRect(190, 206, 40, 25))
+        self.score_white_3.setGeometry(QtCore.QRect(190, 135, 40, 25))
         self.score_white_3.setStyleSheet(self.Radio_style_1)
         self.score_white_3.setObjectName("score_white_3")
 
-        self.score_white_4.setGeometry(QtCore.QRect(250, 206, 40, 25))
+        self.score_white_4.setGeometry(QtCore.QRect(250, 135, 40, 25))
         self.score_white_4.setStyleSheet(self.Radio_style_1)
         self.score_white_4.setObjectName("score_white_4")
 
-        self.score_white_5.setGeometry(QtCore.QRect(310, 206, 40, 25))
+        self.score_white_5.setGeometry(QtCore.QRect(310, 135, 40, 25))
         self.score_white_5.setStyleSheet(self.Radio_style_1)
         self.score_white_5.setObjectName("score_white_5")
 
-        self.score_white_6.setGeometry(QtCore.QRect(370, 206, 40, 25))
+        self.score_white_6.setGeometry(QtCore.QRect(370, 135, 40, 25))
         self.score_white_6.setStyleSheet(self.Radio_style_1)
         self.score_white_6.setObjectName("score_white_6")
 
-        self.horizon_line_white.setGeometry(QtCore.QRect(10, 240, 395, 1))
+        self.horizon_line_white.setGeometry(QtCore.QRect(10, 165, 395, 1))
         self.horizon_line_white.setStyleSheet("background-color: grey;")
 
-        self.frame_rh.setGeometry(QtCore.QRect(5, 255, 405, 40))
+        self.frame_rh.setGeometry(QtCore.QRect(5, 175, 405, 40))
         self.frame_rh.setStyleSheet("border: none")
         self.frame_rh.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_rh.setObjectName("frame_rh")
 
         self.h_red0.setGeometry(QtCore.QRect(0, 0, 25, 40))
-        self.h_red0.setStyleSheet("color: white; font-family: Gotham-Light; font-size: 20px;")
+        self.h_red0.setFont(self.font_l_20)
         self.h_red0.setAlignment(QtCore.Qt.AlignCenter)
         self.h_red0.setObjectName("h_red0")
 
@@ -1098,13 +1312,13 @@ class KumiteMainWindow_Ui(QWidget):
         self.h_red4.setChecked(True)
         self.h_red4.setObjectName("h_red4")
 
-        self.frame_rj.setGeometry(QtCore.QRect(5, 305, 405, 40))
+        self.frame_rj.setGeometry(QtCore.QRect(5, 225, 405, 40))
         self.frame_rj.setStyleSheet("border: none")
         self.frame_rj.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_rj.setObjectName("frame_rj")
 
         self.j_red0.setGeometry(QtCore.QRect(0, 0, 25, 40))
-        self.j_red0.setStyleSheet("color: white; font-family: Gotham-Light; font-size: 40px;")
+        self.j_red0.setFont(self.font_l_40)
         self.j_red0.setAlignment(QtCore.Qt.AlignCenter)
         self.j_red0.setObjectName("j_red0")
 
@@ -1125,13 +1339,13 @@ class KumiteMainWindow_Ui(QWidget):
         self.j_red4.setChecked(True)
         self.j_red4.setObjectName("j_red4")
 
-        self.frame_wh.setGeometry(QtCore.QRect(5, 255, 405, 40))
+        self.frame_wh.setGeometry(QtCore.QRect(5, 175, 405, 40))
         self.frame_wh.setStyleSheet("border-color: None;")
         self.frame_wh.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_wh.setObjectName("frame_wh")
 
         self.h_white0.setGeometry(QtCore.QRect(0, 0, 25, 40))
-        self.h_white0.setStyleSheet("font-family: Gotham-Light; font-size: 20px;")
+        self.h_white0.setFont(self.font_l_20)
         self.h_white0.setAlignment(QtCore.Qt.AlignCenter)
         self.h_white0.setObjectName("h_white0")
 
@@ -1152,13 +1366,13 @@ class KumiteMainWindow_Ui(QWidget):
         self.h_white4.setChecked(True)
         self.h_white4.setObjectName("h_white4")
 
-        self.frame_wj.setGeometry(QtCore.QRect(5, 305, 405, 40))
+        self.frame_wj.setGeometry(QtCore.QRect(5, 225, 405, 40))
         self.frame_wj.setStyleSheet("border-color: None;")
         self.frame_wj.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_wj.setObjectName("frame_wj")
 
         self.j_white0.setGeometry(QtCore.QRect(0, 0, 25, 40))
-        self.j_white0.setStyleSheet("font-family: Gotham-Light; font-size: 40px;")
+        self.j_white0.setFont(self.font_l_40)
         self.j_white0.setAlignment(QtCore.Qt.AlignCenter)
         self.j_white0.setObjectName("j_white0")
 
@@ -1179,8 +1393,72 @@ class KumiteMainWindow_Ui(QWidget):
         self.j_white4.setChecked(True)
         self.j_white4.setObjectName("j_white4")
 
+        # --------------------------------------
+
+        self.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 50))
+        self.btn_show_screen.setStyleSheet(self.btn_style_1)
+        self.btn_show_screen.setFont(self.font_m_13)
+        self.btn_show_screen.setObjectName("btn_show_screen")
+        self.btn_show_screen.setToolTip('Отобразить экран со спортсменами поверх экрана с очками')
+
+        self.frm_spman_white.setGeometry(QtCore.QRect(0, 420, 450, 140))
+        self.frm_spman_white.setStyleSheet("background-color: None;")
+        self.frm_spman_white.setObjectName("frm_spman_red")
+
+        self.label_name_white_1.setGeometry(QtCore.QRect(50, 0, 350, 40))
+        self.label_name_white_1.setFont(self.font_m_33)
+        self.label_name_white_1.setStyleSheet("color: grey; border: none;")
+        self.label_name_white_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_name_white_1.setObjectName("label_name_white_1")
+
+        self.label_region_white_1.setGeometry(QtCore.QRect(100, 40, 250, 20))
+        self.label_region_white_1.setFont(self.font_m_13)
+        self.label_region_white_1.setStyleSheet("color: grey; border: none;")
+        self.label_region_white_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_region_white_1.setObjectName("label_region_white_1")
+
+        self.lineEdit_name_white_1.setGeometry(QtCore.QRect(50, 60, 350, 30))
+        self.lineEdit_name_white_1.setStyleSheet(self.LEdit_style_1)
+        self.lineEdit_name_white_1.setFont(self.font_l_20)
+        self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
+
+        self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
+        self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
+        self.lineEdit_region_white_1.setFont(self.font_l_20)
+        self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
+
+        self.frm_spman_red.setGeometry(QtCore.QRect(450, 420, 450, 140))
+        self.frm_spman_red.setStyleSheet("background-color: None;")
+        self.frm_spman_red.setObjectName("frm_spman_red")
+
+        self.label_name_red_1.setGeometry(QtCore.QRect(50, 0, 350, 40))
+        self.label_name_red_1.setFont(self.font_m_33)
+        self.label_name_red_1.setStyleSheet("color: grey; border: none;")
+        self.label_name_red_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_name_red_1.setObjectName("label_name_red_1")
+
+        self.label_region_red_1.setGeometry(QtCore.QRect(100, 40, 250, 20))
+        self.label_region_red_1.setFont(self.font_m_13)
+        self.label_region_red_1.setStyleSheet("color: grey; border: none;")
+        self.label_region_red_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_region_red_1.setObjectName("label_region_red_1")
+
+        self.lineEdit_name_red_1.setGeometry(QtCore.QRect(50, 60, 350, 30))
+        self.lineEdit_name_red_1.setStyleSheet(self.LEdit_style_1)
+        self.lineEdit_name_red_1.setFont(self.font_l_20)
+        self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
+
+        self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
+        self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
+        self.lineEdit_region_red_1.setFont(self.font_l_20)
+        self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
+
         #################### ЕСЛИ ЗАГРУЖЕН СВОДНЫЙ СПИСОК
-        self.frame_sportsmans.setGeometry(QtCore.QRect(0, 500, 900, 95))
+        self.frame_sportsmans.setGeometry(QtCore.QRect(0, 565, 900, 105))
         self.frame_sportsmans.setStyleSheet("background-color: None;")
         self.frame_sportsmans.setObjectName("frame_sportsmans")
 
@@ -1190,62 +1468,75 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_sex.setObjectName("frame_sex")
 
         self.male.setGeometry(QtCore.QRect(20, 0, 40, 25))
-        self.male.setStyleSheet("font-family: Gotham-Medium; font-size: 20px;")
+        self.male.setFont(self.font_m_20)
         self.male.setObjectName("male")
 
         self.female.setGeometry(QtCore.QRect(90, 0, 40, 25))
-        self.female.setStyleSheet("font-family: Gotham-Medium; font-size: 20px;")
+        self.female.setFont(self.font_m_20)
         self.female.setObjectName("female")
 
         self.sex_1.setGeometry(QtCore.QRect(330, 0, 50, 13))
-        self.sex_1.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 13px;")
+        self.sex_1.setFont(self.font_b_13)
+        self.sex_1.setStyleSheet("color: black;")
         self.sex_1.setAlignment(QtCore.Qt.AlignCenter)
         self.sex_1.setObjectName("sex_1")
 
         self.age_1.setGeometry(QtCore.QRect(490, 0, 110, 13))
-        self.age_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.age_1.setFont(self.font_l_13)
+        self.age_1.setStyleSheet("color: grey;")
         self.age_1.setAlignment(QtCore.Qt.AlignCenter)
         self.age_1.setObjectName("age_1")
 
         self.comboBox_age.setEnabled(False)
         self.comboBox_age.setGeometry(QtCore.QRect(490, 20, 110, 22))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(13)
-        self.comboBox_age.setFont(font)
+        self.comboBox_age.setFont(self.font_l_13)
         self.comboBox_age.setObjectName("comboBox_age")
 
         self.comboBox_name_red_1.setEnabled(False)
         self.comboBox_name_red_1.setGeometry(QtCore.QRect(470, 70, 390, 25))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(12)
-        self.comboBox_name_red_1.setFont(font)
+        self.comboBox_name_red_1.setFont(self.font_l_12)
         self.comboBox_name_red_1.setObjectName("comboBox_name_red_1")
 
         self.comboBox_name_white_1.setEnabled(False)
         self.comboBox_name_white_1.setGeometry(QtCore.QRect(40, 70, 390, 25))
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(12)
-        self.comboBox_name_white_1.setFont(font)
+        self.comboBox_name_white_1.setFont(self.font_l_12)
         self.comboBox_name_white_1.setObjectName("comboBox_name_white_1")
 
         self.name_red_1.setGeometry(QtCore.QRect(470, 50, 390, 16))
-        self.name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.name_red_1.setFont(self.font_l_13)
+        self.name_red_1.setStyleSheet("color: grey;")
         self.name_red_1.setAlignment(QtCore.Qt.AlignCenter)
         self.name_red_1.setObjectName("name_red_1")
 
         self.name_white_1.setGeometry(QtCore.QRect(40, 50, 390, 16))
-        self.name_white_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.name_white_1.setFont(self.font_l_13)
+        self.name_white_1.setStyleSheet("color: grey;")
         self.name_white_1.setAlignment(QtCore.Qt.AlignCenter)
         self.name_white_1.setObjectName("name_white_1")
 
+        # --------------------------------------
 
+        # --------------------------------------
+
+        self.frame_pyatnov.setGeometry(QtCore.QRect(0, 500, 900, 50))
+        self.frame_pyatnov.setStyleSheet("background-color: None;")
+        self.frame_pyatnov.setObjectName("frame_pyatnov")
+
+        self.pyatnov_name.setEnabled(False)
+        self.pyatnov_name.setGeometry(QtCore.QRect(270, 15, 390, 25))
+        self.pyatnov_name.setFont(self.font_l_12)
+        self.pyatnov_name.setObjectName("pyatnov_name")
+
+        self.pyatnov_label.setGeometry(QtCore.QRect(150, 15, 110, 25))
+        self.pyatnov_label.setFont(self.font_l_13)
+        self.pyatnov_label.setStyleSheet("color: grey;")
+        self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_label.setObjectName("pyatnov_label")
 
         QtCore.QMetaObject.connectSlotsByName(self.Form2)
 
         self.KumiteSecondWindow = KumiteSecondWindow()
+        self.KumiteSWindow_Ui = KumiteSWindow_Ui()
 
         self.lcd1.setNumDigits(5)
         self.KumiteSecondWindow.lcd2.setNumDigits(5)
@@ -1271,11 +1562,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
         self.KumiteSecondWindow.show()
         self.show()
-        coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
-        coord_y1 = display_coord_y1 + (display_height - self.size().height())//2
+        coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
+        coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2
         self.move(coord_x1, coord_y1)
 
     def closeSecondWin(self):
+        self.show_screen()
         self.KumiteSecondWindow.close()
         self.close()
 
@@ -1332,6 +1624,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.label_5min.setStyleSheet("font-family: Gotham-Medium;")
 
     def upTime(self):
+        self.show_screen()
         if datetime.strptime(str('00:00'), '%M:%S') <= self.tics < self.datetime:
             if self.btn_start.text() == '▇ STOP':
                 self.tics += timedelta(seconds=1)
@@ -1350,6 +1643,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_start.setText('► START')
 
     def downTime(self):
+        self.show_screen()
         if datetime.strptime(str('00:00'), '%M:%S') < self.tics <= self.datetime:
             if self.btn_start.text() == '▇ STOP':
                 self.tics -= timedelta(seconds=1)
@@ -1368,6 +1662,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_start.setText('► START')
 
     def update_time(self):
+        self.show_screen()
         self.timer.start(1000)
         self.tics -= timedelta(seconds=1)
         self.lcd1.display(str(self.tics).split()[1])
@@ -1385,16 +1680,14 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.lcd2.display(str(self.tics).split()[1])
 
     def start_timer(self):
+        self.show_screen()
         if self.btn_start.text() == '► START':
             self.btn_start.setText('▇ STOP')
             self.timer.start(1000)
             self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
             self.btn_reset.setText('НОВЫЙ БОЙ')
-            font = QtGui.QFont()
-            font.setFamily("Gotham-Medium")
-            font.setPixelSize(13)
-            self.btn_pause.setFont(font)
-            self.btn_reset.setFont(font)
+            self.btn_pause.setFont(self.font_m_13)
+            self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
         else:
@@ -1402,15 +1695,13 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_start.setText('► START')
             self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
             self.btn_reset.setText('НОВЫЙ БОЙ')
-            font = QtGui.QFont()
-            font.setFamily("Gotham-Medium")
-            font.setPixelSize(13)
-            self.btn_pause.setFont(font)
-            self.btn_reset.setFont(font)
+            self.btn_pause.setFont(self.font_m_13)
+            self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
 
     def reset_timer(self):
+        self.show_screen()
         if self.btn_start.text() != '► START':
             self.btn_pause.setText('Останови бой')
             self.btn_pause.setStyleSheet("color: red")
@@ -1419,17 +1710,15 @@ class KumiteMainWindow_Ui(QWidget):
             self.timeRound()
             self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
             self.btn_reset.setText('НОВЫЙ БОЙ')
-            font = QtGui.QFont()
-            font.setFamily("Gotham-Medium")
-            font.setPixelSize(13)
-            self.btn_pause.setFont(font)
-            self.btn_reset.setFont(font)
+            self.btn_pause.setFont(self.font_m_13)
+            self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
             self.btn_pause.setToolTip('Сбросить только секундомер')
             self.btn_reset.setToolTip('Сбросить всё')
 
     def reset_all(self):
+        self.show_screen()
         if self.btn_start.text() != '► START':
             self.btn_reset.setText('Останови бой')
             self.btn_reset.setStyleSheet("color: red")
@@ -1451,10 +1740,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.winnerWhite.setChecked(False)
         self.winnerRed.setAutoExclusive(True)
         self.winnerWhite.setAutoExclusive(True)
-        self.KumiteSecondWindow.line2.show()
-        self.KumiteSecondWindow.frame_white2.setGeometry(QtCore.QRect(1000, 150, 880, 850))
+        # self.KumiteSecondWindow.line2.show()
+        self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
         self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
-        self.KumiteSecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 880, 850))
+        self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
         self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
         self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
         self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
@@ -1462,20 +1751,32 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.frame_white2.show()
         self.KumiteSecondWindow.frame_red2.show()
         self.KumiteSecondWindow.label_winner.hide()
+        self.show_screen()
 
         self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
         self.btn_reset.setText('НОВЫЙ БОЙ')
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Medium")
-        font.setPixelSize(13)
-        self.btn_pause.setFont(font)
-        self.btn_reset.setFont(font)
+        self.btn_pause.setFont(self.font_m_13)
+        self.btn_reset.setFont(self.font_m_13)
         self.btn_pause.setStyleSheet(self.btn_style_1)
         self.btn_reset.setStyleSheet(self.btn_style_1)
         self.label_score11.setText('0')
         self.KumiteSecondWindow.label_score21.setText('0')
         self.label_score12.setText('0')
         self.KumiteSecondWindow.label_score22.setText('0')
+
+        self.KumiteSecondWindow.label_name_white_2.clear()
+        self.KumiteSecondWindow.label_name_red_2.clear()
+        self.label_name_red_1.setText("ФАМИЛИЯ")
+        # self.label_name_red_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_region_red_1.setText("регион")
+        self.label_name_white_1.setText("ФАМИЛИЯ")
+        # self.label_name_white_1.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_region_white_1.setText("регион")
+        self.lineEdit_name_red_1.clear()
+        self.lineEdit_region_red_1.clear()
+        self.lineEdit_name_white_1.clear()
+        self.lineEdit_region_white_1.clear()
+
         self.score_red_0.setChecked(True)
         self.score_white_0.setChecked(True)
 
@@ -1497,11 +1798,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.label_kum_jw0.setText(None)
 
     def setWinner(self):
+        self.show_screen()
         radio = self.sender()
         if self.temp_index == radio.text():
             if radio.text() == "Победил АКА":
-                self.KumiteSecondWindow.line2.show()
-                self.KumiteSecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 880, 850))
+                # self.KumiteSecondWindow.line2.show()
+                self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
                 self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
                 self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
                 self.KumiteSecondWindow.lcd2.show()
@@ -1511,10 +1813,10 @@ class KumiteMainWindow_Ui(QWidget):
                 self.winnerRed.setAutoExclusive(False)
                 self.winnerRed.setChecked(False)
                 self.winnerRed.setAutoExclusive(True)
-                self.temp_index= False
+                self.temp_index = False
             elif radio.text() == "Победил СИРО":
-                self.KumiteSecondWindow.line2.show()
-                self.KumiteSecondWindow.frame_white2.setGeometry(QtCore.QRect(1000, 150, 880, 850))
+                # self.KumiteSecondWindow.line2.show()
+                self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
                 self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
                 self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
                 self.KumiteSecondWindow.lcd2.show()
@@ -1528,55 +1830,62 @@ class KumiteMainWindow_Ui(QWidget):
         elif radio.isChecked():
             if radio.text() == "Победил АКА":
                 self.temp_index = radio.text()
-                self.KumiteSecondWindow.frame_red2.setGeometry(QtCore.QRect(520, 150, 880, 850))
+                self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_win)
                 self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 880, 450))
                 self.KumiteSecondWindow.lcd2.hide()
-                self.KumiteSecondWindow.line2.hide()
+                # self.KumiteSecondWindow.line2.hide()
                 self.KumiteSecondWindow.label_winner.show()
                 self.KumiteSecondWindow.frame_red2.show()
                 self.KumiteSecondWindow.frame_white2.hide()
                 self.winnerWhite.setChecked(False)
             elif radio.text() == "Победил СИРО":
                 self.temp_index = radio.text()
-                self.KumiteSecondWindow.frame_white2.setGeometry(QtCore.QRect(520, 150, 880, 850))
+                self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_win)
                 self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(0, 0, 880, 450))
                 self.KumiteSecondWindow.lcd2.hide()
-                self.KumiteSecondWindow.line2.hide()
+                # self.KumiteSecondWindow.line2.hide()
                 self.KumiteSecondWindow.label_winner.show()
                 self.KumiteSecondWindow.frame_white2.show()
                 self.KumiteSecondWindow.frame_red2.hide()
                 self.winnerRed.setChecked(False)
 
     def onClickedR(self):
+        self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score11.setText(radio.text())
             self.KumiteSecondWindow.label_score21.setText(radio.text())
 
     def onClickedW(self):
+        self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score12.setText(radio.text())
             self.KumiteSecondWindow.label_score22.setText(radio.text())
 
     def penaltyButton_hmr1(self):
+        self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2, self.KumiteSecondWindow.hm_r3,
+            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
+                                self.KumiteSecondWindow.hm_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr2(self):
+        self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2, self.KumiteSecondWindow.hm_r3,
+            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
+                                self.KumiteSecondWindow.hm_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr3(self):
+        self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -1587,99 +1896,125 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr4(self):
+        self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2, self.KumiteSecondWindow.hm_r3)
+            self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
+                                self.KumiteSecondWindow.hm_r3)
             self.KumiteSecondWindow.label_kum_hmr0.setText(None)
 
     def penaltyButton_jr1(self):
+        self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2, self.KumiteSecondWindow.j_r3,
+            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
+                                self.KumiteSecondWindow.j_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr2(self):
+        self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2, self.KumiteSecondWindow.j_r3,
+            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
+                                self.KumiteSecondWindow.j_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr3(self):
+        self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2, self.KumiteSecondWindow.j_r3,
+            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
+                                self.KumiteSecondWindow.j_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr4(self):
+        self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2, self.KumiteSecondWindow.j_r3)
+            self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
+                                self.KumiteSecondWindow.j_r3)
             self.KumiteSecondWindow.label_kum_jr0.setText(None)
 
     def penaltyButton_hmw1(self):
+        self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2, self.KumiteSecondWindow.hm_w3,
+            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
+                                self.KumiteSecondWindow.hm_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw2(self):
+        self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2, self.KumiteSecondWindow.hm_w3,
+            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
+                                self.KumiteSecondWindow.hm_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw3(self):
+        self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2, self.KumiteSecondWindow.hm_w3,
+            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
+                                self.KumiteSecondWindow.hm_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw4(self):
+        self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2, self.KumiteSecondWindow.hm_w3)
+            self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
+                                self.KumiteSecondWindow.hm_w3)
             self.KumiteSecondWindow.label_kum_hmw0.setText(None)
 
     def penaltyButton_jw1(self):
+        self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2, self.KumiteSecondWindow.j_w3,
+            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
+                                self.KumiteSecondWindow.j_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw2(self):
+        self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2, self.KumiteSecondWindow.j_w3,
+            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
+                                self.KumiteSecondWindow.j_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw3(self):
+        self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2, self.KumiteSecondWindow.j_w3,
+            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
+                                self.KumiteSecondWindow.j_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw4(self):
+        self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
-            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2, self.KumiteSecondWindow.j_w3)
+            self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
+                                self.KumiteSecondWindow.j_w3)
             self.KumiteSecondWindow.label_kum_jw0.setText(None)
 
     def setStyleButton(self, rad_S1, rad_S2, rad_S3,
@@ -1691,36 +2026,143 @@ class KumiteMainWindow_Ui(QWidget):
         rad_S3.setStyleSheet(rad_S3_FontSize)
 
     def setMatchName(self):
-        firstWindowMatchName1 = self.matchName11.fontMetrics().boundingRect(self.matchName11.text()).width()
-        firstWindowMatchName2 = self.matchName12.fontMetrics().boundingRect(self.matchName12.text()).width()
-        firstWindowMatchName = firstWindowMatchName1 + firstWindowMatchName2
-        print(2)
-        if firstWindowMatchName > 356:
-            print(21)
-            n = "font-family: Gotham-Medium; font-size: "\
-                + str(int(17.8 * (1880 / firstWindowMatchName))) + "px; color: grey;"
-            self.KumiteSecondWindow.matchName21.setStyleSheet(n)
-        else:
-            print(22)
-            self.KumiteSecondWindow.matchName21.setStyleSheet(
-                "font-family: Gotham-Medium; font-size: 100px; color: grey;")
-        self.KumiteSecondWindow.matchName21.setText(self.matchName11.text()+", "+self.matchName12.text())
-        print(3)
+        try:
+            firstWindowMatchName1 = self.matchName11.fontMetrics().boundingRect(self.matchName11.text()).width()
+            firstWindowMatchName2 = self.matchName12.fontMetrics().boundingRect(self.matchName12.text()).width()
+            firstWindowMatchName = firstWindowMatchName1 + firstWindowMatchName2
+            if firstWindowMatchName > 356:
+                n = "font-family: Gotham-Medium; font-size: " \
+                    + str(int(17.8 * (1880 / firstWindowMatchName))) + "px; color: grey;"
+                self.KumiteSecondWindow.matchName21.setStyleSheet(n)
+            else:
+                self.KumiteSecondWindow.matchName21.setStyleSheet(
+                    "font-family: Gotham-Medium; font-size: 100px; color: grey;")
+            self.KumiteSecondWindow.matchName21.setText(self.matchName11.text() + ", " + self.matchName12.text())
+        except Exception as e:
+            print('setMatchName   ', e)
 
     def setSportsmanName(self):
-        print(1)
-        self.setMatchName()
-        # firstWindowMatchName2 = self.matchName12.fontMetrics().boundingRect(self.matchName12.text()).width()
-        #
-        # if firstWindowMatchName2 > 100:
-        #     n = "background-color: none; font-family: Gotham-Medium; font-size: "\
-        #         + str(int(20 * (680 / firstWindowMatchName2))) + "px; color: grey;"
-        #     self.KumiteSecondWindow.matchName22.setStyleSheet(n)
-        # else:
-        #     self.KumiteSecondWindow.matchName22.setStyleSheet("font-family: Gotham-Medium;"
-        #                                                       "font-size: 50px; color: grey;")
-        # self.KumiteSecondWindow.matchName22.setText(self.matchName12.text())
+        try:
+            print('setSportsmanName')
+            self.setMatchName()
+            self.winnerRed.setAutoExclusive(False)
+            self.winnerWhite.setAutoExclusive(False)
+            self.winnerRed.setChecked(False)
+            self.winnerWhite.setChecked(False)
+            self.winnerRed.setAutoExclusive(True)
+            self.winnerWhite.setAutoExclusive(True)
+            self.label_name_red_1.setText(self.lineEdit_name_red_1.text())
+            self.label_region_red_1.setText(self.lineEdit_region_red_1.text())
+            self.KumiteSecondWindow.label_name_red_2.setText(self.lineEdit_name_red_1.text())
+            self.KumiteSecondWindow.screen_label_name_red.setText(self.lineEdit_name_red_1.text())
+            self.KumiteSecondWindow.screen_label_region_red.setText(self.lineEdit_region_red_1.text())
+            self.label_name_white_1.setText(self.lineEdit_name_white_1.text())
+            self.label_region_white_1.setText(self.lineEdit_region_white_1.text())
+            self.KumiteSecondWindow.label_name_white_2.setText(self.lineEdit_name_white_1.text())
+            self.KumiteSecondWindow.screen_label_name_white.setText(self.lineEdit_name_white_1.text())
+            self.KumiteSecondWindow.screen_label_region_white.setText(self.lineEdit_region_white_1.text())
+            # self.KumiteSecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 1840, 400))
+            # self.KumiteSecondWindow.frame_white2.setGeometry(QtCore.QRect(40, 600, 1840, 400))
+            self.KumiteSecondWindow.frame_red2.show()
+            self.KumiteSecondWindow.frame_white2.show()
+            self.KumiteSecondWindow.label_winner.hide()
+            # # self.KumiteSecondWindow.label_name_red_2.show()
+            # # self.KumiteSecondWindow.label_name_white_2.show()
 
+            # screen_window_name_red = self.KumiteSecondWindow.screen_label_name_red.fontMetrics().boundingRect(
+            #     self.KumiteSecondWindow.screen_label_name_red.text()).width()
+            # first_window_region_red = self.KumiteSecondWindow.screen_label_region_red.fontMetrics().boundingRect(
+            #     self.KumiteSecondWindow.screen_label_region_red.text()).width()
+            first_window_name_red = self.label_name_red_1.fontMetrics().boundingRect(
+                self.label_name_red_1.text()).width()
+            screen_window_name_red = first_window_name_red
+            first_window_region_red = self.label_region_red_1.fontMetrics().boundingRect(
+                self.label_region_red_1.text()).width()
+
+            first_window_name_white = self.label_name_white_1.fontMetrics().boundingRect(
+                self.label_name_white_1.text()).width()
+            screen_window_name_white = first_window_name_white
+            first_window_region_white = self.label_region_white_1.fontMetrics().boundingRect(
+                self.label_region_white_1.text()).width()
+
+            print('_'*15, 'КУМИТЕ', '_'*15,)
+            print('Маленький first_window_name_', 'white:', first_window_name_white, 'red:', first_window_name_red)
+            print('screen name', 'white:', screen_window_name_white, 'red:', screen_window_name_red)
+            print('  first region', 'white:', first_window_region_white, 'red:', first_window_region_red)
+
+            if max(first_window_name_white, first_window_name_red) > 237*2:
+                max_value = max(first_window_name_white, first_window_name_red)
+
+                custom_font = QtGui.QFont()
+                custom_font.setFamily("Gotham-Medium")
+                custom_font.setPixelSize(int(300/(4.167/2) * (198 / max_value)))
+                print(int(300/(4.167/2) * (198 / max_value)))
+                self.KumiteSecondWindow.label_name_white_2.setFont(custom_font)
+                self.KumiteSecondWindow.label_name_red_2.setFont(custom_font)
+
+                # n = "background-color: none; color: grey; font-size: " + str(int(300/(4.167/2) * (198 / max_value))) + "px; align-self: flex-end;"
+                #
+                # self.KumiteSecondWindow.label_name_white_2.setStyleSheet(n)
+                # self.KumiteSecondWindow.label_name_red_2.setStyleSheet(n)
+            else:
+                print(' label_name_white_2 font_m_60')
+                self.KumiteSecondWindow.label_name_white_2.setFont(self.KumiteSecondWindow.font_m_60)
+                self.KumiteSecondWindow.label_name_red_2.setFont(self.KumiteSecondWindow.font_m_60)
+
+            if screen_window_name_white > 237 or screen_window_name_red > 237:
+                max_value = max(screen_window_name_white, screen_window_name_red)
+
+                custom_font = QtGui.QFont()
+                custom_font.setFamily("Gotham-Medium")
+                custom_font.setPixelSize(int(300 * (198 / max_value)))
+                print(int(300 * (198 / max_value)))
+                self.KumiteSecondWindow.screen_label_name_white.setFont(custom_font)
+                self.KumiteSecondWindow.screen_label_name_red.setFont(custom_font)
+
+                # nw = "font-family: Gotham-Medium; font-size: " + str(int(300 * (198 / max_value))) + "px;"
+                # nr = "color: white; font-family: Gotham-Medium; font-size: " + str(int(300 * (198 / max_value))) + "px;"
+
+                # self.KumiteSecondWindow.screen_label_name_white.setStyleSheet(nw)
+                # self.KumiteSecondWindow.screen_label_name_red.setStyleSheet(nr)
+            else:
+                print(' screen_label_name_white font_b_250')
+                self.KumiteSecondWindow.screen_label_name_white.setFont(self.KumiteSecondWindow.font_b_250)
+                self.KumiteSecondWindow.screen_label_name_red.setFont(self.KumiteSecondWindow.font_b_250)
+
+            if first_window_region_white > 93 or first_window_region_white > 93:
+                max_value = max(first_window_region_white, first_window_region_white)
+
+                custom_font = QtGui.QFont()
+                custom_font.setFamily("Gotham-Light")
+                custom_font.setPixelSize(int(150 * (155 / max_value)))
+                print(int(150 * (155 / max_value)))
+                self.KumiteSecondWindow.screen_label_region_white.setFont(custom_font)
+                self.KumiteSecondWindow.screen_label_region_red.setFont(custom_font)
+
+                # n = "font-family: Gotham-Light; font-size: " + str(int(150 * (155 / max_value))) + "px;"
+                # self.KumiteSecondWindow.screen_label_region_white.setStyleSheet(n)
+                # self.KumiteSecondWindow.screen_label_region_red.setStyleSheet(n)
+            else:
+                self.KumiteSecondWindow.screen_label_region_white.setFont(self.KumiteSecondWindow.font_l_150)
+                self.KumiteSecondWindow.screen_label_region_red.setFont(self.KumiteSecondWindow.font_l_150)
+        except Exception as e:
+            print('kum setSportsmanName:', e)
+
+    def show_screen(self, force_hide=1):
+        try:
+            if self.btn_show_screen.text() == 'Показать\nэкран ФИО' and not force_hide:
+                self.setSportsmanName()
+                self.KumiteSecondWindow.sportsman_screen.show()
+                self.btn_show_screen.setText('Скрыть\nэкран ФИО')
+                self.btn_show_screen.setStyleSheet("color: red")
+                self.btn_show_screen.setToolTip('Скрыть экран с ФИО, отобразится экран с очками')
+            else:
+                self.KumiteSecondWindow.sportsman_screen.hide()
+                self.btn_show_screen.setText('Показать\nэкран ФИО')
+                self.btn_show_screen.setStyleSheet(self.btn_style_1)
+                self.btn_show_screen.setToolTip('Отобразить экран со спортсменами поверх экрана с очками')
+        except Exception as e:
+            print('kum show_screen:', e)
 
 class dialogWindow_Ui(object):
     def setupUi_dialog(self, Dialog):
@@ -1729,7 +2171,7 @@ class dialogWindow_Ui(object):
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         self.buttonBox.setGeometry(QtCore.QRect(140, 70, 150, 32))
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(100, 20, 200, 20))
@@ -1744,5 +2186,3 @@ class dialogWindow_Ui(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.label.setText(_translate("Dialog", "TextLabel"))
-
-
