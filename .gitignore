@@ -1,5 +1,6 @@
 /build
 /dist
+/dist/*
 /*.xlsx
 /*.xlsm
 *.xlsx
