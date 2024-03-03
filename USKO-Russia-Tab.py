@@ -9,6 +9,7 @@ from Kumite import KumiteMainWindow_Ui  # KumiteSecondWindow
 import re
 import datetime
 import resources
+from os import listdir
 
 
 class Ui_Form0(object):
@@ -78,10 +79,17 @@ class Ui_Form0(object):
                 color: white;
                 }
         """
+        self.font_l_15 = QtGui.QFont()
+        self.font_l_15.setFamily("Gotham-Light")
+        self.font_l_15.setPixelSize(15)
 
         self.font_m_15 = QtGui.QFont()
         self.font_m_15.setFamily("Gotham-Medium")
         self.font_m_15.setPixelSize(15)
+
+        self.font_l_20 = QtGui.QFont()
+        self.font_l_20.setFamily("Gotham-Light")
+        self.font_l_20.setPixelSize(20)
 
         self.font_m_35 = QtGui.QFont()
         self.font_m_35.setFamily("Gotham-Medium")
@@ -317,13 +325,16 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_KataFinalToKumite.btn_OK.clicked.connect(self.ui_kataFinal.clearKataData)
         self.ui_KataFinalToKumite.btn_OK.clicked.connect(self.showKumiteWin)
         ########   в окне КУМИТЕ кнопка ГЛАВНОЕ МЕНЮ
-        self.ui_KumiteMenu.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        # self.ui_KumiteMenu.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        self.ui_KumiteMenu.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
         self.ui_KumiteMenu.btn_OK.clicked.connect(self.showMainMenu)
         ########   в окне КУМИТЕ кнопка КАТА отб.
-        self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        # self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        self.ui_KumiteToKataQual.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
         self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.showKataQualWin)
         ########   в окне КУМИТЕ кнопка КАТА ФИНАЛ
-        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        # self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
         self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.showKataFinalWin)
 
         # Все окна операторов (кроме главного меню) имею кастомную панель с кнопками свернуть, закрыть.
@@ -436,6 +447,132 @@ class MenuWindow(QWidget, Ui_Form0):
         # self.ui_kumite.frame_pyatnov.hide()
 
         self.show_withOut_load_file_interface()
+
+        ###############################################################################################################
+        # ИКОНКИ РЕГИОНОВ
+        # Все флаги https://ru.wikipedia.org/wiki/%D0%A4%D0%BB%D0%B0%D0%B3%D0%B8_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
+        # Все гербы https://ru.wikipedia.org/wiki/%D0%93%D0%B5%D1%80%D0%B1%D1%8B_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
+        # Указываем путь к директории (icon_regions_directory = i_r_d)
+        self.i_r_d = "Images/icon_regions/coat_of_arms"
+        # Создаем список иконок гербов регионов (icon_regions_coat_of_arms = i_r_d)
+        self.coa = []
+        # Добавляем файлы в список
+        self.coa += listdir(self.i_r_d)
+        # Выводим список файлов
+        print(self.coa)
+        # Полный список регионов
+        self.flags_set = \
+            ['АДЫГЕЯ Республика', 'БАШКОРТОСТАН Республика', 'КОМИ Республика', 'ТАТАРСТАН Республика',
+             'Республика тыва', 'УДМУРТСКАЯ Республика', 'ЧУВАШСКАЯ Республика', 'АЛТАЙСКИЙ край', 'КРАСНОДАРСКИЙ край',
+             'КРАСНОЯРСКИЙ край', 'ПРИМОРСКИЙ край', 'СТАВРОПОЛЬСКИЙ край', 'АСТРАХАНСКАЯ область', 'БРЯНСКАЯ область',
+             'ВЛАДИМИРСКАЯ область', 'ВОЛОГОДСКАЯ область', 'ВОРОНЕЖСКАЯ область', 'ИВАНОВСКАЯ область',
+             'ИРКУТСКАЯ область', 'КАМЧАТСКИЙ край', 'КОСТРОМСКАЯ область', 'ЛЕНИНГРАДСКАЯ область',
+             'МОСКОВСКАЯ область', 'НИЖЕГОРОДСКАЯ область', 'НОВОСИБИРСКАЯ область', 'ОМСКАЯ область',
+             'ОРЕНБУРГСКАЯ область', 'ПЕНЗЕНСКАЯ область', 'ПЕРМСКИЙ край', 'РОСТОВСКАЯ область', 'РЯЗАНСКАЯ область',
+             'САМАРСКАЯ область', 'САРАТОВСКАЯ область', 'СМОЛЕНСКАЯ область', 'ТВЕРСКАЯ область', 'ТУЛЬСКАЯ область',
+             'МОСКВА', 'САНКТ-ПЕТЕРБУРГ', 'ДОНЕЦКАЯ НАРОДНАЯ Республика', 'КРЫМ Республика', 'ЯМАЛО-НЕНЕЦКИЙ АО']
+        self.flags_set.sort()
+        self.flags_dict = {
+            'адыгеяреспублика':  '01',
+            'республикаадыгея': '01',
+            'башкортостанреспублика':  '02',
+            'республикабашкортостан': '02',
+            'республикабурятия':  '03',
+            'республикаалтай': '04',
+            'республикадагестан': '05',
+            'республикаингушетия': '06',
+            'кабардино-балкарскаяреспублика': '07',
+            'республикакалмыкия': '08',
+            'карачаево-черкесскаяреспублика': '09',
+            'республикакарелия': '10',
+            'республикакоми': '11',
+            'комиреспублика': '11',
+            'республикамарийэл': '12',
+            'республикамордовия': '13',
+            'республикасаха': '14',
+            'якутия': '14',
+            'республикасевернаяосетия': '15',
+            'алания': '15',
+            'республикататарстан': '16',
+            'татарстанреспублика': '16',
+            'республикатыва': '17',
+            'удмуртскаяреспублика': '18',
+            'республикахакасия': '19',
+            'чувашскаяреспублика': '21',
+            'алтайскийкрай': '22',
+            'краснодарскийкрай': '23',
+            'красноярскийкрай': '24',
+            'приморскийкрай': '25',
+            'ставропольскийкрай': '26',
+            'хабаровскийкрай': '27',
+            'амурскаяобласть': '28',
+            'архангельскаяобласть': '29',
+            'астраханскаяобласть': '30',
+            'белгородскаяобласть': '31',
+            'брянскаяобласть': '32',
+            'владимирскаяобласть': '33',
+            'волгоградскаяобласть': '34',
+            'вологодскаяобласть': '35',
+            'воронежскаяобласть': '36',
+            'ивановскаяобласть': '37',
+            'иркутскаяобласть': '38',
+            'калининградскаяобласть': '39',
+            'калужскаяобласть': '40',
+            'камчатскийкрай': '41',
+            'кемеровскаяобласть': '42',
+            'кировскаяобласть': '43',
+            'костромскаяобласть': '44',
+            'курганскаяобласть': '45',
+            'курскаяобласть': '46',
+            'ленинградскаяобласть': '47',
+            'липецкаяобласть': '48',
+            'магаданскаяобласть': '49',
+            'московскаяобласть': '50',
+            'мурманскаяобласть': '51',
+            'нижегородскаяобласть': '52',
+            'новгородскаяобласть': '53',
+            'новосибирскаяобласть': '54',
+            'омскаяобласть': '55',
+            'оренбургскаяобласть': '56',
+            'орловскаяобласть': '57',
+            'пензенскаяобласть': '58',
+            'пермскийкрай': '59',
+            'псковскаяобласть': '60',
+            'ростовскаяобласть': '61',
+            'рязанскаяобласть': '62',
+            'самарскаяобласть': '63',
+            'саратовскаяобласть': '64',
+            'сахалинскаяобласть': '65',
+            'свердловскаяобласть': '66',
+            'смоленскаяобласть': '67',
+            'тамбовскаяобласть': '68',
+            'тверскаяобласть': '69',
+            'томскаяобласть': '70',
+            'тульскаяобласть': '71',
+            'тюменскаяобласть': '72',
+            'ульяновскаяобласть': '73',
+            'челябинскаяобласть': '74',
+            'Забайкальскийкрай': '75',
+            'ярославскаяобласть': '76',
+            'москва': '77',
+            'санкт-петербург': '78',
+            'еврейскаяавтономнаяобласть': '79',
+            'донецкаянароднаяреспублика': '80',
+            'луганскаянароднаяреспублика': '81',
+            'республикакрым': '82',
+            'крымреспублика': '82',
+            'ненецкийавтономныйокруг': '83',
+            'херсонскаяобласть': '84',
+            'запорожскаяобласть': '85',
+            'ханты-мансийскийавтономныйокруг—Югра': '86',
+            'чукотскийавтономныйокруг': '87',
+            'ямало-ненецкийавтономныйокруг': '89',
+            'ямало-ненецкийао': '89',
+            'севастополь': '92',
+            'чеченскаяреспублика': '95',
+            'байконур': '94',
+            'харьковскаяобласть': '188',
+        }
 
     # Выпадающее меню в окне Кумите с выбором видов соревнований
     def choiceCompitition_Kumite(self):
@@ -1190,7 +1327,7 @@ class MenuWindow(QWidget, Ui_Form0):
         comboBox_name_red_1 = self.ui_kumite.comboBox_name_red_1
         comboBox_name_white_1 = self.ui_kumite.comboBox_name_white_1
         self.calcTabKumiteSpotrsmans(dict_KataOrKumite, comboBox_age, age_1, name_red_1,
-                                   name_white_1, comboBox_name_red_1, comboBox_name_white_1)
+                                     name_white_1, comboBox_name_red_1, comboBox_name_white_1)
 
     def useExportDataKumiteFemale(self):
         dict_KataOrKumite = self.individ_kumite_female_dict
@@ -1217,7 +1354,6 @@ class MenuWindow(QWidget, Ui_Form0):
         comboBox_name_white_1.setEnabled(False)
         comboBox_name_white_1.clear()
         comboBox_age.addItems([self.sportsmans_ages_dict[x] for x in self.TempSet])
-
     def calcTabKataSpotrsmans(self, dict_KataOrKumite, comboBox_age, age_1, name_red_1,
                               name_white_1, comboBox_name_red_1, comboBox_name_white_1):
         self.ui_kataQual.clearKataData()
@@ -1350,14 +1486,18 @@ class MenuWindow(QWidget, Ui_Form0):
         # это конструктор имя, состоящий из Фамилии и первого символа Имя
         self.ui_kumite.lineEdit_name_red_1.setText(
             ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        self.ui_kumite.lineEdit_region_red_1.setText(name.split('a11')[1])
+        # self.ui_kumite.lineEdit_region_red_1.setText(name.split('a11')[1])
+        edit_red = self.ui_kumite.lineEdit_region_red_1.lineEdit()
+        edit_red.setText(name.split('a11')[1])
 
     def setLabelWhiteKumite(self):
         name = self.df_Single_list[self.x].get(self.ui_kumite.comboBox_name_white_1.currentText())
         # это конструктор имя, состоящий из Фамилии и первого символа Имя
         self.ui_kumite.lineEdit_name_white_1.setText(
             ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        self.ui_kumite.lineEdit_region_white_1.setText(name.split('a11')[1])
+        # self.ui_kumite.lineEdit_region_white_1.setText(name.split('a11')[1])
+        edit_white = self.ui_kumite.lineEdit_region_white_1.lineEdit()
+        edit_white.setText(name.split('a11')[1])
 
     def calcTabKata_Reset(self):
         if self.tatamiName != "":
@@ -1432,7 +1572,7 @@ class MenuWindow(QWidget, Ui_Form0):
     def showKumiteWin(self):
         self.ui_kataFinal.clearKataData()
         self.ui_kataQual.NewCategory()
-        self.ui_kumite.clearKumiteData()
+        self.ui_kumite.clearKumiteData(self.flags_dict)
         self.closeAllWin()
         self.ui_kumite.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
                                               self.display_height, self.display_coord_x1_secW,
@@ -1441,6 +1581,25 @@ class MenuWindow(QWidget, Ui_Form0):
         if self.tatamiName != "":
             self.ui_kumite.matchName11.setText(self.tatamiName)
         self.ui_kumite.setMatchName()
+
+        # Заполняем списки регионов в выпадающем списке
+        lineEdit_region_white_1 = self.ui_kumite.lineEdit_region_white_1
+        lineEdit_region_white_1.addItems([''])
+        lineEdit_region_white_1.addItems(self.flags_set)
+        edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Введите регион")
+        edit_white.setFont(self.font_l_15)
+        edit_white.setAlignment(QtCore.Qt.AlignCenter)
+        lineEdit_region_white_1.setLineEdit(edit_white)
+
+        lineEdit_region_red_1 = self.ui_kumite.lineEdit_region_red_1
+        lineEdit_region_red_1.addItems([''])
+        lineEdit_region_red_1.addItems(self.flags_set)
+        edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Введите регион")
+        edit_red.setFont(self.font_l_15)
+        edit_red.setAlignment(QtCore.Qt.AlignCenter)
+        lineEdit_region_red_1.setLineEdit(edit_red)
+
+        print(self.flags_dict.keys())
 
     def closeAllWin(self):
         self.ui_kumite.closeSecondWin()

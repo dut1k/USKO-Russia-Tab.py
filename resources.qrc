@@ -17,5 +17,8 @@
   <file>Images/emblem_usko.png</file>
   <file>Images/emblem_vbe_rus.png</file>
   <file>Images/emblem_vbe_msk.png</file>
+  <file>Images/icon_regions/coat_of_arms</file>
+  <file>Images/icon_regions/flags78</file>
+  <file>Images/icon_regions/flags</file>
 </qresource>
 </RCC>

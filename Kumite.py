@@ -5,6 +5,31 @@ from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QHBoxLayout
 from PyQt5.QtMultimedia import QSound
 from datetime import datetime, timedelta
 
+class RoundedLabel(QtWidgets.QLabel):
+    def __init__(self, parent=None):
+        super(RoundedLabel, self).__init__(parent)
+        self.setScaledContents(True)
+
+    def setPixmap(self, pixmap):
+        # Create a rounded mask
+        mask = QtGui.QPixmap(pixmap.size())
+        mask.fill(QtCore.Qt.transparent)
+        painter = QtGui.QPainter(mask)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
+        painter.setRenderHint(QtGui.QPainter.SmoothPixmapTransform, True)
+        clip_path = QtGui.QPainterPath()
+        clip_path.addRoundedRect(QtCore.QRectF(mask.rect()), 40, 40)
+        painter.setClipPath(clip_path)
+        painter.drawPixmap(0, 0, pixmap)
+
+        # # Draw grey border
+        # painter.setRenderHint(QtGui.QPainter.Antialiasing, False)
+        # painter.setPen(QtGui.QPen(QtGui.QColor(169, 169, 169), 2))
+        # painter.drawRoundedRect(1, 1, self.width() - 2, self.height() - 2, 40, 40)
+        painter.end()
+
+        super(RoundedLabel, self).setPixmap(mask)
+
 
 class KumiteSWindow_Ui(object):
     def __init__(self):
@@ -36,10 +61,18 @@ class KumiteSWindow_Ui(object):
         self.font_b_250.setFamily("Gotham-Bold")
         self.font_b_250.setPixelSize(250)
 
-        self.frame_red2_std = QtCore.QRect(40, 200, 880, 800)
-        self.frame_white2_std = QtCore.QRect(1000, 200, 880, 800)
-        self.frame_red2_win = QtCore.QRect(520, 220, 880, 800)
-        self.frame_white2_win = QtCore.QRect(520, 220, 880, 800)
+        self.coo_frame_red2_std = QtCore.QRect(40, 200, 880, 800)
+        self.coo_frame_white2_std = QtCore.QRect(1000, 200, 880, 800)
+        self.coo_frame_win = QtCore.QRect(40, 220, 1840, 800)
+        self.coo_screen_std = QtCore.QRect(0, 120, 1920, 900)
+        self.coo_screen_red_std = QtCore.QRect(40, 0, 1840, 400)
+        self.coo_screen_white_std = QtCore.QRect(40, 450, 1840, 400)
+        self.coo_screen_win = QtCore.QRect(40, 150, 1840, 400)
+        self.coo_screen_frm_win = QtCore.QRect(0, 0, 1840, 400)
+        self.coo_label_name_red = QtCore.QRect(0, 0, 900, 80)
+        self.coo_label_name_white = QtCore.QRect(940, 0, 900, 80)
+        self.coo_label_name_red_flag = QtCore.QRect(80, 0, 820, 80)
+        self.coo_label_name_white_flag = QtCore.QRect(940, 0, 820, 80)
 
     def setupUi2(self, Form):
         Form.setObjectName("Form22")
@@ -61,16 +94,17 @@ class KumiteSWindow_Ui(object):
         self.frame_red2 = QtWidgets.QFrame(Form)
         self.label_score21 = QtWidgets.QLabel(self.frame_red2)
         self.background_red21 = QtWidgets.QFrame(self.frame_red2)
-        self.background_red22 = QtWidgets.QFrame(self.frame_red2)
+        self.frame_background_red22_red2 = QtWidgets.QFrame(self.frame_red2)
+        self.background_red22 = QtWidgets.QFrame(self.frame_background_red22_red2)
 
-        self.frame_hm_red = QtWidgets.QFrame(self.frame_red2)
+        self.frame_hm_red = QtWidgets.QFrame(self.frame_background_red22_red2)
         self.label_kum_hmr0 = QtWidgets.QLabel(self.frame_hm_red)
         self.label_kum_hmr1 = QtWidgets.QLabel(self.frame_hm_red)
         self.hm_r1 = QtWidgets.QLabel(self.frame_hm_red)
         self.hm_r2 = QtWidgets.QLabel(self.frame_hm_red)
         self.hm_r3 = QtWidgets.QLabel(self.frame_hm_red)
 
-        self.frame_j_red = QtWidgets.QFrame(self.frame_red2)
+        self.frame_j_red = QtWidgets.QFrame(self.frame_background_red22_red2)
         self.label_kum_jr0 = QtWidgets.QLabel(self.frame_j_red)
         self.label_kum_jr1 = QtWidgets.QLabel(self.frame_j_red)
         self.j_r1 = QtWidgets.QLabel(self.frame_j_red)
@@ -80,16 +114,17 @@ class KumiteSWindow_Ui(object):
         self.frame_white2 = QtWidgets.QFrame(Form)
         self.label_score22 = QtWidgets.QLabel(self.frame_white2)
         self.background_white21 = QtWidgets.QFrame(self.frame_white2)
-        self.background_white22 = QtWidgets.QFrame(self.frame_white2)
+        self.frame_background_white22_white2 = QtWidgets.QFrame(self.frame_white2)
+        self.background_white22 = QtWidgets.QFrame(self.frame_background_white22_white2)
 
-        self.frame_hm_white = QtWidgets.QFrame(self.frame_white2)
+        self.frame_hm_white = QtWidgets.QFrame(self.frame_background_white22_white2)
         self.label_kum_hmw0 = QtWidgets.QLabel(self.frame_hm_white)
         self.label_kum_hmw1 = QtWidgets.QLabel(self.frame_hm_white)
         self.hm_w1 = QtWidgets.QLabel(self.frame_hm_white)
         self.hm_w2 = QtWidgets.QLabel(self.frame_hm_white)
         self.hm_w3 = QtWidgets.QLabel(self.frame_hm_white)
 
-        self.frame_j_white = QtWidgets.QFrame(self.frame_white2)
+        self.frame_j_white = QtWidgets.QFrame(self.frame_background_white22_white2)
         self.label_kum_jw0 = QtWidgets.QLabel(self.frame_j_white)
         self.label_kum_jw1 = QtWidgets.QLabel(self.frame_j_white)
         self.j_w1 = QtWidgets.QLabel(self.frame_j_white)
@@ -109,10 +144,10 @@ class KumiteSWindow_Ui(object):
 
         self.label_winner = QtWidgets.QLabel(Form)
         self.label_winner.hide()
-        self.label_winner.setGeometry(QtCore.QRect(0, 150, 550, 50))
-        self.label_winner.setFont(self.font_m_60)
-        self.label_winner.setStyleSheet("background-color: none;")
-        self.label_winner.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_winner.setGeometry(QtCore.QRect(0, 0, 1920, 150))
+        self.label_winner.setFont(self.font_l_150)
+        self.label_winner.setStyleSheet("background-color: white;")
+        self.label_winner.setAlignment(QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
         self.label_winner.setObjectName("label_winner")
 
         # self.lcd2.setGeometry(QtCore.QRect(580, 150, 760, 280))
@@ -126,11 +161,6 @@ class KumiteSWindow_Ui(object):
         # self.line2.setFrameShadow(QtWidgets.QFrame.Sunken)
         # self.line2.setObjectName("line")
 
-        self.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
-        self.label_score21.setFont(self.font_m_530)
-        self.label_score21.setStyleSheet("background-color: none; color:white;")
-        self.label_score21.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_score21.setObjectName("label_score1")
 
         self.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
         self.label_score22.setFont(self.font_m_530)
@@ -144,6 +174,12 @@ class KumiteSWindow_Ui(object):
         self.frame_red2.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_red2.setObjectName("frame_red2")
 
+        self.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
+        self.label_score21.setFont(self.font_m_530)
+        self.label_score21.setStyleSheet("background-color: none; color:white;")
+        self.label_score21.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_score21.setObjectName("label_score1")
+
         self.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
         self.background_red21.setStyleSheet("background-color: rgb(255, 95, 95); border-top-left-radius: 15px;"
                                             "border-top-right-radius: 15px; border: 2px solid grey")
@@ -151,7 +187,10 @@ class KumiteSWindow_Ui(object):
         self.background_red21.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_red21.setObjectName("background_red21")
 
-        self.background_red22.setGeometry(QtCore.QRect(0, 430, 880, 350))
+        self.frame_background_red22_red2.setGeometry(QtCore.QRect(0, 430, 880, 350))
+        self.frame_background_red22_red2.setStyleSheet("background-color: none;")
+
+        self.background_red22.setGeometry(QtCore.QRect(0, 0, 880, 350))
         self.background_red22.setStyleSheet("background-color: white; border-radius: 15px;"
                                             "border: 2px solid grey")
         self.background_red22.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -161,19 +200,65 @@ class KumiteSWindow_Ui(object):
         self.frame_sportsman.setGeometry(QtCore.QRect(40, 120, 1840, 80))
         self.frame_sportsman.setStyleSheet("background-color: none;")
 
-        self.label_name_white_2.setGeometry(QtCore.QRect(940, 0, 900, 80))
-        self.label_name_white_2.setFont(self.font_b_250)
+        self.label_name_white_2.setGeometry(self.coo_label_name_white)
+        self.label_name_white_2.setFont(self.font_m_60)
         self.label_name_white_2.setStyleSheet("background-color: none; color: grey; align-self: flex-end;")
         self.label_name_white_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignBottom)
         self.label_name_white_2.setObjectName("label_name_white_2")
 
-        self.label_name_red_2.setGeometry(QtCore.QRect(0, 0, 900, 80))
-        self.label_name_red_2.setFont(self.font_b_250)
+        self.label_name_red_2.setGeometry(self.coo_label_name_red)
+        self.label_name_red_2.setFont(self.font_m_60)
         self.label_name_red_2.setStyleSheet("background-color: none; color: grey;")
         self.label_name_red_2.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignBottom)
         self.label_name_red_2.setObjectName("label_name_white_2")
 
-        self.frame_hm_red.setGeometry(QtCore.QRect(0, 435, 880, 170))
+        self.flag_white = QtWidgets.QLabel(self.frame_sportsman)
+        self.flag_red = QtWidgets.QLabel(self.frame_sportsman)
+        self.flag_white.hide()
+        self.flag_red.hide()
+
+        # self.icon_white = QtWidgets.QLabel(self.flag_white)
+        # self.icon_red = QtWidgets.QLabel(self.flag_red)
+        ########################
+        self.icon_white = RoundedLabel(self.flag_white)
+        self.icon_red = RoundedLabel(self.flag_red)
+        ########################
+        self.icon_white_frame = QtWidgets.QLabel(self.flag_white)
+        self.icon_red_frame = QtWidgets.QLabel(self.flag_red)
+
+
+        self.img_empty = QtGui.QPixmap(":/Images/Empty.png")
+        self.img_white = QtGui.QPixmap(":/Images/icon_regions/flags/01_Adygea.svg")
+        self.img_curcle = QtGui.QPixmap(":/Images/icon_regions/flags/00_Curcle.svg")
+        self.img_red = QtGui.QPixmap(":/Images/icon_regions/flags/22_Altai_Krai.svg")
+
+        # self.img_white = self.img_white.scaled(80, 80)
+        # self.img_red = self.img_red.scaled(80, 80)
+        # self.img_white = self.img_white.scaledToHeight(80)
+        # self.img_red = self.img_red.scaledToHeight(78)
+
+        self.flag_white.setGeometry(QtCore.QRect(1760, 0, 80, 80))
+        self.flag_white.setObjectName("flag_white")
+        self.flag_red.setGeometry(QtCore.QRect(0, 0, 80, 80))
+        self.flag_red.setObjectName("flag_red")
+
+        self.icon_white.setGeometry(QtCore.QRect(0, 0, 80, 80))
+        self.icon_white.setObjectName("icon_white")
+        self.icon_white.setPixmap(self.img_white)
+
+        self.icon_white_frame.setGeometry(QtCore.QRect(0, 0, 80, 80))
+        self.icon_white_frame.setObjectName("icon_white_frame")
+        self.icon_white_frame.setPixmap(self.img_curcle)
+
+        self.icon_red.setGeometry(QtCore.QRect(0, 0, 80, 80))
+        self.icon_red.setObjectName("icon_red")
+        self.icon_red.setPixmap(self.img_red)
+
+        self.icon_red_frame.setGeometry(QtCore.QRect(0, 0, 80, 80))
+        self.icon_red_frame.setObjectName("icon_red_frame")
+        self.icon_red_frame.setPixmap(self.img_curcle)
+
+        self.frame_hm_red.setGeometry(QtCore.QRect(0, 5, 880, 170))
         self.frame_hm_red.setStyleSheet("background-color: None;")
         self.frame_hm_red.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_hm_red.setObjectName("frame_hm_red")
@@ -203,7 +288,7 @@ class KumiteSWindow_Ui(object):
         self.hm_r3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_r3.setObjectName("hm_r3")
 
-        self.frame_j_red.setGeometry(QtCore.QRect(0, 600, 880, 170))
+        self.frame_j_red.setGeometry(QtCore.QRect(0, 170, 880, 170))
         self.frame_j_red.setStyleSheet("background-color: None;")
         self.frame_j_red.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_j_red.setObjectName("frame_j_red")
@@ -246,14 +331,17 @@ class KumiteSWindow_Ui(object):
         self.background_white21.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_white21.setObjectName("background_white21")
 
-        self.background_white22.setGeometry(QtCore.QRect(0, 430, 880, 350))
+        self.frame_background_white22_white2.setGeometry(QtCore.QRect(0, 430, 880, 350))
+        self.frame_background_white22_white2.setStyleSheet("background-color: none;")
+
+        self.background_white22.setGeometry(QtCore.QRect(0, 0, 880, 350))
         self.background_white22.setStyleSheet("background-color: white; border-radius: 15px;"
                                               "border: 2px solid grey")
         self.background_white22.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.background_white22.setFrameShadow(QtWidgets.QFrame.Raised)
         self.background_white22.setObjectName("background_white22")
 
-        self.frame_hm_white.setGeometry(QtCore.QRect(0, 435, 880, 170))
+        self.frame_hm_white.setGeometry(QtCore.QRect(0, 5, 880, 170))
         self.frame_hm_white.setStyleSheet("background-color: None;")
         self.frame_hm_white.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_hm_white.setObjectName("frame_hm_white")
@@ -283,7 +371,7 @@ class KumiteSWindow_Ui(object):
         self.hm_w3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.hm_w3.setObjectName("hm_w3")
 
-        self.frame_j_white.setGeometry(QtCore.QRect(0, 600, 880, 170))
+        self.frame_j_white.setGeometry(QtCore.QRect(0, 170, 880, 170))
         self.frame_j_white.setStyleSheet("background-color: None;")
         self.frame_j_white.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.frame_j_white.setObjectName("frame_j_white")
@@ -333,7 +421,7 @@ class KumiteSWindow_Ui(object):
         self.sportsman_screen.setFrameShadow(QtWidgets.QFrame.Raised)
         self.sportsman_screen.setObjectName("sportsman_screen")
 
-        self.screen_frame_white.setGeometry(QtCore.QRect(40, 450, 1840, 400))
+        self.screen_frame_white.setGeometry(self.coo_screen_white_std)
         self.screen_frame_white.setStyleSheet("background-color: None;")
         self.screen_frame_white.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.screen_frame_white.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -365,7 +453,7 @@ class KumiteSWindow_Ui(object):
         self.screen_label_region_white.setAlignment(QtCore.Qt.AlignCenter)
         self.screen_label_region_white.setObjectName("screen_label_region_white")
 
-        self.screen_frame_red.setGeometry(QtCore.QRect(40, 00, 1840, 400))
+        self.screen_frame_red.setGeometry(self.coo_screen_red_std)
         self.screen_frame_red.setStyleSheet("background-color: None; ")
         self.screen_frame_red.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.screen_frame_red.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -440,7 +528,6 @@ class KumiteSWindow_Ui(object):
         self.screen_background_red_2.raise_()
         self.screen_label_name_red.raise_()
         self.screen_label_region_red.raise_()
-
         self.label_winner.raise_()
 
         self.retranslateUi(Form)
@@ -629,6 +716,7 @@ class Frame_Header(QWidget):
 class KumiteMainWindow_Ui(QWidget):
     def __init__(self):
         super(KumiteMainWindow_Ui, self).__init__()
+        self.flags_dict = None
         QWidget.setWindowTitle(self, "Кумите. Судейское окно")
 
         self.Form2 = QtWidgets.QFrame(self)
@@ -685,7 +773,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.winnerFrame = QtWidgets.QFrame(self.Form2)
         self.winnerRed = QtWidgets.QRadioButton("Победил АКА", self.winnerFrame)
         self.winnerWhite = QtWidgets.QRadioButton("Победил СИРО", self.winnerFrame)
-        self.temp_index = False
+        # self.temp_index = False
 
         self.frame_rh = QtWidgets.QFrame(self.frame_red1)
         self.h_red0 = QtWidgets.QLabel("H \nM", self.frame_rh)
@@ -732,13 +820,15 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.frm_spman_red,
                                                        placeholderText="АКА. Введите имя спортсмена")
-        self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.frm_spman_red, placeholderText="АКА. Введите регион")
+        # self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.frm_spman_red, placeholderText="АКА. Введите регион")
+        self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.frm_spman_red)
         self.label_name_red_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_red)
         self.label_region_red_1 = QtWidgets.QLabel("регион", self.frm_spman_red)
 
         self.lineEdit_name_white_1 = QtWidgets.QLineEdit(self.frm_spman_white,
                                                          placeholderText="СИРО. Введите имя спортсмена")
-        self.lineEdit_region_white_1 = QtWidgets.QLineEdit(self.frm_spman_white, placeholderText="СИРО. Введите регион")
+        # self.lineEdit_region_white_1 = QtWidgets.QLineEdit(self.frm_spman_white, placeholderText="СИРО. Введите регион")
+        self.lineEdit_region_white_1 = QtWidgets.QComboBox(self.frm_spman_white)
         self.label_name_white_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_white)
         self.label_region_white_1 = QtWidgets.QLabel("регион", self.frm_spman_white)
 
@@ -783,47 +873,99 @@ class KumiteMainWindow_Ui(QWidget):
         """
 
         self.combo_style_1 = """
+            QComboBox {
+                border-top: none;
+                border-bottom: 1px solid gray;
+                border-left: none;
+                border-right: none;
+                padding: 1px 18px 1px 3px;
+            }
+            
+            QComboBox:editable {
+                background: white;
+            }
+            
+            QComboBox:!editable, QComboBox::drop-down:editable {
+                 background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                             stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                             stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+                font-family: Gotham-Light;
+                font-size: 15px;
+            }
+            
+            /* QComboBox gets the "on" state when the popup is open */
+            QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+                background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                            stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+                                            stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+            }
+            
+            QComboBox:on { /* shift the text when the popup opens */
+                padding-top: 3px;
+                padding-left: 4px;
+            }
+            
+            QComboBox::drop-down {
+                subcontrol-position: right center;
+                width: 1px;
+                border: none;
+            }
+            QComboBox QAbstractItemView {
+                border: none;
+                selection-background-color: #3e6ae1;
+            }
+        """
+
+        self.combo_style_2 = """
+        QLineEdit {
+                background-color: #FAF9F9;
+                color: #555B6E;
+                }
+            QLineEdit:hover {
+                background-color: #fdfdfd;
+                color: black;
+                }  
         QComboBox {
-            border-top: none;
-            border-bottom: 1px solid gray;
-            border-left: none;
-            border-right: none;
-            padding: 1px 18px 1px 3px;
-        }
-        
-        QComboBox:editable {
-            background: white;
-        }
-        
-        QComboBox:!editable, QComboBox::drop-down:editable {
-             background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                         stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                         stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-            font-family: Gotham-Light;
-            font-size: 15px;
-        }
-        
-        /* QComboBox gets the "on" state when the popup is open */
-        QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                        stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                        stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-        }
-        
-        QComboBox:on { /* shift the text when the popup opens */
-            padding-top: 3px;
-            padding-left: 4px;
-        }
-        
-        QComboBox::drop-down {
-            subcontrol-position: right center;
-            width: 1px;
-            border: none;
-        }
-        QComboBox QAbstractItemView {
-            border: none;
-            selection-background-color: #3e6ae1;
-        }
+                border: 1px solid gray;
+                background-color: #FAF9F9;
+                color: #555B6E;
+                }
+            QComboBox:hover {
+                border: 1px solid #3e6ae1;
+                background-color: #fdfdfd;
+                color: black;
+                }
+            QComboBox::drop-down {
+                background-color: white;
+                width: 30px;
+                border: none;
+            }
+            QComboBox::drop-down:pressed, QComboBox::drop-down:focus {
+                background-color: #cce4f7;
+            }
+            QComboBox::down-arrow {
+                image: url(:/Images/icon_regions/flags/QComboBox_down_arrow.svg);
+                width: 20px;
+                height: 20px;
+            }
+            /* ===================== focused row ===================== */
+            QComboBox QAbstractItemView {
+                border: none;
+                selection-background-color: #3e6ae1;
+            }
+            /* ===================== vertical scroll ===================== */
+            /* = шкала = */
+            QScrollBar:vertical {
+                background-color: none;
+                border: 1px transparent gray;
+                width: 5px;
+            }
+            /* = ползунок = */
+            QScrollBar::handle:vertical {
+                background-color: #3e6ae1;         
+                min-height: 5px;
+                border-radius: 0;
+            }
         """
 
         self.LEdit_style_1 = """
@@ -838,7 +980,23 @@ class KumiteMainWindow_Ui(QWidget):
                 border-bottom: 2px solid #3e6ae1;
                 background-color: #fdfdfd;
                 color: black;
+                }      
+        """
+
+        self.LEdit_style_2 = """
+            QLineEdit {
+                
+                background-color: grey;
+                color: #555B6E;
+                font-size: 20px;
+                font-family: Gotham-Light;
                 }
+            QLineEdit:hover {
+                
+                background-color: #fdfdfd;
+                color: black;
+                }
+
         """
 
         self.Radio_style_1 = """
@@ -1423,10 +1581,14 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
 
+        # self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
+        # self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
+        # self.lineEdit_region_white_1.setFont(self.font_l_20)
+        # self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        # self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
         self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
-        self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_region_white_1.setFont(self.font_l_20)
-        self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_white_1.setStyleSheet(self.combo_style_2)
+        self.lineEdit_region_white_1.setFont(self.font_l_13)
         self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
 
         self.frm_spman_red.setGeometry(QtCore.QRect(450, 420, 450, 140))
@@ -1451,10 +1613,14 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
+        # self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
+        # self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
+        # self.lineEdit_region_red_1.setFont(self.font_l_20)
+        # self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        # self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
-        self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_region_red_1.setFont(self.font_l_20)
-        self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_red_1.setStyleSheet(self.combo_style_2)
+        self.lineEdit_region_red_1.setFont(self.font_l_13)
         self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
 
         #################### ЕСЛИ ЗАГРУЖЕН СВОДНЫЙ СПИСОК
@@ -1728,30 +1894,71 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_pause.setToolTip('Сбросить только секундомер')
             self.btn_reset.setToolTip('Сбросить всё')
 
-    def clearKumiteData(self):
-        self.timer.stop()
-        self.timeRound()
-        self.j_red4.clicked.connect(self.penaltyButton_jr4)
-        self.h_white4.clicked.connect(self.penaltyButton_hmw4)
-        self.j_white4.clicked.connect(self.penaltyButton_jw4)
+    def resetSportsmanFramePosition(self):
         self.winnerRed.setAutoExclusive(False)
         self.winnerWhite.setAutoExclusive(False)
         self.winnerRed.setChecked(False)
         self.winnerWhite.setChecked(False)
         self.winnerRed.setAutoExclusive(True)
         self.winnerWhite.setAutoExclusive(True)
-        # self.KumiteSecondWindow.line2.show()
-        self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
-        self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
-        self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
-        self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
+
+        self.KumiteSecondWindow.sportsman_screen.setGeometry(self.KumiteSWindow_Ui.coo_screen_std)
+        self.KumiteSecondWindow.screen_frame_red.setGeometry(self.KumiteSWindow_Ui.coo_screen_red_std)
+        self.KumiteSecondWindow.screen_frame_white.setGeometry(self.KumiteSWindow_Ui.coo_screen_white_std)
+
+        self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.coo_frame_red2_std)
+        self.KumiteSecondWindow.frame_background_red22_red2.setGeometry(QtCore.QRect(0, 430, 880, 350))
         self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
+        self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
+
+        self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.coo_frame_white2_std)
+        self.KumiteSecondWindow.frame_background_white22_white2.setGeometry(QtCore.QRect(0, 430, 880, 350))
         self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
+        self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
+
         self.KumiteSecondWindow.lcd2.show()
         self.KumiteSecondWindow.frame_white2.show()
-        self.KumiteSecondWindow.frame_red2.show()
         self.KumiteSecondWindow.label_winner.hide()
+        self.KumiteSecondWindow.frame_red2.show()
+        self.KumiteSecondWindow.sportsman_screen.hide()
+        self.KumiteSecondWindow.screen_frame_white.show()
+        self.KumiteSecondWindow.screen_frame_red.show()
         self.show_screen()
+
+    def clearKumiteData(self, flags_dict=''):
+        if flags_dict:
+            self.flags_dict = flags_dict
+        self.timer.stop()
+        self.timeRound()
+        self.j_red4.clicked.connect(self.penaltyButton_jr4)
+        self.h_white4.clicked.connect(self.penaltyButton_hmw4)
+        self.j_white4.clicked.connect(self.penaltyButton_jw4)
+
+        self.KumiteSecondWindow.label_name_white_2.setGeometry(self.KumiteSecondWindow.coo_label_name_white)
+        self.KumiteSecondWindow.label_name_red_2.setGeometry(self.KumiteSecondWindow.coo_label_name_red)
+        self.KumiteSecondWindow.flag_red.hide()
+        self.KumiteSecondWindow.flag_white.hide()
+
+        self.resetSportsmanFramePosition()
+        # self.winnerRed.setAutoExclusive(False)
+        # self.winnerWhite.setAutoExclusive(False)
+        # self.winnerRed.setChecked(False)
+        # self.winnerWhite.setChecked(False)
+        # self.winnerRed.setAutoExclusive(True)
+        # self.winnerWhite.setAutoExclusive(True)
+        # self.KumiteSecondWindow.line2.show()
+        # self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
+        # self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
+        # self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
+        # self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
+        # self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
+        # self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
+        # self.KumiteSecondWindow.lcd2.show()
+        # self.KumiteSecondWindow.frame_white2.show()
+        # self.KumiteSecondWindow.frame_red2.show()
+        # self.KumiteSecondWindow.label_winner.hide()
+        # self.show_screen()
+
 
         self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
         self.btn_reset.setText('НОВЫЙ БОЙ')
@@ -1797,76 +2004,121 @@ class KumiteMainWindow_Ui(QWidget):
                             self.KumiteSecondWindow.j_w3)
         self.KumiteSecondWindow.label_kum_jw0.setText(None)
 
-    def setWinner(self):
+    def setWinner2(self):
         self.show_screen()
         radio = self.sender()
-        if self.temp_index == radio.text():
+        # if self.temp_index == radio.text():
+        #     if radio.text() == "Победил АКА":
+        #         # self.KumiteSecondWindow.line2.show()
+        #         self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
+        #         self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
+        #         self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
+        #         self.KumiteSecondWindow.lcd2.show()
+        #         self.KumiteSecondWindow.frame_white2.show()
+        #         self.KumiteSecondWindow.frame_red2.show()
+        #         self.KumiteSecondWindow.label_winner.hide()
+        #         self.winnerRed.setAutoExclusive(False)
+        #         self.winnerRed.setChecked(False)
+        #         self.winnerRed.setAutoExclusive(True)
+        #         self.temp_index = False
+        #     elif radio.text() == "Победил СИРО":
+        #         # self.KumiteSecondWindow.line2.show()
+        #         self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
+        #         self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
+        #         self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
+        #         self.KumiteSecondWindow.lcd2.show()
+        #         self.KumiteSecondWindow.frame_white2.show()
+        #         self.KumiteSecondWindow.frame_red2.show()
+        #         self.KumiteSecondWindow.label_winner.hide()
+        #         self.winnerWhite.setAutoExclusive(False)
+        #         self.winnerWhite.setChecked(False)
+        #         self.winnerWhite.setAutoExclusive(True)
+        #         self.temp_index = False
+        # elif radio.isChecked():
+        if radio.isChecked():
             if radio.text() == "Победил АКА":
-                # self.KumiteSecondWindow.line2.show()
-                self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
-                self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
-                self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
-                self.KumiteSecondWindow.lcd2.show()
-                self.KumiteSecondWindow.frame_white2.show()
-                self.KumiteSecondWindow.frame_red2.show()
-                self.KumiteSecondWindow.label_winner.hide()
-                self.winnerRed.setAutoExclusive(False)
-                self.winnerRed.setChecked(False)
-                self.winnerRed.setAutoExclusive(True)
-                self.temp_index = False
-            elif radio.text() == "Победил СИРО":
-                # self.KumiteSecondWindow.line2.show()
-                self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
-                self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
-                self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
-                self.KumiteSecondWindow.lcd2.show()
-                self.KumiteSecondWindow.frame_white2.show()
-                self.KumiteSecondWindow.frame_red2.show()
-                self.KumiteSecondWindow.label_winner.hide()
-                self.winnerWhite.setAutoExclusive(False)
-                self.winnerWhite.setChecked(False)
-                self.winnerWhite.setAutoExclusive(True)
-                self.temp_index = False
-        elif radio.isChecked():
-            if radio.text() == "Победил АКА":
-                self.temp_index = radio.text()
+                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_win)
                 self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 880, 450))
                 self.KumiteSecondWindow.lcd2.hide()
-                # self.KumiteSecondWindow.line2.hide()
                 self.KumiteSecondWindow.label_winner.show()
                 self.KumiteSecondWindow.frame_red2.show()
                 self.KumiteSecondWindow.frame_white2.hide()
                 self.winnerWhite.setChecked(False)
             elif radio.text() == "Победил СИРО":
-                self.temp_index = radio.text()
+                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_win)
                 self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(0, 0, 880, 450))
                 self.KumiteSecondWindow.lcd2.hide()
-                # self.KumiteSecondWindow.line2.hide()
                 self.KumiteSecondWindow.label_winner.show()
                 self.KumiteSecondWindow.frame_white2.show()
                 self.KumiteSecondWindow.frame_red2.hide()
                 self.winnerRed.setChecked(False)
 
-    def onClickedR(self):
+    def setWinner(self):
         self.show_screen()
+        radio = self.sender()
+        if radio.isChecked():
+            if radio.text() == "Победил АКА":
+                # self.temp_index = radio.text()
+                self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.coo_frame_win)
+                self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(300, 360, 380, 420))
+                self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(300, 360, 380, 420))
+                self.KumiteSecondWindow.frame_background_red22_red2.setGeometry(QtCore.QRect(660, 430, 880, 350))
+                self.KumiteSecondWindow.lcd2.hide()
+                self.KumiteSecondWindow.label_winner.show()
+
+                self.KumiteSecondWindow.frame_red2.show()
+                self.KumiteSecondWindow.frame_white2.hide()
+                self.winnerWhite.setChecked(False)
+
+                # self.KumiteSecondWindow.screen_frame_red.show()
+                # self.KumiteSecondWindow.screen_frame_white.hide()
+                self.KumiteSecondWindow.sportsman_screen.show()
+                self.KumiteSecondWindow.screen_frame_red.show()
+                self.KumiteSecondWindow.screen_frame_white.hide()
+                self.KumiteSecondWindow.sportsman_screen.setGeometry(self.KumiteSWindow_Ui.coo_screen_win)
+                self.KumiteSecondWindow.screen_frame_red.setGeometry(self.KumiteSWindow_Ui.coo_screen_frm_win)
+
+            elif radio.text() == "Победил СИРО":
+                # self.temp_index = radio.text()
+                self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.coo_frame_win)
+                self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(300, 360, 380, 420))
+                self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(300, 360, 380, 420))
+                self.KumiteSecondWindow.frame_background_white22_white2.setGeometry(QtCore.QRect(660, 430, 880, 350))
+                self.KumiteSecondWindow.lcd2.hide()
+                self.KumiteSecondWindow.label_winner.show()
+
+                self.KumiteSecondWindow.frame_white2.show()
+                self.KumiteSecondWindow.frame_red2.hide()
+                self.winnerRed.setChecked(False)
+
+                # self.KumiteSecondWindow.screen_frame_white.show()
+                # self.KumiteSecondWindow.screen_frame_red.hide()
+                self.KumiteSecondWindow.sportsman_screen.show()
+                self.KumiteSecondWindow.screen_frame_white.show()
+                self.KumiteSecondWindow.screen_frame_red.hide()
+                self.KumiteSecondWindow.sportsman_screen.setGeometry(self.KumiteSWindow_Ui.coo_screen_win)
+                self.KumiteSecondWindow.screen_frame_white.setGeometry(self.KumiteSWindow_Ui.coo_screen_frm_win)
+
+    def onClickedR(self):
+        # self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score11.setText(radio.text())
             self.KumiteSecondWindow.label_score21.setText(radio.text())
 
     def onClickedW(self):
-        self.show_screen()
+        # self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score12.setText(radio.text())
             self.KumiteSecondWindow.label_score22.setText(radio.text())
 
     def penaltyButton_hmr1(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -1875,7 +2127,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr2(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -1885,7 +2137,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr3(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -1896,7 +2148,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr4(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -1904,7 +2156,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(None)
 
     def penaltyButton_jr1(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
@@ -1913,7 +2165,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr2(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
@@ -1923,7 +2175,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr3(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
@@ -1934,7 +2186,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
 
     def penaltyButton_jr4(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jr = self.sender()
         if penaltyB_jr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
@@ -1942,7 +2194,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jr0.setText(None)
 
     def penaltyButton_hmw1(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
@@ -1951,7 +2203,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw2(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
@@ -1961,7 +2213,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw3(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
@@ -1972,7 +2224,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
 
     def penaltyButton_hmw4(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_hmw = self.sender()
         if penaltyB_hmw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
@@ -1980,7 +2232,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmw0.setText(None)
 
     def penaltyButton_jw1(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
@@ -1989,7 +2241,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw2(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
@@ -1999,7 +2251,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw3(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
@@ -2010,7 +2262,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
 
     def penaltyButton_jw4(self):
-        self.show_screen()
+        # self.show_screen()
         penaltyB_jw = self.sender()
         if penaltyB_jw.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
@@ -2024,6 +2276,30 @@ class KumiteMainWindow_Ui(QWidget):
         rad_S1.setStyleSheet(rad_S1_FontSize)
         rad_S2.setStyleSheet(rad_S2_FontSize)
         rad_S3.setStyleSheet(rad_S3_FontSize)
+
+    def setRegionsFlags(self, region_white, region_red):
+        try:
+            region_white = region_white.replace(" ", "").lower()
+            region_red = region_red.replace(" ", "").lower()
+
+            if region_white in self.flags_dict.keys() and region_red in self.flags_dict.keys():
+                self.KumiteSecondWindow.label_name_white_2.setGeometry(self.KumiteSecondWindow.coo_label_name_white_flag)
+                self.KumiteSecondWindow.label_name_red_2.setGeometry(self.KumiteSecondWindow.coo_label_name_red_flag)
+                self.KumiteSecondWindow.flag_white.show()
+                self.KumiteSecondWindow.flag_red.show()
+
+                img_white = QtGui.QPixmap(f":/Images/icon_regions/flags/{self.flags_dict[region_white]}.svg")
+                img_red = QtGui.QPixmap(f":/Images/icon_regions/flags/{self.flags_dict[region_red]}.svg")
+                self.KumiteSecondWindow.icon_white.setPixmap(img_white)
+                self.KumiteSecondWindow.icon_red.setPixmap(img_red)
+            else:
+                self.KumiteSecondWindow.label_name_white_2.setGeometry(self.KumiteSecondWindow.coo_label_name_white)
+                self.KumiteSecondWindow.label_name_red_2.setGeometry(self.KumiteSecondWindow.coo_label_name_red)
+                self.KumiteSecondWindow.flag_red.hide()
+                self.KumiteSecondWindow.flag_white.hide()
+
+        except Exception as e:
+            print('setRegionsFlags   ', e)
 
     def setMatchName(self):
         try:
@@ -2043,36 +2319,24 @@ class KumiteMainWindow_Ui(QWidget):
 
     def setSportsmanName(self):
         try:
-            print('setSportsmanName')
             self.setMatchName()
-            self.winnerRed.setAutoExclusive(False)
-            self.winnerWhite.setAutoExclusive(False)
-            self.winnerRed.setChecked(False)
-            self.winnerWhite.setChecked(False)
-            self.winnerRed.setAutoExclusive(True)
-            self.winnerWhite.setAutoExclusive(True)
+            lrwhi = self.lineEdit_region_white_1.currentText()
+            lrred = self.lineEdit_region_red_1.currentText()
+            self.setRegionsFlags(lrwhi, lrred)
+
             self.label_name_red_1.setText(self.lineEdit_name_red_1.text())
-            self.label_region_red_1.setText(self.lineEdit_region_red_1.text())
+            self.label_region_red_1.setText(lrred)
             self.KumiteSecondWindow.label_name_red_2.setText(self.lineEdit_name_red_1.text())
             self.KumiteSecondWindow.screen_label_name_red.setText(self.lineEdit_name_red_1.text())
-            self.KumiteSecondWindow.screen_label_region_red.setText(self.lineEdit_region_red_1.text())
+            self.KumiteSecondWindow.screen_label_region_red.setText(lrred)
             self.label_name_white_1.setText(self.lineEdit_name_white_1.text())
-            self.label_region_white_1.setText(self.lineEdit_region_white_1.text())
+            self.label_region_white_1.setText(lrwhi)
             self.KumiteSecondWindow.label_name_white_2.setText(self.lineEdit_name_white_1.text())
             self.KumiteSecondWindow.screen_label_name_white.setText(self.lineEdit_name_white_1.text())
-            self.KumiteSecondWindow.screen_label_region_white.setText(self.lineEdit_region_white_1.text())
-            # self.KumiteSecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 1840, 400))
-            # self.KumiteSecondWindow.frame_white2.setGeometry(QtCore.QRect(40, 600, 1840, 400))
-            self.KumiteSecondWindow.frame_red2.show()
-            self.KumiteSecondWindow.frame_white2.show()
-            self.KumiteSecondWindow.label_winner.hide()
-            # # self.KumiteSecondWindow.label_name_red_2.show()
-            # # self.KumiteSecondWindow.label_name_white_2.show()
+            self.KumiteSecondWindow.screen_label_region_white.setText(lrwhi)
 
-            # screen_window_name_red = self.KumiteSecondWindow.screen_label_name_red.fontMetrics().boundingRect(
-            #     self.KumiteSecondWindow.screen_label_name_red.text()).width()
-            # first_window_region_red = self.KumiteSecondWindow.screen_label_region_red.fontMetrics().boundingRect(
-            #     self.KumiteSecondWindow.screen_label_region_red.text()).width()
+            self.resetSportsmanFramePosition()
+
             first_window_name_red = self.label_name_red_1.fontMetrics().boundingRect(
                 self.label_name_red_1.text()).width()
             screen_window_name_red = first_window_name_red
@@ -2085,63 +2349,45 @@ class KumiteMainWindow_Ui(QWidget):
             first_window_region_white = self.label_region_white_1.fontMetrics().boundingRect(
                 self.label_region_white_1.text()).width()
 
-            print('_'*15, 'КУМИТЕ', '_'*15,)
-            print('Маленький first_window_name_', 'white:', first_window_name_white, 'red:', first_window_name_red)
-            print('screen name', 'white:', screen_window_name_white, 'red:', screen_window_name_red)
-            print('  first region', 'white:', first_window_region_white, 'red:', first_window_region_red)
+            if self.KumiteSecondWindow.flag_red.isVisible():
+                first_window_name_length = 0.95
+            else:
+                first_window_name_length = 1
 
             if max(first_window_name_white, first_window_name_red) > 237*2:
                 max_value = max(first_window_name_white, first_window_name_red)
 
                 custom_font = QtGui.QFont()
                 custom_font.setFamily("Gotham-Medium")
-                custom_font.setPixelSize(int(300/(4.167/2) * (198 / max_value)))
-                print(int(300/(4.167/2) * (198 / max_value)))
+                custom_font.setPixelSize(int(300/(4.167/2) * (198 / max_value) * first_window_name_length))
                 self.KumiteSecondWindow.label_name_white_2.setFont(custom_font)
                 self.KumiteSecondWindow.label_name_red_2.setFont(custom_font)
 
-                # n = "background-color: none; color: grey; font-size: " + str(int(300/(4.167/2) * (198 / max_value))) + "px; align-self: flex-end;"
-                #
-                # self.KumiteSecondWindow.label_name_white_2.setStyleSheet(n)
-                # self.KumiteSecondWindow.label_name_red_2.setStyleSheet(n)
             else:
-                print(' label_name_white_2 font_m_60')
                 self.KumiteSecondWindow.label_name_white_2.setFont(self.KumiteSecondWindow.font_m_60)
                 self.KumiteSecondWindow.label_name_red_2.setFont(self.KumiteSecondWindow.font_m_60)
 
-            if screen_window_name_white > 237 or screen_window_name_red > 237:
+            if max(screen_window_name_white, screen_window_name_red) > 237:
                 max_value = max(screen_window_name_white, screen_window_name_red)
 
                 custom_font = QtGui.QFont()
                 custom_font.setFamily("Gotham-Medium")
                 custom_font.setPixelSize(int(300 * (198 / max_value)))
-                print(int(300 * (198 / max_value)))
                 self.KumiteSecondWindow.screen_label_name_white.setFont(custom_font)
                 self.KumiteSecondWindow.screen_label_name_red.setFont(custom_font)
 
-                # nw = "font-family: Gotham-Medium; font-size: " + str(int(300 * (198 / max_value))) + "px;"
-                # nr = "color: white; font-family: Gotham-Medium; font-size: " + str(int(300 * (198 / max_value))) + "px;"
-
-                # self.KumiteSecondWindow.screen_label_name_white.setStyleSheet(nw)
-                # self.KumiteSecondWindow.screen_label_name_red.setStyleSheet(nr)
             else:
-                print(' screen_label_name_white font_b_250')
                 self.KumiteSecondWindow.screen_label_name_white.setFont(self.KumiteSecondWindow.font_b_250)
                 self.KumiteSecondWindow.screen_label_name_red.setFont(self.KumiteSecondWindow.font_b_250)
 
-            if first_window_region_white > 93 or first_window_region_white > 93:
-                max_value = max(first_window_region_white, first_window_region_white)
+            if max(first_window_region_white, first_window_region_red) > 93:
+                max_value = max(first_window_region_white, first_window_region_red)
 
                 custom_font = QtGui.QFont()
                 custom_font.setFamily("Gotham-Light")
                 custom_font.setPixelSize(int(150 * (155 / max_value)))
-                print(int(150 * (155 / max_value)))
                 self.KumiteSecondWindow.screen_label_region_white.setFont(custom_font)
                 self.KumiteSecondWindow.screen_label_region_red.setFont(custom_font)
-
-                # n = "font-family: Gotham-Light; font-size: " + str(int(150 * (155 / max_value))) + "px;"
-                # self.KumiteSecondWindow.screen_label_region_white.setStyleSheet(n)
-                # self.KumiteSecondWindow.screen_label_region_red.setStyleSheet(n)
             else:
                 self.KumiteSecondWindow.screen_label_region_white.setFont(self.KumiteSecondWindow.font_l_150)
                 self.KumiteSecondWindow.screen_label_region_red.setFont(self.KumiteSecondWindow.font_l_150)
@@ -2152,6 +2398,7 @@ class KumiteMainWindow_Ui(QWidget):
         try:
             if self.btn_show_screen.text() == 'Показать\nэкран ФИО' and not force_hide:
                 self.setSportsmanName()
+                self.resetSportsmanFramePosition()
                 self.KumiteSecondWindow.sportsman_screen.show()
                 self.btn_show_screen.setText('Скрыть\nэкран ФИО')
                 self.btn_show_screen.setStyleSheet("color: red")
@@ -2163,6 +2410,7 @@ class KumiteMainWindow_Ui(QWidget):
                 self.btn_show_screen.setToolTip('Отобразить экран со спортсменами поверх экрана с очками')
         except Exception as e:
             print('kum show_screen:', e)
+
 
 class dialogWindow_Ui(object):
     def setupUi_dialog(self, Dialog):

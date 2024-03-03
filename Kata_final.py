@@ -248,46 +248,46 @@ class Frame_Header(QWidget):
                 }
         """
 
-        self.combo_style_1 = """
-        QComboBox {
-            border: none;
-            border-bottom: 1px solid gray;
-            padding: 1px 18px 1px 3px;
-        }
-
-        QComboBox:editable {
-            background: white;
-        }
-
-        QComboBox:!editable, QComboBox::drop-down:editable {
-             background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                         stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                         stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-            font-family: Gotham-Light;
-            font-size: 15px;
-        }
-
-        QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                        stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                        stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-        }
-
-        QComboBox:on { 
-            padding-top: 3px;
-            padding-left: 4px;
-        }
-
-        QComboBox::drop-down {
-            subcontrol-position: right center;
-            width: 1px;
-            border: none;
-        }
-        QComboBox QAbstractItemView {
-            border: none;
-            selection-background-color: #3e6ae1;
-        }
-        """
+        # self.combo_style_1 = """
+        # QComboBox {
+        #     border: none;
+        #     border-bottom: 1px solid gray;
+        #     padding: 1px 18px 1px 3px;
+        # }
+        #
+        # QComboBox:editable {
+        #     background: white;
+        # }
+        #
+        # QComboBox:!editable, QComboBox::drop-down:editable {
+        #      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        #                                  stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+        #                                  stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+        #     font-family: Gotham-Light;
+        #     font-size: 15px;
+        # }
+        #
+        # QComboBox:!editable:on, QComboBox::drop-down:editable:on {
+        #     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+        #                                 stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
+        #                                 stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
+        # }
+        #
+        # QComboBox:on {
+        #     padding-top: 3px;
+        #     padding-left: 4px;
+        # }
+        #
+        # QComboBox::drop-down {
+        #     subcontrol-position: right center;
+        #     width: 1px;
+        #     border: none;
+        # }
+        # QComboBox QAbstractItemView {
+        #     border: none;
+        #     selection-background-color: #3e6ae1;
+        # }
+        # """
 
         self.font_l_13 = QtGui.QFont()
         self.font_l_13.setFamily("Gotham-Light")
