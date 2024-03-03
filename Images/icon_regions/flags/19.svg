@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="80"
+   height="80"
+   viewBox="0 0 24 24"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="19_Khakassia.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs9">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath9">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:0.6"
+         id="rect10"
+         width="180"
+         height="180"
+         x="-72.426407"
+         y="-5.1471863"
+         transform="rotate(-45)" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath10">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:0.6"
+         id="rect11"
+         width="180"
+         height="180"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath11">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:0.6"
+         id="rect12"
+         width="180"
+         height="180"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath12">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:0.6"
+         id="rect13"
+         width="180"
+         height="180"
+         x="0"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath13">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:0.6"
+         id="rect14"
+         width="180"
+         height="180"
+         x="0"
+         y="0" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview9"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="1.7025"
+     inkscape:cx="600"
+     inkscape:cy="300.44053"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9" />
+  <rect
+     fill="#d81e05"
+     width="360"
+     height="180"
+     id="rect1"
+     clip-path="url(#clipPath13)"
+     x="0"
+     y="0"
+     transform="scale(0.13333333)" />
+  <rect
+     fill="#ffffff"
+     width="360"
+     height="120"
+     id="rect2"
+     clip-path="url(#clipPath12)"
+     x="0"
+     y="0"
+     transform="scale(0.13333333)" />
+  <rect
+     fill="#0051ba"
+     width="360"
+     height="60"
+     id="rect3"
+     clip-path="url(#clipPath11)"
+     x="0"
+     y="0"
+     transform="scale(0.13333333)" />
+  <rect
+     fill="#009847"
+     width="60"
+     height="180"
+     id="rect4"
+     clip-path="url(#clipPath10)"
+     x="0"
+     y="0"
+     transform="scale(0.13333333)" />
+  <g
+     fill="#ffd700"
+     transform="matrix(0.0942809,0.0942809,-0.0942809,0.0942809,9.6568542,0.6862915)"
+     id="g9"
+     clip-path="url(#clipPath9)">
+    <path
+       d="M 30,120 51,90 30,60 9,90 Z"
+       id="path4" />
+    <path
+       d="M 60,90 30,111 0,90 30,69 Z"
+       id="path5" />
+    <circle
+       cx="30"
+       cy="90"
+       r="24"
+       id="circle5" />
+    <circle
+       fill="#009847"
+       cx="30"
+       cy="90"
+       r="21"
+       id="circle6" />
+    <circle
+       cx="30"
+       cy="90"
+       r="18"
+       id="circle7" />
+    <circle
+       fill="#009847"
+       cx="30"
+       cy="90"
+       r="12"
+       id="circle8" />
+    <circle
+       cx="30"
+       cy="90"
+       r="10"
+       id="circle9" />
+  </g>
+</svg>

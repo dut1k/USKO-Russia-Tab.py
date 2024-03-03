@@ -452,14 +452,14 @@ class MenuWindow(QWidget, Ui_Form0):
         # ИКОНКИ РЕГИОНОВ
         # Все флаги https://ru.wikipedia.org/wiki/%D0%A4%D0%BB%D0%B0%D0%B3%D0%B8_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
         # Все гербы https://ru.wikipedia.org/wiki/%D0%93%D0%B5%D1%80%D0%B1%D1%8B_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
-        # Указываем путь к директории (icon_regions_directory = i_r_d)
-        self.i_r_d = "Images/icon_regions/coat_of_arms"
-        # Создаем список иконок гербов регионов (icon_regions_coat_of_arms = i_r_d)
-        self.coa = []
-        # Добавляем файлы в список
-        self.coa += listdir(self.i_r_d)
-        # Выводим список файлов
-        print(self.coa)
+        # # Указываем путь к директории (icon_regions_directory = i_r_d)
+        # self.i_r_d = "Images/icon_regions/coat_of_arms"
+        # # Создаем список иконок гербов регионов (icon_regions_coat_of_arms = i_r_d)
+        # self.coa = []
+        # # Добавляем файлы в список
+        # self.coa += listdir(self.i_r_d)
+        # # Выводим список файлов
+        # print(self.coa)
         # Полный список регионов
         self.flags_set = \
             ['АДЫГЕЯ Республика', 'БАШКОРТОСТАН Республика', 'КОМИ Республика', 'ТАТАРСТАН Республика',
@@ -1166,7 +1166,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.individ_kata_dict = self.calc_dict(3, 'один')  # КАТА ЛИЧН
         self.individ_kumite_dict = self.calc_dict(3, 'личн')  # КУМИТЕ ЛИЧН
         self.team_kata_dict = self.calc_dict(3, 'груп')  # КАТА ГРУП
-        self.team_kumite_dict = self.calc_dict(3, 'ком')  # ККУМИТЕ КОМ
+        self.team_kumite_dict = self.calc_dict(3, 'ком')  # КУМИТЕ КОМ
         self.male_label_dict = self.calc_dict(7, 'м')  # М
         self.female_label_dict = self.calc_dict(7, 'ж')  # Ж
 
@@ -1198,6 +1198,39 @@ class MenuWindow(QWidget, Ui_Form0):
         for g in set(self.male_label_dict):
             if g in self.individ_kumite_female_dict:
                 self.individ_kumite_female_dict.pop(g)
+
+        ############ Ката М КОМ   #################################
+        self.team_kata_male_dict = self.team_kata_dict.copy()
+        for g in set(self.female_label_dict):
+            if g in self.team_kata_male_dict:
+                self.team_kata_male_dict.pop(g)
+
+        ############ Ката Ж КОМ   #################################
+        self.team_kata_female_dict = self.team_kata_dict.copy()
+        for g in set(self.male_label_dict):
+            if g in self.team_kata_female_dict:
+                self.team_kata_female_dict.pop(g)
+
+        ############ Кумите М КОМ #################################
+        self.team_kumite_male_dict = self.team_kumite_dict.copy()
+        for g in set(self.female_label_dict):
+            if g in self.team_kumite_male_dict:
+                self.team_kumite_male_dict.pop(g)
+
+        ############ Кумите Ж КОМ #################################
+        self.team_kumite_female_dict = self.team_kumite_dict.copy()
+        for g in set(self.male_label_dict):
+            if g in self.team_kumite_female_dict:
+                self.team_kumite_female_dict.pop(g)
+
+        print(self.team_kata_dict)
+        print(self.team_kata_male_dict)
+        print(self.team_kata_female_dict)
+        print(self.team_kumite_dict)
+        print(self.team_kumite_male_dict)
+        print(self.team_kumite_female_dict)
+        print('ссылка на пример переключателя ЛИЧН/КОМ')
+        print('https://ru.stackoverflow.com/questions/1218170/%D0%9A%D0%B0%D0%BA-%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C-%D1%81%D0%B2%D0%BE%D0%B9-%D0%BF%D0%B5%D1%80%D0%B5%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C-pyqt5')
 
         # конструктор для matchName ############################################
         self.matchName_dict1 = self.sheet.iloc[0].to_dict()

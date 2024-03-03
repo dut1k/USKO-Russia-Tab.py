@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="80"
+   height="80"
+   viewBox="0 0 60 60"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="72_Tyumen_Oblast.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:1.5"
+         id="rect5"
+         width="600"
+         height="600"
+         x="0"
+         y="0" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="8.3509311"
+     inkscape:cx="38.738195"
+     inkscape:cy="33.828563"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <g
+     id="g4"
+     clip-path="url(#clipPath4)"
+     transform="scale(0.1)">
+    <rect
+       fill="#00923f"
+       width="900"
+       height="600"
+       id="rect1"
+       x="0"
+       y="0" />
+    <rect
+       fill="#0051ba"
+       width="900"
+       height="400"
+       id="rect2"
+       x="0"
+       y="0" />
+    <rect
+       fill="#ffffff"
+       width="900"
+       height="200"
+       id="rect3"
+       x="0"
+       y="0" />
+    <path
+       id="1"
+       d="m 193.5,288 24,36 h 62 l 24,-36 m -44,-6 14,12 m -50,0 14,-12 m -26,-6 32,48 h 10 l 32,-48"
+       fill="none"
+       stroke="#ffd700"
+       stroke-width="12"
+       stroke-linecap="round" />
+    <use
+       xlink:href="#1"
+       transform="translate(140)"
+       id="use3" />
+    <use
+       xlink:href="#1"
+       transform="translate(280)"
+       id="use4" />
+    <path
+       fill="#d81e05"
+       d="M -46.5,600 V 0 l 225,300 z"
+       id="path4" />
+  </g>
+</svg>

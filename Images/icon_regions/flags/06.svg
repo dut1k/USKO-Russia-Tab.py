@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="80"
+   height="80"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="06_Ingushetia.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath3">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect4"
+         width="400"
+         height="400"
+         x="100"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect5"
+         width="400"
+         height="400"
+         x="100"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect6"
+         width="400"
+         height="400"
+         x="100"
+         y="0" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="2.9525"
+     inkscape:cx="300.25402"
+     inkscape:cy="200"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <rect
+     width="600"
+     height="400"
+     fill="#00923f"
+     id="rect1"
+     clip-path="url(#clipPath5)"
+     x="0"
+     y="0"
+     transform="matrix(0.2,0,0,0.2,-20,0)" />
+  <rect
+     y="67"
+     width="600"
+     height="267"
+     fill="#ffffff"
+     id="rect2"
+     clip-path="url(#clipPath4)"
+     x="0"
+     transform="matrix(0.2,0,0,0.2,-20,0)" />
+  <g
+     fill="none"
+     stroke="#d81e05"
+     id="g2"
+     clip-path="url(#clipPath3)"
+     transform="matrix(0.2,0,0,0.2,-20,0)">
+    <circle
+       cx="300"
+       cy="220"
+       r="55"
+       stroke-width="30"
+       id="circle2" />
+    <path
+       d="m 300,166 a 26,26 0 1 0 -20.5,-42 m -27.29,123.1 a 26,26 0 1 0 -26.15,38.86 m 122.31,-41.94 a 26,26 0 1 0 46.51,3.18"
+       stroke-width="20"
+       stroke-linecap="round"
+       id="path2" />
+  </g>
+</svg>
