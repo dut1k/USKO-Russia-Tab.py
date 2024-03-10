@@ -5,18 +5,29 @@
   <file>Fonts/Gotham-Bold.ttf</file>
   <file>Audio/gong1.wav</file>
   <file>Audio/gong2.wav</file>
+
+  <file>Images/emblem_usko.png</file>
+  <file>Images/emblem_vbe_msk.png</file>
+  <file>Images/emblem_vbe_rus.png</file>
   <file>Images/Empty.png</file>
+
   <file>Images/icon.ico</file>
   <file>Images/icon_30px.ico</file>
-  <file>Images/radiobutton_unchecked.png</file>
-  <file>Images/radiobutton_unchecked_hover.png</file>
-  <file>Images/radiobutton_unchecked_pressed.png</file>
+  <file>Images/icon_30px11.ico</file>
+  <file>Images/JKA_30px.ico</file>
+  <file>Images/JKA_30px.png</file>
+  <file>Images/JKA_30px11.png</file>
   <file>Images/radiobutton_checked.png</file>
   <file>Images/radiobutton_checked_hover.png</file>
   <file>Images/radiobutton_checked_pressed.png</file>
-  <file>Images/emblem_usko.png</file>
-  <file>Images/emblem_vbe_rus.png</file>
-  <file>Images/emblem_vbe_msk.png</file>
+  <file>Images/radiobutton_unchecked.png</file>
+  <file>Images/radiobutton_unchecked_hover.png</file>
+  <file>Images/radiobutton_unchecked_pressed.png</file>
+  <file>Images/toggle-group.svg</file>
+  <file>Images/toggle-group_hover.svg</file>
+  <file>Images/toggle-pers.svg</file>
+  <file>Images/toggle-pers_hover.svg</file>
+
   <file>Images/icon_regions/coat_of_arms</file>
   <file>Images/icon_regions/flags78</file>
   <file>Images/icon_regions/flags</file>

@@ -79,6 +79,7 @@ class Ui_Form0(object):
                 color: white;
                 }
         """
+
         self.font_l_15 = QtGui.QFont()
         self.font_l_15.setFamily("Gotham-Light")
         self.font_l_15.setPixelSize(15)
@@ -279,7 +280,7 @@ class MenuWindow(QWidget, Ui_Form0):
         # Кнопка закрытия окна в окне Кумите вызывает диалоговое окно, позволяющее перейти в главное меню.
         # Программа полностью не закрывается
         self.ui_kumite.Frame_Header.btn_closeWin.clicked.connect(self.KumiteWindowsClose.show)
-        self.KumiteWindowsClose.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
+        self.KumiteWindowsClose.btn_OK.clicked.connect(self.ui_kumite.reset_all)
         self.KumiteWindowsClose.btn_OK.clicked.connect(self.showMainMenu)
 
         # Кнопка закрытия окна в Ката по флажкам, работает аналогично кнопке "Закрыть" в Кумите
@@ -298,7 +299,8 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataQual.btn_NewCategory.clicked.connect(self.ui_kataQual.NewCategory)
 
         # Кнопка очистки данных в Кумите, очищает ФИО и Регион с экрана телевизора
-        self.ui_kumite.btn_clearData.clicked.connect(self.ui_kumite.clearKumiteData)
+        self.ui_kumite.btn_NewCategory.clicked.connect(self.ui_kumite.reset_all)
+        self.ui_kumite.btn_NewCategory.clicked.connect(self.ui_kumite.NewCategory)
 
         ########   в окне КАТА отб. кнопка ГЛАВНОЕ МЕНЮ
         # self.ui_kataQual.MenuButton.clicked.connect(self.showDialogWindow)
@@ -325,16 +327,16 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_KataFinalToKumite.btn_OK.clicked.connect(self.ui_kataFinal.clearKataData)
         self.ui_KataFinalToKumite.btn_OK.clicked.connect(self.showKumiteWin)
         ########   в окне КУМИТЕ кнопка ГЛАВНОЕ МЕНЮ
-        # self.ui_KumiteMenu.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
-        self.ui_KumiteMenu.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
+        self.ui_KumiteMenu.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
+        self.ui_KumiteMenu.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
         self.ui_KumiteMenu.btn_OK.clicked.connect(self.showMainMenu)
         ########   в окне КУМИТЕ кнопка КАТА отб.
-        # self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
-        self.ui_KumiteToKataQual.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
+        self.ui_KumiteToKataQual.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
+        self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
         self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.showKataQualWin)
         ########   в окне КУМИТЕ кнопка КАТА ФИНАЛ
-        # self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.ui_kumite.clearKumiteData)
-        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(lambda: self.ui_kumite.clearKumiteData(self.flags_dict))
+        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
+        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
         self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.showKataFinalWin)
 
         # Все окна операторов (кроме главного меню) имею кастомную панель с кнопками свернуть, закрыть.
@@ -373,10 +375,13 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.comboBox_name_red_1.activated[str].connect(self.setLabelRedkataFinal)
 
         # Кнопки и списки из окна Кумите, принцип, как в Ката по флажкам
-        self.ui_kumite.male.clicked.connect(self.useExportDataKumiteMale)
-        self.ui_kumite.female.clicked.connect(self.useExportDataKumiteFemale)
-        self.ui_kumite.comboBox_age.activated[str].connect(self.calcTabKumiteSpotrsmansRed)
-        self.ui_kumite.comboBox_age.activated[str].connect(self.calcTabKumiteSpotrsmansWhite)
+        # Кнопка (QCheckBox) "Личн./Ком." - подгружаем личный или командрый список
+        self.ui_kumite.pers_com_qbx.clicked.connect(self.pers_com_qbxKumite)
+        self.ui_kumite.male.clicked.connect(lambda: self.useExportDataKumite(
+            load_date=self.individ_kumite_male_dict))
+        self.ui_kumite.female.clicked.connect(lambda: self.useExportDataKumite(
+            load_date=self.individ_kumite_female_dict))
+        self.ui_kumite.comboBox_age.activated[str].connect(self.calcTab_kumite)
         self.ui_kumite.comboBox_name_red_1.activated[str].connect(self.setLabelRedKumite)
         self.ui_kumite.comboBox_name_white_1.activated[str].connect(self.setLabelWhiteKumite)
 
@@ -393,7 +398,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.btn_start.clicked.connect(self.ui_kumite.start_timer)
         self.ui_kumite.btn_pause.clicked.connect(self.ui_kumite.reset_timer)
-        self.ui_kumite.btn_reset.clicked.connect(self.ui_kumite.reset_all)
+        self.ui_kumite.btn_reset.clicked.connect(self.ui_kumite.clearKumiteData)
 
         self.ui_kumite.plus2sec.clicked.connect(self.ui_kumite.upTime)
         self.ui_kumite.minus2sec.clicked.connect(self.ui_kumite.downTime)
@@ -452,14 +457,7 @@ class MenuWindow(QWidget, Ui_Form0):
         # ИКОНКИ РЕГИОНОВ
         # Все флаги https://ru.wikipedia.org/wiki/%D0%A4%D0%BB%D0%B0%D0%B3%D0%B8_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
         # Все гербы https://ru.wikipedia.org/wiki/%D0%93%D0%B5%D1%80%D0%B1%D1%8B_%D1%81%D1%83%D0%B1%D1%8A%D0%B5%D0%BA%D1%82%D0%BE%D0%B2_%D0%A0%D0%BE%D1%81%D1%81%D0%B8%D0%B9%D1%81%D0%BA%D0%BE%D0%B9_%D0%A4%D0%B5%D0%B4%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%B8
-        # # Указываем путь к директории (icon_regions_directory = i_r_d)
-        # self.i_r_d = "Images/icon_regions/coat_of_arms"
-        # # Создаем список иконок гербов регионов (icon_regions_coat_of_arms = i_r_d)
-        # self.coa = []
-        # # Добавляем файлы в список
-        # self.coa += listdir(self.i_r_d)
-        # # Выводим список файлов
-        # print(self.coa)
+
         # Полный список регионов
         self.flags_set = \
             ['АДЫГЕЯ Республика', 'БАШКОРТОСТАН Республика', 'КОМИ Республика', 'ТАТАРСТАН Республика',
@@ -573,6 +571,14 @@ class MenuWindow(QWidget, Ui_Form0):
             'байконур': '94',
             'харьковскаяобласть': '188',
         }
+
+        self.font_l_13 = QtGui.QFont()
+        self.font_l_13.setFamily("Gotham-Light")
+        self.font_l_13.setPixelSize(13)
+
+        self.font_b_13 = QtGui.QFont()
+        self.font_b_13.setFamily("Gotham-Bold")
+        self.font_b_13.setPixelSize(13)
 
     # Выпадающее меню в окне Кумите с выбором видов соревнований
     def choiceCompitition_Kumite(self):
@@ -695,7 +701,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.combo.hide()
                 self.user_choice = 0
                 self.data_processing()
-        except:
+        except Exception as e:
             if self.sportsmans_ages_dict != {}:
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
                 self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
@@ -703,6 +709,8 @@ class MenuWindow(QWidget, Ui_Form0):
                 return
             else:
                 self.show_withOut_load_file_interface()
+                self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
+                self.status_file.setText(f'<b>Ошибка:</b> {e}')
                 return
 
     def show_withOut_load_file_interface(self):
@@ -745,6 +753,8 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.Frame_Header.combo.model().item(2).setEnabled(True)
         self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(True)
         self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(True)
+
+        self.ui_kumite.reset_all(self.flags_dict)
         print('    show_with_load_file_interface')
 
     def show_pyatnov_kata_interface(self):
@@ -974,28 +984,37 @@ class MenuWindow(QWidget, Ui_Form0):
                 # self.ui_kumite.Form2.setFixedSize(900, 750)
                 # self.ui_kumite.frame_bottom1.show()
                 # self.ui_kumite.frame_bottom.hide()
-            except:
+            except Exception as e:
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-                self.status_file.setText('Выбран неверный файл или лист')
+                print(e)
+                self.status_file.setText(f'Выбран неверный файл или лист {e}')
                 self.clearDataMember()
                 self.show_withOut_load_file_interface()
 
     def file_dementieva(self):
         print('file_dementieva')
-        for k_n in self.list_kat_name:
-            # ЛИЧНЫЕ СОРЕВНОВАНИЯ
-            # Поиск строк со значением "*" в столбце "k_n"
-            #           (Поиск всех смортсменов, у которых в категории (столбце "k_n") поставлена ЗВЕЗДОЧКА "*")
-            df2 = self.sheet.loc[self.sheet[k_n] == '*', ['a10', 'a11', 'a12', 'a13']]
-
-            # Создание словаря из найденых спортсменов
-            df_Temp_Single_list = dict(zip(df2.a12 + ' ' + df2.a13 + ' - ' + df2.a11,
-                                           'a12' + df2.a12 + 'a13' + df2.a13 + 'a11' + df2.a11))
-
-            self.df_Single_names.append(k_n)
-            self.df_Group_names.append(k_n)
-            self.df_Single_list.append(df_Temp_Single_list)
+        print(self.list_kat_name)
+        # for k_n in self.list_kat_name:
+        #     # ЛИЧНЫЕ СОРЕВНОВАНИЯ
+        #     # Поиск строк со значением "*" в столбце "k_n"
+        #     #           (Поиск всех смортсменов, у которых в категории (столбце "k_n") поставлена ЗВЕЗДОЧКА "*")
+        #     df2 = self.sheet.loc[self.sheet[k_n] == '*', ['a10', 'a11', 'a12', 'a13']]
+        #
+        #     # Создание словаря из найденых спортсменов
+        #     df_Temp_Single_list = dict(zip(df2.a12 + ' ' + df2.a13 + ' - ' + df2.a11,
+        #                                    'a12' + df2.a12 + 'a13' + df2.a13 + 'a11' + df2.a11))
+        #
+        #     # КОМАНДНЫЕ СОРЕВНОВАНИЯ
+        #     # ------------
+        #
+        #     self.df_Single_names.append(k_n)
+        #     self.df_Group_names.append(k_n)
+        #     self.df_Single_list.append(df_Temp_Single_list)
         ################################################################
+        # print(self.df_Single_list)
+        # for i in self.df_Single_list:
+        #     print(i)
+        #     print('      ', type(i))
 
         self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
         self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
@@ -1004,47 +1023,54 @@ class MenuWindow(QWidget, Ui_Form0):
         type_set = set(self.sheet.iloc[self.countRowTab - 2].values.tolist()) | set(
             self.sheet.iloc[self.countRowTab].values.tolist()) \
                    | set(self.sheet.iloc[self.countRowTab + 1].values.tolist())
-
-        if 'личн' in type_set:  # ЛИЧНЫЕ СОРЕВНОВАНИЯ
+        # ЛИЧНЫЕ СОРЕВНОВАНИЯ
+        if 'личн' in type_set:
             self.individ_dict = self.calc_dict(self.countRowTab - 2, 'личн')
-        if 'личн' not in type_set:  # ЛИЧНЫЕ СОРЕВНОВАНИЯ
+        else:
             self.individ_dict = {}
-        if 'КОМ' in type_set:  # КОМАНДНЫЕ СОРЕВНОВАНИЯ
+        # КОМАНДНЫЕ СОРЕВНОВАНИЯ
+        if 'КОМ' in type_set:
             self.team_dict = self.calc_dict(self.countRowTab - 2, 'КОМ')
-        if 'КОМ' not in type_set:  # КОМАНДНЫЕ СОРЕВНОВАНИЯ
+        else:
             self.team_dict = {}
-        if 'кумите' in type_set:  # КУМИТЕ
+        # КУМИТЕ
+        if 'кумите' in type_set:
             self.kumite_dict = self.calc_dict(self.countRowTab + 1, 'кумите')
-        if 'кумите' not in type_set:  # КУМИТЕ
+        else:
             self.kumite_dict = {}
-        if 'ката' in type_set:  # КАТА
+        # КАТА
+        if 'ката' in type_set:
             self.kata_dict = self.calc_dict(self.countRowTab + 1, 'ката')
-        if 'ката' not in type_set:  # КАТА
+        else:
             self.kata_dict = {}
-        if 'м' in type_set:  # М
+        # М
+        if 'м' in type_set:
             self.male_label_dict1 = self.calc_dict(self.countRowTab, 'м')
             self.male_label_dict |= self.male_label_dict1
-        if 'м' not in type_set:  # М
+        else:
             self.male_label_dict1 = {}
-        if 'юн-ры' in type_set:  # М
+        # М
+        if 'юн-ры' in type_set:
             self.male_label_dict1 = self.calc_dict(self.countRowTab, 'юн-ры')
             self.male_label_dict |= self.male_label_dict1
-        if 'юн-ры' not in type_set:  # М
+        else:
             self.male_label_dict1 = {}
-        if 'ж' in type_set:  # Ж
+        # Ж
+        if 'ж' in type_set:
             self.female_label_dict1 = self.calc_dict(self.countRowTab, 'ж')
             self.female_label_dict |= self.female_label_dict1
-        if 'ж' not in type_set:  # Ж
+        else:
             self.female_label_dict1 = {}
-        if 'д' in type_set:  # Ж
+        # Ж
+        if 'д' in type_set:
             self.female_label_dict1 = self.calc_dict(self.countRowTab, 'д')
             self.female_label_dict |= self.female_label_dict1
-        if 'д' not in type_set:  # Ж
+        else:
             self.female_label_dict1 = {}
         if 'юн-ки' in type_set:  # Ж
             self.female_label_dict1 = self.calc_dict(self.countRowTab, 'юн-ки')
             self.female_label_dict |= self.female_label_dict1
-        if 'юн-ки' not in type_set:  # Ж
+        else:
             self.female_label_dict1 = {}
 
         # ЛИЧНЫЕ СОРЕВНОВАНИЯ           ############################################
@@ -1109,6 +1135,24 @@ class MenuWindow(QWidget, Ui_Form0):
         self.individ_kata_dict = dict((i, self.individ_dict[i]) for i in self.individ_dict
                                       if i not in list(self.kumite_dict.keys()))
 
+        ############ Ката М/Ж КОМ   #################################
+        self.team_kata_male_dict = self.team_dict.copy()
+        self.team_kata_female_dict = self.team_dict.copy()
+        for g in self.team_dict.keys():
+            if g in (set(self.team_kumite) | set(self.male_label_dict)):
+                self.team_kata_female_dict.pop(g)
+            if g in (set(self.team_kumite) | set(self.female_label_dict)):
+                self.team_kata_male_dict.pop(g)
+
+        ############ Кумите М/Ж КОМ #################################
+        self.team_kumite_male_dict = self.team_dict.copy()
+        self.team_kumite_female_dict = self.team_dict.copy()
+        for g in self.team_dict.keys():
+            if g in (set(self.team_kata) | set(self.male_label_dict)):
+                self.team_kumite_female_dict.pop(g)
+            if g in (set(self.team_kumite) | set(self.female_label_dict)):
+                self.team_kumite_male_dict.pop(g)
+
         # конструктор для matchName ############################################
         self.matchName_male_dict1 = self.male_sportsmans_ages_dict.copy()
         self.matchName_funk(self.matchName_male_dict1, "М")
@@ -1116,6 +1160,43 @@ class MenuWindow(QWidget, Ui_Form0):
         self.matchName_funk(self.matchName_female_dict1, "Ж")
         self.matchName = (self.matchName_male_dict1 | self.matchName_female_dict1).copy()
         self.matchName = dict(sorted(self.matchName.items()))
+
+        print(self.team_dict)
+        print(self.team_dict.keys())
+        print(self.team_kumite_male_dict.keys())
+        print(self.team_kumite_female_dict.keys())
+        print(self.individ_kumite_male_dict)
+        print(self.individ_kumite_female_dict)
+        print(self.team_kumite_male_dict)
+        print(self.team_kumite_female_dict)
+
+        for k_n in self.list_kat_name:
+            # ЛИЧНЫЕ СОРЕВНОВАНИЯ
+            # Поиск строк со значением "*" в столбце "k_n"
+            #           (Поиск всех смортсменов, у которых в категории (столбце "k_n") поставлена ЗВЕЗДОЧКА "*")
+            df2 = self.sheet.loc[self.sheet[k_n] == '*', ['a10', 'a11', 'a12', 'a13']]
+
+            # Создание словаря из найденых спортсменов
+            df_Temp_Single_list = dict(zip(df2.a12 + ' ' + df2.a13 + ' - ' + df2.a11,
+                                           'a12' + df2.a12 + 'a13' + df2.a13 + 'a11' + df2.a11))
+
+            # КОМАНДНЫЕ СОРЕВНОВАНИЯ
+            # ------------
+            if k_n in self.team_dict.keys():
+                self.df_Group_list.append(df_Temp_Single_list)
+                self.df_Single_list.append({})
+            else:
+                self.df_Single_list.append(df_Temp_Single_list)
+                self.df_Group_list.append({})
+
+            self.df_Single_names.append(k_n)
+            self.df_Group_names.append(k_n)
+
+
+        # for i in self.df_Single_list:
+        #     print(i)
+        # for i in self.df_Group_list:
+        #     print('      ', i)
 
     def file_yutkin(self):
         print('file_yutkin')
@@ -1155,6 +1236,9 @@ class MenuWindow(QWidget, Ui_Form0):
                 df_Temp1_Group_list = df_Temp1_Group_list | df_Temp2_Group_list | \
                                       df_Temp3_Group_list | df_Temp4_Group_list | df_Temp5_Group_list
                 self.df_Group_list.append(df_Temp1_Group_list)
+            else:
+                self.df_Group_list.append({})
+
             self.df_Single_names.append(k_n)
             self.df_Group_names.append(k_n)
             self.df_Single_list.append(df_Temp_Single_list)
@@ -1222,15 +1306,6 @@ class MenuWindow(QWidget, Ui_Form0):
         for g in set(self.male_label_dict):
             if g in self.team_kumite_female_dict:
                 self.team_kumite_female_dict.pop(g)
-
-        print(self.team_kata_dict)
-        print(self.team_kata_male_dict)
-        print(self.team_kata_female_dict)
-        print(self.team_kumite_dict)
-        print(self.team_kumite_male_dict)
-        print(self.team_kumite_female_dict)
-        print('ссылка на пример переключателя ЛИЧН/КОМ')
-        print('https://ru.stackoverflow.com/questions/1218170/%D0%9A%D0%B0%D0%BA-%D1%81%D0%B4%D0%B5%D0%BB%D0%B0%D1%82%D1%8C-%D1%81%D0%B2%D0%BE%D0%B9-%D0%BF%D0%B5%D1%80%D0%B5%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%82%D0%B5%D0%BB%D1%8C-pyqt5')
 
         # конструктор для matchName ############################################
         self.matchName_dict1 = self.sheet.iloc[0].to_dict()
@@ -1351,27 +1426,49 @@ class MenuWindow(QWidget, Ui_Form0):
         self.calcTabKataSpotrsmans(dict_KataOrKumite, comboBox_age, age_1, name_red_1,
                                    name_white_1, comboBox_name_red_1, comboBox_name_white_1)
 
-    def useExportDataKumiteMale(self):
-        dict_KataOrKumite = self.individ_kumite_male_dict
-        comboBox_age = self.ui_kumite.comboBox_age
-        age_1 = self.ui_kumite.age_1
-        name_red_1 = self.ui_kumite.name_red_1
-        name_white_1 = self.ui_kumite.name_white_1
-        comboBox_name_red_1 = self.ui_kumite.comboBox_name_red_1
-        comboBox_name_white_1 = self.ui_kumite.comboBox_name_white_1
-        self.calcTabKumiteSpotrsmans(dict_KataOrKumite, comboBox_age, age_1, name_red_1,
-                                     name_white_1, comboBox_name_red_1, comboBox_name_white_1)
+    def pers_com_qbxKumite(self):
+        pers_com_qbx = self.ui_kumite.pers_com_qbx
+        if not pers_com_qbx.isChecked():
+            self.ui_kumite.pers_lbl.setFont(self.font_b_13)
+            self.ui_kumite.pers_lbl.setStyleSheet("color: black;")
+            self.ui_kumite.com_lbl.setFont(self.font_l_13)
+            self.ui_kumite.com_lbl.setStyleSheet("color: grey;")
 
-    def useExportDataKumiteFemale(self):
-        dict_KataOrKumite = self.individ_kumite_female_dict
+            self.ui_kumite.male.clicked.connect(
+                lambda: self.useExportDataKumite(load_date=self.individ_kumite_male_dict))
+            self.ui_kumite.female.clicked.connect(
+                lambda: self.useExportDataKumite(load_date=self.individ_kumite_female_dict))
+            if self.ui_kumite.male.isChecked():
+                self.useExportDataKumite(load_date=self.individ_kumite_male_dict)
+            else:
+                self.ui_kumite.male.setChecked(True)
+                self.useExportDataKumite(load_date=self.individ_kumite_female_dict)
+        else:
+            self.ui_kumite.com_lbl.setFont(self.font_b_13)
+            self.ui_kumite.com_lbl.setStyleSheet("color: black;")
+            self.ui_kumite.pers_lbl.setFont(self.font_l_13)
+            self.ui_kumite.pers_lbl.setStyleSheet("color: grey;")
+
+            self.ui_kumite.male.clicked.connect(
+                lambda: self.useExportDataKumite(load_date=self.team_kumite_male_dict))
+            self.ui_kumite.female.clicked.connect(
+                lambda: self.useExportDataKumite(load_date=self.team_kumite_female_dict))
+            if self.ui_kumite.male.isChecked():
+                self.useExportDataKumite(load_date=self.team_kumite_male_dict)
+            else:
+                self.useExportDataKumite(load_date=self.team_kumite_female_dict)
+
+
+    def useExportDataKumite(self, load_date):
+        dict_KataOrKumite = load_date
         comboBox_age = self.ui_kumite.comboBox_age
         age_1 = self.ui_kumite.age_1
         name_red_1 = self.ui_kumite.name_red_1
         name_white_1 = self.ui_kumite.name_white_1
         comboBox_name_red_1 = self.ui_kumite.comboBox_name_red_1
         comboBox_name_white_1 = self.ui_kumite.comboBox_name_white_1
-        self.calcTabKumiteSpotrsmans(dict_KataOrKumite, comboBox_age, age_1, name_red_1,
-                                     name_white_1, comboBox_name_red_1, comboBox_name_white_1)
+        self.calcTabKumiteSpotrsmans(dict_KataOrKumite, comboBox_age, age_1, name_red_1, name_white_1,
+                                     comboBox_name_red_1, comboBox_name_white_1)
 
     def calcTabKumiteSpotrsmans(self, dict_KataOrKumite, comboBox_age, age_1, name_red_1,
                                 name_white_1, comboBox_name_red_1, comboBox_name_white_1):
@@ -1379,14 +1476,18 @@ class MenuWindow(QWidget, Ui_Form0):
         self.TempSet = sorted(list(set(dict_KataOrKumite)))
         comboBox_age.setEnabled(True)
         comboBox_age.clear()
-        age_1.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 12px;")
-        name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 12px;")
-        name_white_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 12px;")
+        age_1.setFont(self.font_b_13)
+        age_1.setStyleSheet("color: black;")
+        name_red_1.setFont(self.font_l_13)
+        name_red_1.setStyleSheet("color: grey;")
+        name_white_1.setFont(self.font_l_13)
+        name_white_1.setStyleSheet("color: grey;")
         comboBox_name_red_1.setEnabled(False)
         comboBox_name_red_1.clear()
         comboBox_name_white_1.setEnabled(False)
         comboBox_name_white_1.clear()
         comboBox_age.addItems([self.sportsmans_ages_dict[x] for x in self.TempSet])
+
     def calcTabKataSpotrsmans(self, dict_KataOrKumite, comboBox_age, age_1, name_red_1,
                               name_white_1, comboBox_name_red_1, comboBox_name_white_1):
         self.ui_kataQual.clearKataData()
@@ -1394,9 +1495,12 @@ class MenuWindow(QWidget, Ui_Form0):
         self.TempSet = sorted(list(set(dict_KataOrKumite)))
         comboBox_age.setEnabled(True)
         comboBox_age.clear()
-        age_1.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 12px;")
-        name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 12px;")
-        name_white_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 12px;")
+        age_1.setFont(self.font_b_13)
+        age_1.setStyleSheet("color: black;")
+        name_red_1.setFont(self.font_l_13)
+        name_red_1.setStyleSheet("color: grey;")
+        name_white_1.setFont(self.font_l_13)
+        name_white_1.setStyleSheet("color: grey;")
         comboBox_name_red_1.setEnabled(False)
         comboBox_name_red_1.clear()
         comboBox_name_white_1.setEnabled(False)
@@ -1412,27 +1516,39 @@ class MenuWindow(QWidget, Ui_Form0):
     def calcTabKataSpotrsmansWhite(self):
         self.calcTab(self.ui_kataQual.name_white_1, self.ui_kataQual.comboBox_name_white_1)
 
-    def calcTabKumiteSpotrsmansRed(self):
-        self.calcTab_kumite(self.ui_kumite.name_red_1, self.ui_kumite.comboBox_name_red_1)
+    def calcTab_kumite(self):
+        name_r = self.ui_kumite.name_red_1
+        name_w = self.ui_kumite.name_white_1
+        comboBox_name_r = self.ui_kumite.comboBox_name_red_1
+        comboBox_name_w = self.ui_kumite.comboBox_name_white_1
+        comboBox_name_r.clear()
+        comboBox_name_w.clear()
 
-    def calcTabKumiteSpotrsmansWhite(self):
-        self.calcTab_kumite(self.ui_kumite.name_white_1, self.ui_kumite.comboBox_name_white_1)
+        n = self.ui_kumite.comboBox_age.currentText()
+        jj = self.ui_kumite.matchName12
 
-    def calcTab_kumite(self, name, comboBox_name):
-        comboBox_name.clear()
-        if name == self.ui_kumite.name_red_1:
-            n = self.ui_kumite.comboBox_age.currentText()
-            jj = self.ui_kumite.matchName12
-        elif name == self.ui_kumite.name_white_1:
-            n = self.ui_kumite.comboBox_age.currentText()
-            jj = self.ui_kumite.matchName12
         a2 = {k: v for k, v in
               zip((self.TempSet), [self.sportsmans_ages_dict[x] for x in self.TempSet])}
         self.x = list(self.sportsmans_ages_dict.keys()).index(list(a2.keys())[list(a2.values()).index(n)])
-        jj.setText(self.matchName[list(self.matchName.keys())[self.x]])
-        name.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 12px;")
-        comboBox_name.addItems(sorted(self.df_Single_list[self.x]))
-        comboBox_name.setEnabled(True)
+        pers_com_qbx = self.ui_kumite.pers_com_qbx
+        group_pref = ''
+
+        if not pers_com_qbx.isChecked():
+            df_list = sorted(self.df_Single_list[self.x])
+        else:
+            df_list = sorted(self.df_Group_list[self.x])
+            group_pref = "КОМАНДНЫЕ "
+        jj.setText(f"{group_pref}{self.matchName[list(self.matchName.keys())[self.x]]}")
+
+        name_r.setFont(self.font_b_13)
+        name_r.setStyleSheet("color: black;")
+        name_w.setFont(self.font_b_13)
+        name_w.setStyleSheet("color: black;")
+
+        comboBox_name_r.addItems(df_list)
+        comboBox_name_w.addItems(df_list)
+        comboBox_name_r.setEnabled(True)
+        comboBox_name_w.setEnabled(True)
 
     def calcTab(self, name, comboBox_name):
         try:
@@ -1471,16 +1587,9 @@ class MenuWindow(QWidget, Ui_Form0):
             print(e)
 
     def setLabel(self):
-        print(self.ui_kataQual.pyatnov_name.currentText())
-        print(self.sportsmen_dict['combo_box'])
         value = [i for i in self.sportsmen_dict['combo_box'] if
                  self.sportsmen_dict['combo_box'][i] == self.ui_kataQual.pyatnov_name.currentText()][0]
 
-        print(value)
-        print(self.sportsmen_dict['aka'][value])
-        print(self.sportsmen_dict['region_aka'][value])
-        print(self.sportsmen_dict['siro'][value])
-        print(self.sportsmen_dict['region_siro'][value])
         self.ui_kataQual.lineEdit_name_red_1.setText(self.sportsmen_dict['aka_short'][value])
         self.ui_kataQual.lineEdit_region_red_1.setText(self.sportsmen_dict['region_aka'][value])
         self.ui_kataQual.lineEdit_name_white_1.setText(self.sportsmen_dict['siro_short'][value])
@@ -1515,22 +1624,42 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataQual.lineEdit_region_white_1.setText(name.split('a11')[1])
 
     def setLabelRedKumite(self):
-        name = self.df_Single_list[self.x].get(self.ui_kumite.comboBox_name_red_1.currentText())
-        # это конструктор имя, состоящий из Фамилии и первого символа Имя
-        self.ui_kumite.lineEdit_name_red_1.setText(
-            ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        # self.ui_kumite.lineEdit_region_red_1.setText(name.split('a11')[1])
-        edit_red = self.ui_kumite.lineEdit_region_red_1.lineEdit()
-        edit_red.setText(name.split('a11')[1])
+        try:
+            pers_com_qbx = self.ui_kumite.pers_com_qbx
+            if not pers_com_qbx.isChecked():
+                df_list = self.df_Single_list[self.x]
+            else:
+                df_list = self.df_Group_list[self.x]
+            name = df_list.get(self.ui_kumite.comboBox_name_red_1.currentText())
+            # это конструктор имя, состоящий из Фамилии и первого символа Имя
+            self.ui_kumite.lineEdit_name_red_1.setText(
+                ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
+            # self.ui_kumite.lineEdit_region_red_1.setText(name.split('a11')[1])
+            edit_red = self.ui_kumite.lineEdit_region_red_1.lineEdit()
+            edit_red.setText(name.split('a11')[1])
+        except Exception as e:
+            self.show_withOut_load_file_interface()
+            self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
+            self.status_file.setText(f'setLabelRedKumite. <b>Ошибка:</b> {e}')
 
     def setLabelWhiteKumite(self):
-        name = self.df_Single_list[self.x].get(self.ui_kumite.comboBox_name_white_1.currentText())
-        # это конструктор имя, состоящий из Фамилии и первого символа Имя
-        self.ui_kumite.lineEdit_name_white_1.setText(
-            ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        # self.ui_kumite.lineEdit_region_white_1.setText(name.split('a11')[1])
-        edit_white = self.ui_kumite.lineEdit_region_white_1.lineEdit()
-        edit_white.setText(name.split('a11')[1])
+        try:
+            pers_com_qbx = self.ui_kumite.pers_com_qbx
+            if not pers_com_qbx.isChecked():
+                df_list = self.df_Single_list[self.x]
+            else:
+                df_list = self.df_Group_list[self.x]
+            name = df_list.get(self.ui_kumite.comboBox_name_white_1.currentText())
+            # это конструктор имя, состоящий из Фамилии и первого символа Имя
+            self.ui_kumite.lineEdit_name_white_1.setText(
+                ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
+            # self.ui_kumite.lineEdit_region_white_1.setText(name.split('a11')[1])
+            edit_white = self.ui_kumite.lineEdit_region_white_1.lineEdit()
+            edit_white.setText(name.split('a11')[1])
+        except Exception as e:
+            self.show_withOut_load_file_interface()
+            self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
+            self.status_file.setText(f'setLabelWhiteKumite. <b>Ошибка:</b> {e}')
 
     def calcTabKata_Reset(self):
         if self.tatamiName != "":
@@ -1605,7 +1734,7 @@ class MenuWindow(QWidget, Ui_Form0):
     def showKumiteWin(self):
         self.ui_kataFinal.clearKataData()
         self.ui_kataQual.NewCategory()
-        self.ui_kumite.clearKumiteData(self.flags_dict)
+        self.ui_kumite.reset_all(self.flags_dict)
         self.closeAllWin()
         self.ui_kumite.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
                                               self.display_height, self.display_coord_x1_secW,
@@ -1631,8 +1760,6 @@ class MenuWindow(QWidget, Ui_Form0):
         edit_red.setFont(self.font_l_15)
         edit_red.setAlignment(QtCore.Qt.AlignCenter)
         lineEdit_region_red_1.setLineEdit(edit_red)
-
-        print(self.flags_dict.keys())
 
     def closeAllWin(self):
         self.ui_kumite.closeSecondWin()

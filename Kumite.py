@@ -727,7 +727,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
         self.matchName11 = QtWidgets.QLineEdit("Татами №#", self.frame_matchName)
         self.matchName12 = QtWidgets.QLineEdit("Возраст", self.frame_matchName)
-        self.btn_clearData = QtWidgets.QPushButton("ОЧИСТИТЬ\nДАННЫЕ", self.frame_matchName)
+        self.btn_NewCategory = QtWidgets.QPushButton("НОВАЯ\nКАТЕГОРИЯ", self.frame_matchName)
         self.btn_showData = QtWidgets.QPushButton("ПОКАЗАТЬ\nНА ЭКРАНЕ", self.frame_matchName)
 
         self.control_panel = QtWidgets.QFrame(self.Form2)
@@ -806,6 +806,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_sex = QtWidgets.QFrame(self.frame_sportsmans)
         self.male = QtWidgets.QRadioButton("М", self.frame_sex)
         self.female = QtWidgets.QRadioButton("Ж", self.frame_sex)
+        self.pers_com_lbl = QtWidgets.QLabel("/", self.frame_sportsmans)
+        self.pers_lbl = QtWidgets.QLabel("Личные", self.frame_sportsmans)
+        self.com_lbl = QtWidgets.QLabel("Командные", self.frame_sportsmans)
+        self.pers_com_qbx = QtWidgets.QCheckBox(self.frame_sportsmans)
         self.sex_1 = QtWidgets.QLabel("Пол", self.frame_sportsmans)
         self.age_1 = QtWidgets.QLabel("Возраст", self.frame_sportsmans)
         self.comboBox_name_red_1 = QtWidgets.QComboBox(self.frame_sportsmans)
@@ -1177,10 +1181,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.btn_showData.setObjectName("btn_showData")
         self.btn_showData.setToolTip('Отобразить на Большом экране ФИО, номер татами и категорию')
 
-        self.btn_clearData.setGeometry(QtCore.QRect(730, 10, 120, 50))
-        self.btn_clearData.setStyleSheet(self.btn_style_2)
-        self.btn_clearData.setFont(self.font_m_13)
-        self.btn_clearData.setObjectName("btn_clearData")
+        self.btn_NewCategory.setGeometry(QtCore.QRect(730, 10, 120, 50))
+        self.btn_NewCategory.setStyleSheet(self.btn_style_2)
+        self.btn_NewCategory.setFont(self.font_m_13)
+        self.btn_NewCategory.setObjectName("btn_NewCategory")
 
         self.label_matchName1.setGeometry(QtCore.QRect(210, 0, 480, 25))
         self.label_matchName1.setFont(self.font_l_20)
@@ -1628,6 +1632,41 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_sportsmans.setStyleSheet("background-color: None;")
         self.frame_sportsmans.setObjectName("frame_sportsmans")
 
+        self.pers_com_lbl.setGeometry(QtCore.QRect(178, 0, 7, 13))
+        self.pers_com_lbl.setFont(self.font_b_13)
+        self.pers_com_lbl.setStyleSheet("color: black;")
+        self.pers_com_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.pers_com_lbl.setObjectName("pers_com_lbl")
+
+        self.pers_lbl.setGeometry(QtCore.QRect(97, 0, 80, 13))
+        self.pers_lbl.setFont(self.font_b_13)
+        self.pers_lbl.setStyleSheet("color: black;")
+        self.pers_lbl.setAlignment(QtCore.Qt.AlignRight)
+        self.pers_lbl.setObjectName("pers_lbl")
+
+        self.com_lbl.setGeometry(QtCore.QRect(186, 0, 80, 13))
+        self.com_lbl.setFont(self.font_l_13)
+        self.com_lbl.setStyleSheet("color: grey;")
+        self.com_lbl.setAlignment(QtCore.Qt.AlignLeft)
+        self.com_lbl.setObjectName("com_lbl")
+
+        self.pers_com_qbx.setGeometry(QtCore.QRect(155, 20, 50, 25))
+        self.pers_com_qbx.setStyleSheet('''
+            QCheckBox::indicator:unchecked {
+                image: url(:/Images/toggle-pers.svg);
+            }
+            QCheckBox::indicator:unchecked:hover {
+                image: url(:/Images/toggle-pers_hover.svg);
+            }
+            QCheckBox::indicator:checked {
+                image: url(:/Images/toggle-group.svg);
+            }
+            QCheckBox::indicator:checked:hover {
+                image: url(:/Images/toggle-group_hover.svg);
+            }
+        ''')
+        self.pers_com_qbx.setObjectName("pers_com_lbl")
+
         self.frame_sex.setGeometry(QtCore.QRect(270, 20, 151, 25))
         self.frame_sex.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_sex.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -1883,16 +1922,41 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_pause.setToolTip('Сбросить только секундомер')
             self.btn_reset.setToolTip('Сбросить всё')
 
-    def reset_all(self):
+    def clearKumiteData(self):
         self.show_screen()
         if self.btn_start.text() != '► START':
             self.btn_reset.setText('Останови бой')
             self.btn_reset.setStyleSheet("color: red")
             self.btn_pause.setToolTip('Сперва нужно остановить бой')
         else:
-            self.clearKumiteData()
+            self.reset_all()
             self.btn_pause.setToolTip('Сбросить только секундомер')
             self.btn_reset.setToolTip('Сбросить всё')
+
+    def NewCategory(self):
+        self.comboBox_age.clear()
+        self.comboBox_name_red_1.clear()
+        self.comboBox_name_white_1.clear()
+        self.comboBox_age.setEnabled(False)
+        self.comboBox_name_red_1.setEnabled(False)
+        self.comboBox_name_white_1.setEnabled(False)
+        self.male.setAutoExclusive(False)
+        self.female.setAutoExclusive(False)
+        self.male.setChecked(False)
+        self.female.setChecked(False)
+        self.male.setAutoExclusive(True)
+        self.female.setAutoExclusive(True)
+
+        self.name_red_1.setFont(self.font_l_13)
+        self.name_red_1.setStyleSheet("color: grey;")
+        self.name_white_1.setFont(self.font_l_13)
+        self.name_white_1.setStyleSheet("color: grey;")
+        self.age_1.setFont(self.font_l_13)
+        self.age_1.setStyleSheet("color: grey;")
+
+        self.matchName12.setText('Возраст'
+        if len(self.KumiteSecondWindow.matchName21.text().split(', ')) > 1:
+            self.KumiteSecondWindow.matchName21.setText(self.KumiteSecondWindow.matchName21.text().split(', ')[0])
 
     def resetSportsmanFramePosition(self):
         self.winnerRed.setAutoExclusive(False)
@@ -1925,7 +1989,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.screen_frame_red.show()
         self.show_screen()
 
-    def clearKumiteData(self, flags_dict=''):
+    def reset_all(self, flags_dict=''):
         if flags_dict:
             self.flags_dict = flags_dict
         self.timer.stop()
@@ -1940,25 +2004,6 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.flag_white.hide()
 
         self.resetSportsmanFramePosition()
-        # self.winnerRed.setAutoExclusive(False)
-        # self.winnerWhite.setAutoExclusive(False)
-        # self.winnerRed.setChecked(False)
-        # self.winnerWhite.setChecked(False)
-        # self.winnerRed.setAutoExclusive(True)
-        # self.winnerWhite.setAutoExclusive(True)
-        # self.KumiteSecondWindow.line2.show()
-        # self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
-        # self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
-        # self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
-        # self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
-        # self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
-        # self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
-        # self.KumiteSecondWindow.lcd2.show()
-        # self.KumiteSecondWindow.frame_white2.show()
-        # self.KumiteSecondWindow.frame_red2.show()
-        # self.KumiteSecondWindow.label_winner.hide()
-        # self.show_screen()
-
 
         self.btn_pause.setText('ОБНУЛИТЬ ТАЙМЕР')
         self.btn_reset.setText('НОВЫЙ БОЙ')
@@ -1970,14 +2015,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.label_score21.setText('0')
         self.label_score12.setText('0')
         self.KumiteSecondWindow.label_score22.setText('0')
-
         self.KumiteSecondWindow.label_name_white_2.clear()
         self.KumiteSecondWindow.label_name_red_2.clear()
+
         self.label_name_red_1.setText("ФАМИЛИЯ")
-        # self.label_name_red_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_region_red_1.setText("регион")
         self.label_name_white_1.setText("ФАМИЛИЯ")
-        # self.label_name_white_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_region_white_1.setText("регион")
         self.lineEdit_name_red_1.clear()
         self.lineEdit_region_red_1.clear()
@@ -2007,37 +2050,8 @@ class KumiteMainWindow_Ui(QWidget):
     def setWinner2(self):
         self.show_screen()
         radio = self.sender()
-        # if self.temp_index == radio.text():
-        #     if radio.text() == "Победил АКА":
-        #         # self.KumiteSecondWindow.line2.show()
-        #         self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_std)
-        #         self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(0, 0, 500, 420))
-        #         self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 500, 450))
-        #         self.KumiteSecondWindow.lcd2.show()
-        #         self.KumiteSecondWindow.frame_white2.show()
-        #         self.KumiteSecondWindow.frame_red2.show()
-        #         self.KumiteSecondWindow.label_winner.hide()
-        #         self.winnerRed.setAutoExclusive(False)
-        #         self.winnerRed.setChecked(False)
-        #         self.winnerRed.setAutoExclusive(True)
-        #         self.temp_index = False
-        #     elif radio.text() == "Победил СИРО":
-        #         # self.KumiteSecondWindow.line2.show()
-        #         self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_std)
-        #         self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(380, 0, 500, 450))
-        #         self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
-        #         self.KumiteSecondWindow.lcd2.show()
-        #         self.KumiteSecondWindow.frame_white2.show()
-        #         self.KumiteSecondWindow.frame_red2.show()
-        #         self.KumiteSecondWindow.label_winner.hide()
-        #         self.winnerWhite.setAutoExclusive(False)
-        #         self.winnerWhite.setChecked(False)
-        #         self.winnerWhite.setAutoExclusive(True)
-        #         self.temp_index = False
-        # elif radio.isChecked():
         if radio.isChecked():
             if radio.text() == "Победил АКА":
-                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_win)
                 self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 880, 450))
@@ -2047,7 +2061,6 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.frame_white2.hide()
                 self.winnerWhite.setChecked(False)
             elif radio.text() == "Победил СИРО":
-                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_win)
                 self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(265, 0, 350, 420))
                 self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(0, 0, 880, 450))
@@ -2062,7 +2075,6 @@ class KumiteMainWindow_Ui(QWidget):
         radio = self.sender()
         if radio.isChecked():
             if radio.text() == "Победил АКА":
-                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.coo_frame_win)
                 self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(300, 360, 380, 420))
                 self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(300, 360, 380, 420))
@@ -2074,8 +2086,6 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.frame_white2.hide()
                 self.winnerWhite.setChecked(False)
 
-                # self.KumiteSecondWindow.screen_frame_red.show()
-                # self.KumiteSecondWindow.screen_frame_white.hide()
                 self.KumiteSecondWindow.sportsman_screen.show()
                 self.KumiteSecondWindow.screen_frame_red.show()
                 self.KumiteSecondWindow.screen_frame_white.hide()
@@ -2083,7 +2093,6 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.screen_frame_red.setGeometry(self.KumiteSWindow_Ui.coo_screen_frm_win)
 
             elif radio.text() == "Победил СИРО":
-                # self.temp_index = radio.text()
                 self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.coo_frame_win)
                 self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(300, 360, 380, 420))
                 self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(300, 360, 380, 420))
@@ -2095,8 +2104,6 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.frame_red2.hide()
                 self.winnerRed.setChecked(False)
 
-                # self.KumiteSecondWindow.screen_frame_white.show()
-                # self.KumiteSecondWindow.screen_frame_red.hide()
                 self.KumiteSecondWindow.sportsman_screen.show()
                 self.KumiteSecondWindow.screen_frame_white.show()
                 self.KumiteSecondWindow.screen_frame_red.hide()
@@ -2104,21 +2111,18 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.screen_frame_white.setGeometry(self.KumiteSWindow_Ui.coo_screen_frm_win)
 
     def onClickedR(self):
-        # self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score11.setText(radio.text())
             self.KumiteSecondWindow.label_score21.setText(radio.text())
 
     def onClickedW(self):
-        # self.show_screen()
         radio = self.sender()
         if radio.isChecked():
             self.label_score12.setText(radio.text())
             self.KumiteSecondWindow.label_score22.setText(radio.text())
 
     def penaltyButton_hmr1(self):
-        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
@@ -2127,7 +2131,6 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
 
     def penaltyButton_hmr2(self):
-        # self.show_screen()
         penaltyB_hmr = self.sender()
         if penaltyB_hmr.isChecked():
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
