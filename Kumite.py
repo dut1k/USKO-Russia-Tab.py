@@ -1,11 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, QPoint
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QHBoxLayout
-# from PyQt5.Qt import QHBoxLayout, QPoint
 from PyQt5.QtMultimedia import QSound
 from datetime import datetime, timedelta
+import styleCSS as css
+
 
 class RoundedLabel(QtWidgets.QLabel):
+    """Класс для создания круглых иконок флагов регионов"""
     def __init__(self, parent=None):
         super(RoundedLabel, self).__init__(parent)
         self.setScaledContents(True)
@@ -22,10 +24,6 @@ class RoundedLabel(QtWidgets.QLabel):
         painter.setClipPath(clip_path)
         painter.drawPixmap(0, 0, pixmap)
 
-        # # Draw grey border
-        # painter.setRenderHint(QtGui.QPainter.Antialiasing, False)
-        # painter.setPen(QtGui.QPen(QtGui.QColor(169, 169, 169), 2))
-        # painter.drawRoundedRect(1, 1, self.width() - 2, self.height() - 2, 40, 40)
         painter.end()
 
         super(RoundedLabel, self).setPixmap(mask)
@@ -33,33 +31,13 @@ class RoundedLabel(QtWidgets.QLabel):
 
 class KumiteSWindow_Ui(object):
     def __init__(self):
-        self.font_b_60 = QtGui.QFont()
-        self.font_b_60.setFamily("Gotham-Bold")
-        self.font_b_60.setPixelSize(60)
-
-        self.font_m_60 = QtGui.QFont()
-        self.font_m_60.setFamily("Gotham-Medium")
-        self.font_m_60.setPixelSize(60)
-
-        self.font_m_100 = QtGui.QFont()
-        self.font_m_100.setFamily("Gotham-Medium")
-        self.font_m_100.setPixelSize(100)
-
-        self.font_m_530 = QtGui.QFont()
-        self.font_m_530.setFamily("Gotham-Medium")
-        self.font_m_530.setPixelSize(530)
-
-        self.font_l_150 = QtGui.QFont()
-        self.font_l_150.setFamily("Gotham-Light")
-        self.font_l_150.setPixelSize(150)
-
-        self.font_l_190 = QtGui.QFont()
-        self.font_l_190.setFamily("Gotham-Light")
-        self.font_l_190.setPixelSize(190)
-
-        self.font_b_250 = QtGui.QFont()
-        self.font_b_250.setFamily("Gotham-Bold")
-        self.font_b_250.setPixelSize(250)
+        self.font_b_60 = css.font_b_60
+        self.font_m_60 = css.font_m_60
+        self.font_m_100 = css.font_m_100
+        self.font_m_530 = css.font_m_530
+        self.font_l_150 = css.font_l_150
+        self.font_l_190 = css.font_l_190
+        self.font_b_250 = css.font_b_250
 
         self.coo_frame_red2_std = QtCore.QRect(40, 200, 880, 800)
         self.coo_frame_white2_std = QtCore.QRect(1000, 200, 880, 800)
@@ -564,66 +542,7 @@ class Frame_Header(QWidget):
         super(Frame_Header, self).__init__()
         self.parent = parent
 
-        self.btn_style_2 = """
-            QPushButton {
-                color: #555B6E;
-                background-color: none;
-                border: none;
-                }
-            QPushButton:hover {
-                border: 1px solid black;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: none;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
-
-        self.combo_style_1 = """
-        QComboBox {
-            border-top: none;
-            border-bottom: 1px solid gray;
-            border-left: none;
-            border-right: none;
-            padding: 1px 18px 1px 3px;
-        }
-
-        QComboBox:editable {
-            background: white;
-        }
-
-        QComboBox:!editable, QComboBox::drop-down:editable {
-             background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                         stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                         stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-            font-family: Gotham-Light;
-            font-size: 15px;
-        }
-
-        QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                        stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                        stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-        }
-
-        QComboBox:on { 
-            padding-top: 3px;
-            padding-left: 4px;
-        }
-
-        QComboBox::drop-down {
-            subcontrol-position: right center;
-            width: 1px;
-            border: none;
-        }
-        QComboBox QAbstractItemView {
-            border: none;
-            selection-background-color: #3e6ae1;
-        }
-        """
+        self.btn_style_header = css.btn_style_header
 
         self.font_l_13 = QtGui.QFont()
         self.font_l_13.setFamily("Gotham-Light")
@@ -672,12 +591,12 @@ class Frame_Header(QWidget):
 
         self.btn_showMinimized = QtWidgets.QPushButton("_", self.frame_btn)
         self.btn_showMinimized.setGeometry(QtCore.QRect(0, 4, 24, 24))
-        self.btn_showMinimized.setStyleSheet(self.btn_style_2)
+        self.btn_showMinimized.setStyleSheet(self.btn_style_header)
         self.btn_showMinimized.setFont(self.font_l_13)
         self.btn_showMinimized.clicked.connect(self.btn_showMinimized_clicked)
 
         self.btn_closeWin = QtWidgets.QPushButton("×", self.frame_btn)
-        self.btn_closeWin.setStyleSheet(self.btn_style_2)
+        self.btn_closeWin.setStyleSheet(self.btn_style_header)
         self.btn_closeWin.setFont(self.font_l_22)
         self.btn_closeWin.setGeometry(QtCore.QRect(23, 4, 24, 24))
 
@@ -841,136 +760,11 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
-        self.btn_style_1 = """
-            QPushButton {
-                border: 2px solid #3e6ae1;
-                color: #3e6ae1;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 3px solid white;
-                background-color: #3e6ae1;
-                color: white;                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-        """
+        self.btn_style_1 = css.btn_style_1
 
-        self.btn_style_2 = """
-            QPushButton {
-                border: 2px solid #555B6E;
-                color: #555B6E;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
+        self.btn_style_2 = css.btn_style_2
 
-        self.combo_style_1 = """
-            QComboBox {
-                border-top: none;
-                border-bottom: 1px solid gray;
-                border-left: none;
-                border-right: none;
-                padding: 1px 18px 1px 3px;
-            }
-            
-            QComboBox:editable {
-                background: white;
-            }
-            
-            QComboBox:!editable, QComboBox::drop-down:editable {
-                 background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                             stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                             stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-                font-family: Gotham-Light;
-                font-size: 15px;
-            }
-            
-            /* QComboBox gets the "on" state when the popup is open */
-            QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-                background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                            stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                            stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-            }
-            
-            QComboBox:on { /* shift the text when the popup opens */
-                padding-top: 3px;
-                padding-left: 4px;
-            }
-            
-            QComboBox::drop-down {
-                subcontrol-position: right center;
-                width: 1px;
-                border: none;
-            }
-            QComboBox QAbstractItemView {
-                border: none;
-                selection-background-color: #3e6ae1;
-            }
-        """
-
-        self.combo_style_2 = """
-        QLineEdit {
-                background-color: #FAF9F9;
-                color: #555B6E;
-                }
-            QLineEdit:hover {
-                background-color: #fdfdfd;
-                color: black;
-                }  
-        QComboBox {
-                border: 1px solid gray;
-                background-color: #FAF9F9;
-                color: #555B6E;
-                }
-            QComboBox:hover {
-                border: 1px solid #3e6ae1;
-                background-color: #fdfdfd;
-                color: black;
-                }
-            QComboBox::drop-down {
-                background-color: white;
-                width: 30px;
-                border: none;
-            }
-            QComboBox::drop-down:pressed, QComboBox::drop-down:focus {
-                background-color: #cce4f7;
-            }
-            QComboBox::down-arrow {
-                image: url(:/Images/icon_regions/flags/QComboBox_down_arrow.svg);
-                width: 20px;
-                height: 20px;
-            }
-            /* ===================== focused row ===================== */
-            QComboBox QAbstractItemView {
-                border: none;
-                selection-background-color: #3e6ae1;
-            }
-            /* ===================== vertical scroll ===================== */
-            /* = шкала = */
-            QScrollBar:vertical {
-                background-color: none;
-                border: 1px transparent gray;
-                width: 5px;
-            }
-            /* = ползунок = */
-            QScrollBar::handle:vertical {
-                background-color: #3e6ae1;         
-                min-height: 5px;
-                border-radius: 0;
-            }
-        """
+        self.combo_style_2 = css.combo_style_2
 
         self.LEdit_style_1 = """
             QLineEdit {
@@ -989,14 +783,12 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.LEdit_style_2 = """
             QLineEdit {
-                
                 background-color: grey;
                 color: #555B6E;
                 font-size: 20px;
                 font-family: Gotham-Light;
                 }
             QLineEdit:hover {
-                
                 background-color: #fdfdfd;
                 color: black;
                 }
@@ -1565,7 +1357,7 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.frm_spman_white.setGeometry(QtCore.QRect(0, 420, 450, 140))
         self.frm_spman_white.setStyleSheet("background-color: None;")
-        self.frm_spman_white.setObjectName("frm_spman_red")
+        self.frm_spman_white.setObjectName("frm_spman_white")
 
         self.label_name_white_1.setGeometry(QtCore.QRect(50, 0, 350, 40))
         self.label_name_white_1.setFont(self.font_m_33)
@@ -1585,11 +1377,6 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
 
-        # self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
-        # self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
-        # self.lineEdit_region_white_1.setFont(self.font_l_20)
-        # self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
-        # self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
         self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
         self.lineEdit_region_white_1.setStyleSheet(self.combo_style_2)
         self.lineEdit_region_white_1.setFont(self.font_l_13)
@@ -1617,11 +1404,6 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
-        # self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
-        # self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
-        # self.lineEdit_region_red_1.setFont(self.font_l_20)
-        # self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
-        # self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
         self.lineEdit_region_red_1.setStyleSheet(self.combo_style_2)
         self.lineEdit_region_red_1.setFont(self.font_l_13)
@@ -1954,7 +1736,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.age_1.setFont(self.font_l_13)
         self.age_1.setStyleSheet("color: grey;")
 
-        self.matchName12.setText('Возраст'
+        self.matchName12.setText('Возраст')
         if len(self.KumiteSecondWindow.matchName21.text().split(', ')) > 1:
             self.KumiteSecondWindow.matchName21.setText(self.KumiteSecondWindow.matchName21.text().split(', ')[0])
 
@@ -2023,10 +1805,13 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_name_white_1.setText("ФАМИЛИЯ")
         self.label_region_white_1.setText("регион")
         self.lineEdit_name_red_1.clear()
-        self.lineEdit_region_red_1.clear()
         self.lineEdit_name_white_1.clear()
-        self.lineEdit_region_white_1.clear()
-
+        try:
+            self.lineEdit_region_red_1.lineEdit().clear()
+            self.lineEdit_region_white_1.lineEdit().clear()
+        except:
+            self.lineEdit_region_red_1.clear()
+            self.lineEdit_region_white_1.clear()
         self.score_red_0.setChecked(True)
         self.score_white_0.setChecked(True)
 

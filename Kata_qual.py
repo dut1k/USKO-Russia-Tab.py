@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-# from PyQt5.Qt import *
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
+import styleCSS as css
 
 
 class KataQual_SecondWindow_Ui(object):
@@ -149,66 +149,7 @@ class Frame_Header(QWidget):
         super(Frame_Header, self).__init__()
         self.parent = parent
 
-        self.btn_style_2 = """
-            QPushButton {
-                color: #555B6E;
-                background-color: none;
-                border: none;
-                }
-            QPushButton:hover {
-                border: 1px solid black;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: none;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
-
-        self.combo_style_1 = """
-        QComboBox {
-            border-top: none;
-            border-bottom: 1px solid gray;
-            border-left: none;
-            border-right: none;
-            padding: 1px 18px 1px 3px;
-        }
-
-        QComboBox:editable {
-            background: white;
-        }
-
-        QComboBox:!editable, QComboBox::drop-down:editable {
-             background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                         stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-                                         stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-            font-family: Gotham-Light;
-            font-size: 15px;
-        }
-
-        QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-            background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                                        stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-                                        stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-        }
-
-        QComboBox:on { 
-            padding-top: 3px;
-            padding-left: 4px;
-        }
-
-        QComboBox::drop-down {
-            subcontrol-position: right center;
-            width: 1px;
-            border: none;
-        }
-        QComboBox QAbstractItemView {
-            border: none;
-            selection-background-color: #3e6ae1;
-        }
-        """
+        self.btn_style_header = css.btn_style_header
 
         self.font_l_13 = QtGui.QFont()
         self.font_l_13.setFamily("Gotham-Light")
@@ -257,12 +198,12 @@ class Frame_Header(QWidget):
 
         self.btn_showMinimized = QtWidgets.QPushButton("_", self.frame_btn)
         self.btn_showMinimized.setGeometry(QtCore.QRect(0, 4, 24, 24))
-        self.btn_showMinimized.setStyleSheet(self.btn_style_2)
+        self.btn_showMinimized.setStyleSheet(self.btn_style_header)
         self.btn_showMinimized.setFont(self.font_l_13)
         self.btn_showMinimized.clicked.connect(self.btn_showMinimized_clicked)
 
         self.btn_closeWin = QtWidgets.QPushButton("×", self.frame_btn)
-        self.btn_closeWin.setStyleSheet(self.btn_style_2)
+        self.btn_closeWin.setStyleSheet(self.btn_style_header)
         self.btn_closeWin.setFont(self.font_l_22)
         self.btn_closeWin.setGeometry(QtCore.QRect(23, 4, 24, 24))
 
@@ -336,10 +277,10 @@ class KataQual_MainWindow_Ui(QWidget):
         self.horizon_line_red = QtWidgets.QFrame(self.frame_red1)
         self.horizon_line_white = QtWidgets.QFrame(self.frame_white1)
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.frame_red1, placeholderText="АКА. Введите имя спортсмена")
-        self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.frame_red1, placeholderText="АКА. Введите регион")
         self.lineEdit_name_white_1 = QtWidgets.QLineEdit(self.frame_white1,
                                                          placeholderText="СИРО. Введите имя спортсмена")
-        self.lineEdit_region_white_1 = QtWidgets.QLineEdit(self.frame_white1, placeholderText="СИРО. Введите регион")
+        self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.frame_red1)
+        self.lineEdit_region_white_1 = QtWidgets.QComboBox(self.frame_white1)
         self.frame_winner = QtWidgets.QFrame(self.Form21)
         self.winnerRed = QtWidgets.QRadioButton("Победил АКА", self.frame_winner)
         self.winnerWhite = QtWidgets.QRadioButton("Победил СИРО", self.frame_winner)
@@ -349,70 +290,13 @@ class KataQual_MainWindow_Ui(QWidget):
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
-        self.btn_style_1 = """
-            QPushButton {
-                border: 2px solid #3e6ae1;
-                color: #3e6ae1;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 3px solid white;
-                background-color: #3e6ae1;
-                color: white;                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-        """
+        self.btn_style_1 = css.btn_style_1
 
-        self.btn_style_2 = """
-            QPushButton {
-                border: 2px solid #555B6E;
-                color: #555B6E;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
+        self.btn_style_2 = css.btn_style_2
 
-        self.LEdit_style_1 = """
-            QLineEdit {
-                border: none;
-                border-radius: none;
-                border-bottom: 1px solid grey;
-                background-color: #FAF9F9;
-                color: #555B6E;
-                }
-            QLineEdit:hover {
-                border-bottom: 2px solid #3e6ae1;
-                background-color: #fdfdfd;
-                color: black;
-                }
-        """
+        self.LEdit_style_1 = css.LEdit_style_1
 
-        self.LEdit_style_2 = """
-            QLineEdit {
-                border: none;
-                border-radius: none;
-                border-bottom: 1px solid grey;
-                background-color: white;
-                color: #555B6E;
-                }
-            QLineEdit:hover {
-                border-bottom: 2px solid #3e6ae1;
-                background-color: #fdfdfd;
-                color: black;
-                }
-        """
+        self.combo_style_2 = css.combo_style_2
 
         self.font_l_12 = QtGui.QFont()
         self.font_l_12.setFamily("Gotham-Light")
@@ -454,7 +338,6 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.matchName1.setGeometry(QtCore.QRect(0, 25, 500, 30))
         self.matchName1.setStyleSheet(self.LEdit_style_1)
-        self.matchName1.setFont(self.font_l_20)
         self.matchName1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.matchName1.setObjectName("matchName1")
 
@@ -567,27 +450,23 @@ class KataQual_MainWindow_Ui(QWidget):
         self.horizon_line_white.setStyleSheet("background-color: grey;")
 
         self.lineEdit_name_red_1.setGeometry(QtCore.QRect(30, 170, 340, 30))
-        self.lineEdit_name_red_1.setStyleSheet(self.LEdit_style_2)
-        self.lineEdit_name_red_1.setFont(self.font_l_20)
+        self.lineEdit_name_red_1.setStyleSheet(self.LEdit_style_1)
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(50, 210, 300, 30))
-        self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_2)
-        self.lineEdit_region_red_1.setFont(self.font_l_20)
-        self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_red_1.setStyleSheet(self.combo_style_2)
+        self.lineEdit_region_red_1.setFont(self.font_l_13)
         self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
 
         self.lineEdit_name_white_1.setGeometry(QtCore.QRect(30, 170, 340, 30))
         self.lineEdit_name_white_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_name_white_1.setFont(self.font_l_20)
         self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
 
         self.lineEdit_region_white_1.setGeometry(QtCore.QRect(50, 210, 300, 30))
-        self.lineEdit_region_white_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_region_white_1.setFont(self.font_l_20)
-        self.lineEdit_region_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        self.lineEdit_region_white_1.setStyleSheet(self.combo_style_2)
+        self.lineEdit_region_white_1.setFont(self.font_l_13)
         self.lineEdit_region_white_1.setObjectName("lineEdit_region_white_1")
 
         self.frame_winner.setGeometry(QtCore.QRect(145, 100, 610, 25))
@@ -672,9 +551,13 @@ class KataQual_MainWindow_Ui(QWidget):
         self.label_name_white_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_region_white_1.setText("регион")
         self.lineEdit_name_red_1.clear()
-        self.lineEdit_region_red_1.clear()
         self.lineEdit_name_white_1.clear()
-        self.lineEdit_region_white_1.clear()
+        try:
+            self.lineEdit_region_red_1.lineEdit().clear()
+            self.lineEdit_region_white_1.lineEdit().clear()
+        except:
+            self.lineEdit_region_red_1.clear()
+            self.lineEdit_region_white_1.clear()
         self.winnerRed.setAutoExclusive(False)
         self.winnerWhite.setAutoExclusive(False)
         self.winnerRed.setChecked(False)
@@ -729,13 +612,15 @@ class KataQual_MainWindow_Ui(QWidget):
         self.name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
         self.name_white_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
         self.lineEdit_name_red_1.setText('')
-        self.lineEdit_region_red_1.setText('')
         self.lineEdit_name_white_1.setText('')
-        self.lineEdit_region_white_1.setText('')
+        try:
+            self.lineEdit_region_red_1.lineEdit().clear()
+            self.lineEdit_region_white_1.lineEdit().clear()
+        except:
+            self.lineEdit_region_red_1.clear()
+            self.lineEdit_region_white_1.clear()
         self.lineEdit_name_red_1.setPlaceholderText("АКА. Введите имя спортсмена")
-        self.lineEdit_region_red_1.setPlaceholderText("АКА. Введите регион")
         self.lineEdit_name_white_1.setPlaceholderText("СИРО. Введите имя спортсмена")
-        self.lineEdit_region_white_1.setPlaceholderText("СИРО. Введите регион")
         self.KataQual_SecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 1840, 400))
         self.KataQual_SecondWindow.frame_white2.setGeometry(QtCore.QRect(40, 600, 1840, 400))
         self.KataQual_SecondWindow.frame_red2.show()
@@ -763,13 +648,13 @@ class KataQual_MainWindow_Ui(QWidget):
         self.winnerRed.setAutoExclusive(True)
         self.winnerWhite.setAutoExclusive(True)
         self.label_name_red_1.setText(self.lineEdit_name_red_1.text())
-        self.label_region_red_1.setText(self.lineEdit_region_red_1.text())
+        self.label_region_red_1.setText(self.lineEdit_region_red_1.currentText())
         self.KataQual_SecondWindow.label_name_red_2.setText(self.lineEdit_name_red_1.text())
-        self.KataQual_SecondWindow.label_region_red_2.setText(self.lineEdit_region_red_1.text())
+        self.KataQual_SecondWindow.label_region_red_2.setText(self.lineEdit_region_red_1.currentText())
         self.label_name_white_1.setText(self.lineEdit_name_white_1.text())
-        self.label_region_white_1.setText(self.lineEdit_region_white_1.text())
+        self.label_region_white_1.setText(self.lineEdit_region_white_1.currentText())
         self.KataQual_SecondWindow.label_name_white_2.setText(self.lineEdit_name_white_1.text())
-        self.KataQual_SecondWindow.label_region_white_2.setText(self.lineEdit_region_white_1.text())
+        self.KataQual_SecondWindow.label_region_white_2.setText(self.lineEdit_region_white_1.currentText())
         self.KataQual_SecondWindow.frame_red2.setGeometry(QtCore.QRect(40, 150, 1840, 400))
         self.KataQual_SecondWindow.frame_white2.setGeometry(QtCore.QRect(40, 600, 1840, 400))
         self.KataQual_SecondWindow.frame_red2.show()

@@ -1,11 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-# from PyQt5.Qt import *
 from PyQt5.QtCore import QPoint, Qt
-# from PyQt5.QtGui import Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
+import styleCSS as css
 
 
 class KataSecondWindow_Ui(object):
+    def __init__(self):
+        self.font_m_35 = css.font_m_35
+
     def setupUi_Kata2(self, Form12):
         Form12.setObjectName("Form")
         Form12.setEnabled(True)
@@ -49,38 +51,38 @@ class KataSecondWindow_Ui(object):
 
         self.label_1.setEnabled(True)
         self.label_1.setGeometry(QtCore.QRect(70, 680, 250, 50))
-        self.label_1.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_1.setFont(self.font_m_35)
         self.label_1.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_1.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_1.setObjectName("label_1")
 
         self.label_2.setGeometry(QtCore.QRect(325, 680, 250, 50))
-        self.label_2.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_2.setFont(self.font_m_35)
         self.label_2.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_2.setObjectName("label_2")
 
         self.label_3.setGeometry(QtCore.QRect(580, 680, 250, 50))
-        self.label_3.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_3.setFont(self.font_m_35)
         self.label_3.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_3.setObjectName("label_3")
 
         self.label_4.setGeometry(QtCore.QRect(835, 680, 250, 50))
-        self.label_4.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_4.setFont(self.font_m_35)
         self.label_4.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_4.setObjectName("label_4")
 
         self.label_5.setGeometry(QtCore.QRect(1090, 680, 250, 50))
-        self.label_5.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_5.setFont(self.font_m_35)
         self.label_5.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_5.setObjectName("label_5")
 
         self.label_6.setGeometry(QtCore.QRect(1345, 680, 250, 50))
-        self.label_6.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_6.setFont(self.font_m_35)
         self.label_6.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_6.setObjectName("label_6")
 
         self.label_7.setGeometry(QtCore.QRect(1600, 680, 250, 50))
-        self.label_7.setStyleSheet("font-family: Gotham-Medium; font-size: 35px; ")
+        self.label_7.setFont(self.font_m_35)
         self.label_7.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
         self.label_7.setObjectName("label_7")
 
@@ -230,72 +232,11 @@ class Frame_Header(QWidget):
         super(Frame_Header, self).__init__()
         self.parent = parent
 
-        self.btn_style_2 = """
-            QPushButton {
-                color: #555B6E;
-                background-color: none;
-                border: none;
-                }
-            QPushButton:hover {
-                border: 1px solid black;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: none;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
+        self.btn_style_header = css.btn_style_header
 
-        # self.combo_style_1 = """
-        # QComboBox {
-        #     border: none;
-        #     border-bottom: 1px solid gray;
-        #     padding: 1px 18px 1px 3px;
-        # }
-        #
-        # QComboBox:editable {
-        #     background: white;
-        # }
-        #
-        # QComboBox:!editable, QComboBox::drop-down:editable {
-        #      background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        #                                  stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
-        #                                  stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
-        #     font-family: Gotham-Light;
-        #     font-size: 15px;
-        # }
-        #
-        # QComboBox:!editable:on, QComboBox::drop-down:editable:on {
-        #     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        #                                 stop: 0 #D3D3D3, stop: 0.4 #D8D8D8,
-        #                                 stop: 0.5 #DDDDDD, stop: 1.0 #E1E1E1);
-        # }
-        #
-        # QComboBox:on {
-        #     padding-top: 3px;
-        #     padding-left: 4px;
-        # }
-        #
-        # QComboBox::drop-down {
-        #     subcontrol-position: right center;
-        #     width: 1px;
-        #     border: none;
-        # }
-        # QComboBox QAbstractItemView {
-        #     border: none;
-        #     selection-background-color: #3e6ae1;
-        # }
-        # """
+        self.font_l_13 = css.font_l_13
 
-        self.font_l_13 = QtGui.QFont()
-        self.font_l_13.setFamily("Gotham-Light")
-        self.font_l_13.setPixelSize(13)
-
-        self.font_l_22 = QtGui.QFont()
-        self.font_l_22.setFamily("Gotham-Light")
-        self.font_l_22.setPixelSize(22)
+        self.font_l_22 = css.font_l_22
 
         self.layout = QHBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -336,12 +277,12 @@ class Frame_Header(QWidget):
 
         self.btn_showMinimized = QtWidgets.QPushButton("_", self.frame_btn)
         self.btn_showMinimized.setGeometry(QtCore.QRect(0, 4, 24, 24))
-        self.btn_showMinimized.setStyleSheet(self.btn_style_2)
+        self.btn_showMinimized.setStyleSheet(self.btn_style_header)
         self.btn_showMinimized.setFont(self.font_l_13)
         self.btn_showMinimized.clicked.connect(self.btn_showMinimized_clicked)
 
         self.btn_closeWin = QtWidgets.QPushButton("×", self.frame_btn)
-        self.btn_closeWin.setStyleSheet(self.btn_style_2)
+        self.btn_closeWin.setStyleSheet(self.btn_style_header)
         self.btn_closeWin.setFont(self.font_l_22)
         self.btn_closeWin.setGeometry(QtCore.QRect(23, 4, 24, 24))
 
@@ -440,78 +381,26 @@ class KataMainWindow_Ui(QWidget):
         self.frame_left = QtWidgets.QFrame(self.Form11)
         self.frame_right = QtWidgets.QFrame(self.Form11)
 
-        self.btn_style_1 = """
-            QPushButton {
-                border: 2px solid #3e6ae1;
-                color: #3e6ae1;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 3px solid white;
-                background-color: #3e6ae1;
-                color: white;                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-        """
+        self.btn_style_1 = css.btn_style_1
 
-        self.btn_style_2 = """
-            QPushButton {
-                border: 2px solid #555B6E;
-                color: #555B6E;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
+        self.btn_style_2 = css.btn_style_2
 
-        self.LEdit_style_1 = """
-            QLineEdit {
-                border: none;
-                border-bottom: 1px solid grey;
-                background-color: #FAF9F9;
-                color: #555B6E;
-                }
-            QLineEdit:hover {
-                border-bottom: 2px solid #3e6ae1;
-                background-color: #fdfdfd;
-                color: black;
-                }
-        """
+        self.LEdit_style_referee = css.LEdit_style_referee
+        self.LEdit_style_1 = css.LEdit_style_1
 
-        self.font_l_12 = QtGui.QFont()
-        self.font_l_12.setFamily("Gotham-Light")
-        self.font_l_12.setPixelSize(12)
+        self.label_style_1 = css.label_style_1
 
-        self.font_l_13 = QtGui.QFont()
-        self.font_l_13.setFamily("Gotham-Light")
-        self.font_l_13.setPixelSize(13)
-
-        self.font_l_16 = QtGui.QFont()
-        self.font_l_16.setFamily("Gotham-Light")
-        self.font_l_16.setPixelSize(16)
-
-        self.font_l_20 = QtGui.QFont()
-        self.font_l_20.setFamily("Gotham-Light")
-        self.font_l_20.setPixelSize(20)
-
-        self.font_m_20 = QtGui.QFont()
-        self.font_m_20.setFamily("Gotham-Medium")
-        self.font_m_20.setPixelSize(20)
-
-        self.font_l_46 = QtGui.QFont()
-        self.font_l_46.setFamily("Gotham-Light")
-        self.font_l_46.setPixelSize(46)
+        self.font_l_10 = css.font_l_10
+        self.font_l_12 = css.font_l_12
+        self.font_l_13 = css.font_l_13
+        self.font_m_13 = css.font_m_13
+        self.font_b_13 = css.font_b_13
+        self.font_l_16 = css.font_l_16
+        self.font_l_20 = css.font_l_20
+        self.font_m_20 = css.font_m_20
+        self.font_b_20 = css.font_b_20
+        self.font_m_33 = css.font_m_33
+        self.font_b_40 = css.font_b_40
 
         self.frame_bottom.setGeometry(QtCore.QRect(0, 499, 900, 1))
         self.frame_bottom.setStyleSheet("background-color: grey;")
@@ -527,13 +416,12 @@ class KataMainWindow_Ui(QWidget):
         self.frame_matchName.setObjectName("matchName")
 
         self.label_matchName1.setGeometry(QtCore.QRect(0, 0, 500, 25))
-        self.label_matchName1.setStyleSheet("font-family: Gotham-Light; font-size: 20px;")
+        self.label_matchName1.setFont(self.font_l_20)
         self.label_matchName1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_matchName1.setObjectName("label_matchName1")
 
         self.matchName1.setGeometry(QtCore.QRect(0, 25, 500, 30))
         self.matchName1.setStyleSheet(self.LEdit_style_1)
-        self.matchName1.setFont(self.font_l_20)
         self.matchName1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.matchName1.setObjectName("matchName1")
 
@@ -547,7 +435,8 @@ class KataMainWindow_Ui(QWidget):
         self.pyatnov_name.setObjectName("pyatnov_name")
 
         self.pyatnov_label.setGeometry(QtCore.QRect(100, 15, 160, 25))
-        self.pyatnov_label.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.pyatnov_label.setFont(self.font_l_13)
+        self.pyatnov_label.setStyleSheet("color: grey;")
         self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
         self.pyatnov_label.setObjectName("pyatnov_label")
 
@@ -575,14 +464,14 @@ class KataMainWindow_Ui(QWidget):
         self.btn_showData.setObjectName("btn_showData")
 
         self.label_name_red_1.setGeometry(QtCore.QRect(360, 40, 405, 100))
-        self.label_name_red_1.setStyleSheet("background-color: none; color: grey; font-family: Gotham-Medium;"
-                                            "font-size: 33px;")
+        self.label_name_red_1.setFont(self.font_m_33)
+        self.label_name_red_1.setStyleSheet("background-color: none; color: grey;")
         self.label_name_red_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_name_red_1.setObjectName("label_name_red_1")
 
         self.label_region_red_1.setGeometry(QtCore.QRect(360, 90, 405, 100))
-        self.label_region_red_1.setStyleSheet("background-color: none; color: grey; font-family: Gotham-Medium;"
-                                              "font-size: 20px;")
+        self.label_region_red_1.setFont(self.font_m_20)
+        self.label_region_red_1.setStyleSheet("background-color: none; color: grey;")
         self.label_region_red_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_region_red_1.setObjectName("label_region_red_1")
 
@@ -603,20 +492,22 @@ class KataMainWindow_Ui(QWidget):
         self.frame_sex.setObjectName("frame_sex")
 
         self.male.setGeometry(QtCore.QRect(20, 0, 40, 25))
-        self.male.setStyleSheet("font-family: Gotham-Bold; font-size: 20px;")
+        self.male.setFont(self.font_b_20)
         self.male.setObjectName("male")
 
         self.female.setGeometry(QtCore.QRect(90, 0, 40, 25))
-        self.female.setStyleSheet("font-family: Gotham-Bold; font-size: 20px;")
+        self.female.setFont(self.font_b_20)
         self.female.setObjectName("female")
 
         self.sex_1.setGeometry(QtCore.QRect(60, 0, 150, 13))
-        self.sex_1.setStyleSheet("color: black; font-family: Gotham-Bold; font-size: 13px;")
+        self.sex_1.setFont(self.font_b_13)
+        self.sex_1.setStyleSheet("color: black;")
         self.sex_1.setAlignment(QtCore.Qt.AlignCenter)
         self.sex_1.setObjectName("sex_1")
 
         self.age_1.setGeometry(QtCore.QRect(250, 0, 110, 13))
-        self.age_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.age_1.setFont(self.font_l_13)
+        self.age_1.setStyleSheet("color: grey;")
         self.age_1.setAlignment(QtCore.Qt.AlignCenter)
         self.age_1.setObjectName("age_1")
 
@@ -626,149 +517,145 @@ class KataMainWindow_Ui(QWidget):
         self.comboBox_name_red_1.setObjectName("comboBox_name_red_1")
 
         self.name_red_1.setGeometry(QtCore.QRect(400, 0, 350, 16))
-        self.name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.name_red_1.setFont(self.font_l_13)
+        self.name_red_1.setStyleSheet("color: grey;")
         self.name_red_1.setAlignment(QtCore.Qt.AlignCenter)
         self.name_red_1.setObjectName("name_red_1")
 
         self.lineEdit_name_red_1.setGeometry(QtCore.QRect(280, 350, 340, 30))
         self.lineEdit_name_red_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_name_red_1.setFont(self.font_l_20)
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(300, 400, 300, 25))
         self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_region_red_1.setFont(self.font_l_20)
         self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
 
         self.Calc_Button.setGeometry(QtCore.QRect(60, 330, 170, 45))
         self.Calc_Button.setStyleSheet(self.btn_style_1)
         self.Calc_Button.setFont(self.font_m_20)
-        # self.Calc_Button.setStyleSheet("background-color: #3e6ae1; font-family: Gotham-Medium;"
-        #                                "color: white; font-size: 20pt;")
         self.Calc_Button.setObjectName("Calc_Button")
 
         self.Clear_Button.setGeometry(QtCore.QRect(90, 385, 110, 30))
         self.Clear_Button.setStyleSheet(self.btn_style_1)
         self.Clear_Button.setFont(self.font_l_16)
-        # self.Clear_Button.setStyleSheet("background-color: #3e6ae1; font-family: Gotham-Light;"
-        #                                 "color: white; font-size: 16px;")
         self.Clear_Button.setObjectName("Clear_Button")
 
         self.heading_sum.setGeometry(QtCore.QRect(0, 60, 300, 20))
-        self.heading_sum.setStyleSheet("font-family: Gotham-Medium; font-size: 13px;")
+        self.heading_sum.setFont(self.font_m_13)
         self.heading_sum.setAlignment(QtCore.Qt.AlignCenter)
         self.heading_sum.setObjectName("heading_sum")
 
         self.label_sum.setAlignment(QtCore.Qt.AlignCenter)
         self.label_sum.setGeometry(QtCore.QRect(0, 80, 300, 130))
-        self.label_sum.setStyleSheet("background-color: None; font-family: Gotham-Light; color: grey; font-size: 20px;")
+        self.label_sum.setFont(self.font_l_20)
+        self.label_sum.setStyleSheet("background-color: None; color: grey;")
         self.label_sum.setObjectName("label_sum")
 
         self.referee_point.setGeometry(QtCore.QRect(300, 180, 300, 50))
         self.referee_point.setAlignment(QtCore.Qt.AlignCenter)
-        self.referee_point.setStyleSheet("font-family: Gotham-Bold; font-size: 40px;")
+        self.referee_point.setFont(self.font_b_40)
         self.referee_point.setObjectName("referee_point")
 
         self.label_help.setGeometry(QtCore.QRect(335, 317, 250, 13))
-        self.label_help.setStyleSheet("color: grey; font-size: 10px;")
+        self.label_help.setFont(self.font_l_10)
+        self.label_help.setStyleSheet("color: grey;")
         self.label_help.setObjectName("label_help")
 
         self.frame_referee.setGeometry(QtCore.QRect(0, 230, 900, 80))
         self.frame_referee.setStyleSheet("border: none;")
 
         self.lineEdit_referee1.setGeometry(QtCore.QRect(70, 20, 100, 60))
-        self.lineEdit_referee1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee1.setFont(self.font_l_46)
+        self.lineEdit_referee1.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee1.setInputMask('9.9')
         self.lineEdit_referee1.setText(str('0.0'))
         self.lineEdit_referee1.setObjectName("lineEdit_referee1")
 
         self.lineEdit_referee2.setGeometry(QtCore.QRect(180, 20, 100, 60))
-        self.lineEdit_referee2.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee2.setFont(self.font_l_46)
+        self.lineEdit_referee2.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee2.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee2.setInputMask('9.9')
         self.lineEdit_referee2.setText(str('0.0'))
         self.lineEdit_referee2.setObjectName("lineEdit_referee2")
 
         self.lineEdit_referee3.setGeometry(QtCore.QRect(290, 20, 100, 60))
-        self.lineEdit_referee3.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee3.setFont(self.font_l_46)
+        self.lineEdit_referee3.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee3.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee3.setInputMask('9.9')
         self.lineEdit_referee3.setText(str('0.0'))
         self.lineEdit_referee3.setObjectName("lineEdit_referee3")
 
         self.lineEdit_referee4.setGeometry(QtCore.QRect(400, 20, 100, 60))
-        self.lineEdit_referee4.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee4.setFont(self.font_l_46)
+        self.lineEdit_referee4.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee4.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee4.setInputMask('9.9')
         self.lineEdit_referee4.setText(str('0.0'))
         self.lineEdit_referee4.setObjectName("lineEdit_referee4")
 
         self.lineEdit_referee5.setGeometry(QtCore.QRect(510, 20, 100, 60))
-        self.lineEdit_referee5.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee5.setFont(self.font_l_46)
+        self.lineEdit_referee5.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee5.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee5.setInputMask('9.9')
         self.lineEdit_referee5.setText(str('0.0'))
         self.lineEdit_referee5.setObjectName("lineEdit_referee5")
 
         self.lineEdit_referee6.setGeometry(QtCore.QRect(620, 20, 100, 60))
-        self.lineEdit_referee6.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee6.setFont(self.font_l_46)
+        self.lineEdit_referee6.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee6.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee6.setInputMask('9.9')
         self.lineEdit_referee6.setText(str('0.0'))
         self.lineEdit_referee6.setObjectName("lineEdit_referee6")
 
         self.lineEdit_referee7.setGeometry(QtCore.QRect(730, 20, 100, 60))
-        self.lineEdit_referee7.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_referee7.setFont(self.font_l_46)
+        self.lineEdit_referee7.setStyleSheet(self.LEdit_style_referee)
         self.lineEdit_referee7.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_referee7.setInputMask('9.9')
         self.lineEdit_referee7.setText(str('0.0'))
         self.lineEdit_referee7.setObjectName("lineEdit_referee7")
 
         self.label_1.setGeometry(QtCore.QRect(70, 0, 100, 13))
-        self.label_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_1.setFont(self.font_l_13)
+        self.label_1.setStyleSheet("color: grey;")
         self.label_1.setAlignment(QtCore.Qt.AlignCenter)
         self.label_1.setObjectName("label_1")
 
         self.label_2.setGeometry(QtCore.QRect(180, 0, 100, 13))
-        self.label_2.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_2.setFont(self.font_l_13)
+        self.label_2.setStyleSheet("color: grey;")
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
 
         self.label_3.setGeometry(QtCore.QRect(290, 0, 100, 13))
-        self.label_3.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_3.setFont(self.font_l_13)
+        self.label_3.setStyleSheet("color: grey;")
         self.label_3.setAlignment(QtCore.Qt.AlignCenter)
         self.label_3.setObjectName("label_3")
 
         self.label_4.setGeometry(QtCore.QRect(400, 0, 100, 13))
-        self.label_4.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_4.setFont(self.font_l_13)
+        self.label_4.setStyleSheet("color: grey;")
         self.label_4.setAlignment(QtCore.Qt.AlignCenter)
         self.label_4.setObjectName("label_4")
 
         self.label_5.setGeometry(QtCore.QRect(510, 0, 100, 13))
-        self.label_5.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_5.setFont(self.font_l_13)
+        self.label_5.setStyleSheet("color: grey;")
         self.label_5.setAlignment(QtCore.Qt.AlignCenter)
         self.label_5.setObjectName("label_5")
 
         self.label_6.setGeometry(QtCore.QRect(620, 0, 100, 13))
-        self.label_6.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_6.setFont(self.font_l_13)
+        self.label_6.setStyleSheet("color: grey;")
         self.label_6.setAlignment(QtCore.Qt.AlignCenter)
         self.label_6.setObjectName("label_6")
 
         self.label_7.setGeometry(QtCore.QRect(730, 0, 100, 13))
-        self.label_7.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.label_7.setFont(self.font_l_13)
+        self.label_7.setStyleSheet("color: grey;")
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
-
 
         # self.comboBox_age.raise_()
         # self.frame_sex.raise_()
@@ -825,39 +712,25 @@ class KataMainWindow_Ui(QWidget):
             text = None
         else:
             if sender == self.lineEdit_referee1:
-                self.KataSecondWindow.input_referee1.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee1.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee1.setText(text)
             elif sender == self.lineEdit_referee2:
-                self.KataSecondWindow.input_referee2.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee2.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee2.setText(text)
             elif sender == self.lineEdit_referee3:
-                self.KataSecondWindow.input_referee3.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee3.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee3.setText(text)
             elif sender == self.lineEdit_referee4:
-                self.KataSecondWindow.input_referee4.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee4.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee4.setText(text)
             elif sender == self.lineEdit_referee5:
-                self.KataSecondWindow.input_referee5.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee5.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee5.setText(text)
             elif sender == self.lineEdit_referee6:
-                self.KataSecondWindow.input_referee6.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee6.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee6.setText(text)
             elif sender == self.lineEdit_referee7:
-                self.KataSecondWindow.input_referee7.setStyleSheet("background-color: white;"
-                                                                   "font-family: Gotham-Medium; color: black;"
-                                                                   "font-size: 150px; text-align: left")
+                self.KataSecondWindow.input_referee7.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee7.setText(text)
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,

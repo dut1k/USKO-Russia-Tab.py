@@ -10,6 +10,7 @@ import re
 import datetime
 import resources
 from os import listdir
+import styleCSS as css
 
 
 class Ui_Form0(object):
@@ -39,62 +40,13 @@ class Ui_Form0(object):
         self.sponsored_by = QtWidgets.QLabel(self.frame_logo)
         self.legend = QtWidgets.QLabel(Form0)
 
-        self.btn_style_1 = """
-            QPushButton {
-                border: 2px solid #3e6ae1;
-                color: #3e6ae1;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 3px solid white;
-                background-color: #3e6ae1;
-                color: white;
-                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:disabled {
-                border: 3px solid #FAF9F9;
-                background-color:#edede9;
-                color: #dad7cd;
-                }
-        """
-
-        self.btn_style_2 = """
-            QPushButton {
-                border: 2px solid #555B6E;
-                color: #555B6E;
-                background-color: none;
-                }
-            QPushButton:hover {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #555B6E;
-                color: white;
-                }
-        """
-
-        self.font_l_15 = QtGui.QFont()
-        self.font_l_15.setFamily("Gotham-Light")
-        self.font_l_15.setPixelSize(15)
-
-        self.font_m_15 = QtGui.QFont()
-        self.font_m_15.setFamily("Gotham-Medium")
-        self.font_m_15.setPixelSize(15)
-
-        self.font_l_20 = QtGui.QFont()
-        self.font_l_20.setFamily("Gotham-Light")
-        self.font_l_20.setPixelSize(20)
-
-        self.font_m_35 = QtGui.QFont()
-        self.font_m_35.setFamily("Gotham-Medium")
-        self.font_m_35.setPixelSize(35)
+        self.btn_style_1 = css.btn_style_1
+        self.btn_style_2 = css.btn_style_2
+        self.font_l_12 = css.font_l_12
+        self.font_l_15 = css.font_l_15
+        self.font_m_15 = css.font_m_15
+        self.font_l_20 = css.font_l_20
+        self.font_m_35 = css.font_m_35
 
         # для придания стиля выпадающему списку во всех случаях использую этот способ,
         # помещаю combo_box в прозрачный frame
@@ -121,33 +73,21 @@ class Ui_Form0(object):
         self.btn_select_file.setGeometry(QtCore.QRect(60, 50, 240, 30))
         self.btn_select_file.setToolTip('Можно загрузить файл со сводными списками в Excel')
         self.btn_select_file.setStyleSheet(self.btn_style_2)
-        # font = QtGui.QFont()
-        # font.setFamily("Gotham-Medium")
-        # font.setPixelSize(15)
         self.btn_select_file.setFont(self.font_m_15)
         self.btn_select_file.setObjectName("btn_select_file")
 
         self.btn_Kata_qual.setGeometry(QtCore.QRect(100, 350, 350, 50))
         self.btn_Kata_qual.setStyleSheet(self.btn_style_1)
-        # font = QtGui.QFont()
-        # font.setFamily("Gotham-Medium")
-        # font.setPixelSize(35)
         self.btn_Kata_qual.setFont(self.font_m_35)
         self.btn_Kata_qual.setObjectName("btn_Kata_qual")
 
         self.btn_Kata_final.setGeometry(QtCore.QRect(100, 410, 350, 50))
         self.btn_Kata_final.setStyleSheet(self.btn_style_1)
-        # font = QtGui.QFont()
-        # font.setFamily("Gotham-Medium")
-        # font.setPixelSize(35)
         self.btn_Kata_final.setFont(self.font_m_35)
         self.btn_Kata_final.setObjectName("btn_Kata_final")
 
         self.btn_Kumite.setGeometry(QtCore.QRect(500, 350, 200, 50))
         self.btn_Kumite.setStyleSheet(self.btn_style_1)
-        # font = QtGui.QFont()
-        # font.setFamily("Gotham-Medium")
-        # font.setPixelSize(35)
         self.btn_Kumite.setFont(self.font_m_35)
         self.btn_Kumite.setObjectName("btn_Kumite")
 
@@ -708,9 +648,11 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.show_with_load_file_interface()
                 return
             else:
-                self.show_withOut_load_file_interface()
+                if not e:
+                    e = 'Список спортсменов не выбран'
+                self.status_file.setText(f'select_file. <b>Ошибка:</b> {e}')
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
-                self.status_file.setText(f'<b>Ошибка:</b> {e}')
+                self.show_withOut_load_file_interface()
                 return
 
     def show_withOut_load_file_interface(self):
@@ -1591,9 +1533,9 @@ class MenuWindow(QWidget, Ui_Form0):
                  self.sportsmen_dict['combo_box'][i] == self.ui_kataQual.pyatnov_name.currentText()][0]
 
         self.ui_kataQual.lineEdit_name_red_1.setText(self.sportsmen_dict['aka_short'][value])
-        self.ui_kataQual.lineEdit_region_red_1.setText(self.sportsmen_dict['region_aka'][value])
+        self.ui_kataQual.lineEdit_region_red_1.lineEdit().setText(self.sportsmen_dict['region_aka'][value])
         self.ui_kataQual.lineEdit_name_white_1.setText(self.sportsmen_dict['siro_short'][value])
-        self.ui_kataQual.lineEdit_region_white_1.setText(self.sportsmen_dict['region_siro'][value])
+        self.ui_kataQual.lineEdit_region_white_1.lineEdit().setText(self.sportsmen_dict['region_siro'][value])
         # self.ui_kataQual.lineEdit_name_red_1.setText(''.join([name.replace('a12', '').split('a13')[0],
         #                                                       ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
         # self.ui_kataQual.lineEdit_region_red_1.setText(name.split('a11')[1])
@@ -1608,7 +1550,7 @@ class MenuWindow(QWidget, Ui_Form0):
         # это конструктор имя, состоящий из Фамилии и первого символа Имя
         self.ui_kataQual.lineEdit_name_red_1.setText(''.join([name.replace('a12', '').split('a13')[0],
                                                               ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        self.ui_kataQual.lineEdit_region_red_1.setText(name.split('a11')[1])
+        self.ui_kataQual.lineEdit_region_red_1.lineEdit().setText(name.split('a11')[1])
 
     def setLabelRedkataFinal(self):
         name = self.df_Single_list[self.x].get(self.ui_kataFinal.comboBox_name_red_1.currentText())
@@ -1621,7 +1563,7 @@ class MenuWindow(QWidget, Ui_Form0):
         name = str(self.df_Single_list[self.x].get(self.ui_kataQual.comboBox_name_white_1.currentText()))
         self.ui_kataQual.lineEdit_name_white_1.setText(''.join([name.replace('a12', '').split('a13')[0],
                                                                 ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
-        self.ui_kataQual.lineEdit_region_white_1.setText(name.split('a11')[1])
+        self.ui_kataQual.lineEdit_region_white_1.lineEdit().setText(name.split('a11')[1])
 
     def setLabelRedKumite(self):
         try:
@@ -1635,8 +1577,7 @@ class MenuWindow(QWidget, Ui_Form0):
             self.ui_kumite.lineEdit_name_red_1.setText(
                 ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
             # self.ui_kumite.lineEdit_region_red_1.setText(name.split('a11')[1])
-            edit_red = self.ui_kumite.lineEdit_region_red_1.lineEdit()
-            edit_red.setText(name.split('a11')[1])
+            self.ui_kumite.lineEdit_region_red_1.lineEdit().setText(name.split('a11')[1])
         except Exception as e:
             self.show_withOut_load_file_interface()
             self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
@@ -1654,8 +1595,7 @@ class MenuWindow(QWidget, Ui_Form0):
             self.ui_kumite.lineEdit_name_white_1.setText(
                 ''.join([name.replace('a12', '').split('a13')[0], ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
             # self.ui_kumite.lineEdit_region_white_1.setText(name.split('a11')[1])
-            edit_white = self.ui_kumite.lineEdit_region_white_1.lineEdit()
-            edit_white.setText(name.split('a11')[1])
+            self.ui_kumite.lineEdit_region_white_1.lineEdit().setText(name.split('a11')[1])
         except Exception as e:
             self.show_withOut_load_file_interface()
             self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
@@ -1693,23 +1633,38 @@ class MenuWindow(QWidget, Ui_Form0):
             self.tatamiName = ui_kumite.matchName11.text()
 
     def showKataQualWin(self):
-        self.closeAllWin()
-        self.ui_kataQual.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
-                                                self.display_height, self.display_coord_x1_secW,
-                                                self.display_coord_y1_secW)
-        self.close()
-        # if self.sportsmans_ages_dict == {}:
-        #     self.ui_kataQual.frame_sportsmans.hide()
-        # else:
-        #     self.ui_kataQual.frame_sportsmans.show()
-        if self.tatamiName != "":
+        try:
+            self.closeAllWin()
+            self.ui_kataQual.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
+                                                    self.display_height, self.display_coord_x1_secW,
+                                                    self.display_coord_y1_secW)
+            self.close()
 
-            if self.category_label:
-                self.ui_kataQual.matchName1.setText(self.tatamiName + ", " + self.category_label)
-            else:
-                self.ui_kataQual.matchName1.setText(self.tatamiName + ", Возраст")
+            if self.tatamiName != "":
+                if self.category_label:
+                    self.ui_kataQual.matchName1.setText(self.tatamiName + ", " + self.category_label)
+                else:
+                    self.ui_kataQual.matchName1.setText(self.tatamiName + ", Возраст")
+            self.ui_kataQual.setMatchName()
 
-        self.ui_kataQual.setMatchName()
+            # Заполняем списки регионов в выпадающем списке
+            lineEdit_region_white_1 = self.ui_kataQual.lineEdit_region_white_1
+            lineEdit_region_white_1.addItems([''])
+            lineEdit_region_white_1.addItems(self.flags_set)
+            edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Введите регион")
+            edit_white.setFont(self.font_l_15)
+            edit_white.setAlignment(QtCore.Qt.AlignCenter)
+            lineEdit_region_white_1.setLineEdit(edit_white)
+
+            lineEdit_region_red_1 = self.ui_kataQual.lineEdit_region_red_1
+            lineEdit_region_red_1.addItems([''])
+            lineEdit_region_red_1.addItems(self.flags_set)
+            edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Введите регион")
+            edit_red.setFont(self.font_l_15)
+            edit_red.setAlignment(QtCore.Qt.AlignCenter)
+            lineEdit_region_red_1.setLineEdit(edit_red)
+        except Exception as e:
+            print('showKataQualWin:\n', e)
 
     def showKataFinalWin(self):
         self.closeAllWin()
@@ -1732,34 +1687,37 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.setMatchName()
 
     def showKumiteWin(self):
-        self.ui_kataFinal.clearKataData()
-        self.ui_kataQual.NewCategory()
-        self.ui_kumite.reset_all(self.flags_dict)
-        self.closeAllWin()
-        self.ui_kumite.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
-                                              self.display_height, self.display_coord_x1_secW,
-                                              self.display_coord_y1_secW)
-        self.close()
-        if self.tatamiName != "":
-            self.ui_kumite.matchName11.setText(self.tatamiName)
-        self.ui_kumite.setMatchName()
+        try:
+            self.ui_kataFinal.clearKataData()
+            self.ui_kataQual.NewCategory()
+            self.ui_kumite.reset_all(self.flags_dict)
+            self.closeAllWin()
+            self.ui_kumite.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
+                                                  self.display_height, self.display_coord_x1_secW,
+                                                  self.display_coord_y1_secW)
+            self.close()
+            if self.tatamiName != "":
+                self.ui_kumite.matchName11.setText(self.tatamiName)
+            self.ui_kumite.setMatchName()
 
-        # Заполняем списки регионов в выпадающем списке
-        lineEdit_region_white_1 = self.ui_kumite.lineEdit_region_white_1
-        lineEdit_region_white_1.addItems([''])
-        lineEdit_region_white_1.addItems(self.flags_set)
-        edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Введите регион")
-        edit_white.setFont(self.font_l_15)
-        edit_white.setAlignment(QtCore.Qt.AlignCenter)
-        lineEdit_region_white_1.setLineEdit(edit_white)
+            # Заполняем списки регионов в выпадающем списке
+            lineEdit_region_white_1 = self.ui_kumite.lineEdit_region_white_1
+            lineEdit_region_white_1.addItems([''])
+            lineEdit_region_white_1.addItems(self.flags_set)
+            edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Введите регион")
+            edit_white.setFont(self.font_l_15)
+            edit_white.setAlignment(QtCore.Qt.AlignCenter)
+            lineEdit_region_white_1.setLineEdit(edit_white)
 
-        lineEdit_region_red_1 = self.ui_kumite.lineEdit_region_red_1
-        lineEdit_region_red_1.addItems([''])
-        lineEdit_region_red_1.addItems(self.flags_set)
-        edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Введите регион")
-        edit_red.setFont(self.font_l_15)
-        edit_red.setAlignment(QtCore.Qt.AlignCenter)
-        lineEdit_region_red_1.setLineEdit(edit_red)
+            lineEdit_region_red_1 = self.ui_kumite.lineEdit_region_red_1
+            lineEdit_region_red_1.addItems([''])
+            lineEdit_region_red_1.addItems(self.flags_set)
+            edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Введите регион")
+            edit_red.setFont(self.font_l_15)
+            edit_red.setAlignment(QtCore.Qt.AlignCenter)
+            lineEdit_region_red_1.setLineEdit(edit_red)
+        except Exception as e:
+            print('showKumiteWin:\n', e)
 
     def closeAllWin(self):
         self.ui_kumite.closeSecondWin()
@@ -1876,26 +1834,13 @@ class MenuWindow(QWidget, Ui_Form0):
 
 
 class dialogWindow_Ui(object):
-    def setupUi_dialog(self, Dialog):
-        self.btn_style_3 = """
-            QPushButton {
-                border: 2px solid #3e6ae1;
-                color: #3e6ae1;
-                background-color: none;
-                font-family: Gotham-Light;
-                font-size: 15px;
-                }
-            QPushButton:hover {
-                border: 3px solid white;
-                background-color: #3e6ae1;
-                color: white;                }
-            QPushButton:pressed {
-                border: 1px solid white;
-                background-color: #FAF9F9;
-                color: black;
-                }
-            """
+    def __init__(self):
+        self.font_l_12 = css.font_l_12
+        self.font_l_15 = css.font_l_15
+        self.font_l_20 = css.font_l_20
+        self.btn_style_1 = css.btn_style_1
 
+    def setupUi_dialog(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.setFixedSize(400, 120)
         Dialog.setStyleSheet("background-color: white;")
@@ -1903,31 +1848,25 @@ class dialogWindow_Ui(object):
 
         self.btn_OK = QtWidgets.QPushButton("OK", Dialog)
         self.btn_OK.setGeometry(QtCore.QRect(95, 70, 100, 32))
-        self.btn_OK.setStyleSheet(self.btn_style_3)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(30)
-        self.btn_OK.setFont(font)
+        self.btn_OK.setStyleSheet(self.btn_style_1)
+        self.btn_OK.setFont(self.font_l_15)
 
         self.btn_CANCEL = QtWidgets.QPushButton("CANCEL", Dialog)
         self.btn_CANCEL.setGeometry(QtCore.QRect(205, 70, 100, 32))
-        self.btn_CANCEL.setStyleSheet(self.btn_style_3)
-        font = QtGui.QFont()
-        font.setFamily("Gotham-Light")
-        font.setPixelSize(30)
-        self.btn_CANCEL.setFont(font)
+        self.btn_CANCEL.setStyleSheet(self.btn_style_1)
+        self.btn_CANCEL.setFont(self.font_l_15)
 
         self.btn_CANCEL.clicked.connect(Dialog.close)
 
         self.label = QtWidgets.QLabel(Dialog)
         self.label.setGeometry(QtCore.QRect(0, 15, 400, 25))
-        self.label.setStyleSheet("font-family: Gotham-Light; font-size: 20px;")
+        self.label.setFont(self.font_l_20)
         self.label.setAlignment(QtCore.Qt.AlignCenter)
         self.label.setObjectName("label")
 
         self.label2 = QtWidgets.QLabel(Dialog)
         self.label2.setGeometry(QtCore.QRect(0, 40, 400, 20))
-        self.label2.setStyleSheet("font-family: Gotham-Light; font-size: 12px;")
+        self.label2.setFont(self.font_l_12)
         self.label2.setAlignment(QtCore.Qt.AlignCenter)
         self.label2.setObjectName("label")
 
