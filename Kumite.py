@@ -766,7 +766,8 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.combo_style_2 = css.combo_style_2
 
-        self.LEdit_style_1 = """
+        self.LEdit_style_1 = css.LEdit_style_1
+        """
             QLineEdit {
                 border-bottom: 1px solid grey;
                 background-color: #FAF9F9;
@@ -1505,16 +1506,17 @@ class KumiteMainWindow_Ui(QWidget):
 
         # --------------------------------------
 
-        self.frame_pyatnov.setGeometry(QtCore.QRect(0, 500, 900, 50))
+        self.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 50))
         self.frame_pyatnov.setStyleSheet("background-color: None;")
         self.frame_pyatnov.setObjectName("frame_pyatnov")
 
         self.pyatnov_name.setEnabled(False)
-        self.pyatnov_name.setGeometry(QtCore.QRect(270, 15, 390, 25))
-        self.pyatnov_name.setFont(self.font_l_12)
+        self.pyatnov_name.setGeometry(QtCore.QRect(270, 12, 390, 25))
+        self.pyatnov_name.setStyleSheet(self.combo_style_2)
+        self.pyatnov_name.setFont(self.font_l_16)
         self.pyatnov_name.setObjectName("pyatnov_name")
 
-        self.pyatnov_label.setGeometry(QtCore.QRect(150, 15, 110, 25))
+        self.pyatnov_label.setGeometry(QtCore.QRect(150, 12, 110, 25))
         self.pyatnov_label.setFont(self.font_l_13)
         self.pyatnov_label.setStyleSheet("color: grey;")
         self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)

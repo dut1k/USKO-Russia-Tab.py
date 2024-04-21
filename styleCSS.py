@@ -172,13 +172,16 @@ QComboBox {
         width: 30px;
         border: none;
     }
-    QComboBox::drop-down:pressed, QComboBox::drop-down:focus {
+    QComboBox::drop-down:pressed, QComboBox::drop-down:focus , QComboBox::drop-down:hover {
         background-color: #cce4f7;
     }
     QComboBox::down-arrow {
         image: url(:/Images/icon_regions/flags/QComboBox_down_arrow.svg);
         width: 20px;
         height: 20px;
+    }
+    QComboBox::down-arrow:on {
+        image: url(:/Images/icon_regions/flags/QComboBox_down_arrow_on.svg);
     }
     /* ===================== focused row ===================== */
     QComboBox QAbstractItemView {
@@ -203,6 +206,22 @@ QComboBox {
         color: black;
         border-radius: 0;
         border-left: 1px solid red;
+    }
+    QComboBox:disabled {
+        border: none;
+        background-color:#edede9;
+        color: grey;
+    }
+    QLineEdit:disabled {
+        border: none;
+        background-color:#edede9;
+        color: grey;
+    }
+    QComboBox::down-arrow:disabled {
+        image: none;
+    }
+    QComboBox::drop-down:disabled {
+        background-color: #edede9;
     }
 """
 
@@ -236,7 +255,12 @@ LEdit_style_1 = """
         border-bottom: 2px solid #3e6ae1;
         background-color: #fdfdfd;
         color: black;
-        }      
+        }
+    QLineEdit:disabled {
+        border: none;
+        background-color:#edede9;
+        color: grey;
+        }
 """
 
 LEdit_style_2 = """
@@ -448,4 +472,3 @@ font_l_190.setPixelSize(190)
 font_b_250 = QtGui.QFont()
 font_b_250.setFamily("Gotham-Bold")
 font_b_250.setPixelSize(250)
-        

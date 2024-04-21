@@ -298,21 +298,13 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.combo_style_2 = css.combo_style_2
 
-        self.font_l_12 = QtGui.QFont()
-        self.font_l_12.setFamily("Gotham-Light")
-        self.font_l_12.setPixelSize(12)
+        self.font_l_12 = css.font_l_12
 
-        self.font_l_13 = QtGui.QFont()
-        self.font_l_13.setFamily("Gotham-Light")
-        self.font_l_13.setPixelSize(13)
+        self.font_l_13 = css.font_l_13
 
-        self.font_m_13 = QtGui.QFont()
-        self.font_m_13.setFamily("Gotham-Medium")
-        self.font_m_13.setPixelSize(13)
+        self.font_m_13 = css.font_m_13
 
-        self.font_l_20 = QtGui.QFont()
-        self.font_l_20.setFamily("Gotham-Light")
-        self.font_l_20.setPixelSize(20)
+        self.font_l_20 = css.font_l_20
 
         self.frame_bottom = QtWidgets.QFrame(self.Form21)
         self.frame_left = QtWidgets.QFrame(self.Form21)
@@ -414,7 +406,8 @@ class KataQual_MainWindow_Ui(QWidget):
         self.sex_1.setObjectName("sex_1")
 
         self.age_1.setGeometry(QtCore.QRect(490, 0, 110, 13))
-        self.age_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.age_1.setStyleSheet("color: grey;")
+        self.age_1.setFont(self.font_l_13)
         self.age_1.setAlignment(QtCore.Qt.AlignCenter)
         self.age_1.setObjectName("age_1")
 
@@ -488,11 +481,11 @@ class KataQual_MainWindow_Ui(QWidget):
         self.frame_pyatnov.setObjectName("frame_pyatnov")
 
         self.pyatnov_name.setEnabled(False)
-        self.pyatnov_name.setGeometry(QtCore.QRect(270, 15, 390, 25))
+        self.pyatnov_name.setGeometry(QtCore.QRect(270, 35, 390, 25))
         self.pyatnov_name.setFont(self.font_l_12)
         self.pyatnov_name.setObjectName("pyatnov_name")
 
-        self.pyatnov_label.setGeometry(QtCore.QRect(150, 15, 110, 25))
+        self.pyatnov_label.setGeometry(QtCore.QRect(150, 35, 110, 25))
         self.pyatnov_label.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
         self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
         self.pyatnov_label.setObjectName("pyatnov_label")
@@ -608,9 +601,12 @@ class KataQual_MainWindow_Ui(QWidget):
         self.winnerWhite.setChecked(False)
         self.winnerRed.setAutoExclusive(True)
         self.winnerWhite.setAutoExclusive(True)
-        self.age_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
-        self.name_red_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
-        self.name_white_1.setStyleSheet("color: grey; font-family: Gotham-Light; font-size: 13px;")
+        self.age_1.setStyleSheet("color: grey;")
+        self.age_1.setFont(self.font_l_13)
+        self.name_red_1.setStyleSheet("color: grey;")
+        self.name_red_1.setFont(self.font_l_13)
+        self.name_white_1.setStyleSheet("color: grey;")
+        self.name_white_1.setFont(self.font_l_13)
         self.lineEdit_name_red_1.setText('')
         self.lineEdit_name_white_1.setText('')
         try:
@@ -703,6 +699,7 @@ class KataQual_MainWindow_Ui(QWidget):
         self.KataQual_SecondWindow.label_winner.show()
         self.KataQual_SecondWindow.frame_red2.show()
         self.KataQual_SecondWindow.frame_white2.hide()
+        print("           setWinnerRed")
 
     def setWinnerWhite(self):
         self.KataQual_SecondWindow.frame_white2.setGeometry(QtCore.QRect(40, 350, 1840, 400))

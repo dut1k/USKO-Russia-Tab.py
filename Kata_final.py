@@ -318,7 +318,6 @@ class Frame_Header(QWidget):
         self.parent.showMinimized()
 
 
-
 class KataMainWindow_Ui(QWidget):
     def __init__(self):
         super(KataMainWindow_Ui, self).__init__()
@@ -347,7 +346,8 @@ class KataMainWindow_Ui(QWidget):
         self.comboBox_name_red_1 = QtWidgets.QComboBox(self.frame_sportsmans)
         self.name_red_1 = QtWidgets.QLabel("Выберите спортсмена", self.frame_sportsmans)
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите имя спортсмена")
-        self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите регион")
+        # self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите регион")
+        self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.Form11)
         self.frame_matchName = QtWidgets.QFrame(self.Form11)
         self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
         self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
@@ -356,6 +356,8 @@ class KataMainWindow_Ui(QWidget):
 
         self.pyatnov_label = QtWidgets.QLabel("Выберите спортсмена", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
+        self.pyatnov_kata_label = QtWidgets.QLabel("Ката", self.frame_pyatnov)
+        self.pyatnov_kata_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
         self.btn_clearData = QtWidgets.QPushButton("Очистить данные", self.Form11)
         self.btn_NewCategory = QtWidgets.QPushButton("Новая\nкатегория", self.Form11)
@@ -387,6 +389,8 @@ class KataMainWindow_Ui(QWidget):
 
         self.LEdit_style_referee = css.LEdit_style_referee
         self.LEdit_style_1 = css.LEdit_style_1
+
+        self.combo_style_2 = css.combo_style_2
 
         self.label_style_1 = css.label_style_1
 
@@ -429,16 +433,27 @@ class KataMainWindow_Ui(QWidget):
         self.frame_pyatnov.setStyleSheet("background-color: none;")
         self.frame_pyatnov.setObjectName("frame_pyatnov")
 
-        self.pyatnov_name.setEnabled(False)
-        self.pyatnov_name.setGeometry(QtCore.QRect(270, 15, 390, 25))
-        self.pyatnov_name.setFont(self.font_l_12)
-        self.pyatnov_name.setObjectName("pyatnov_name")
-
-        self.pyatnov_label.setGeometry(QtCore.QRect(100, 15, 160, 25))
+        self.pyatnov_label.setGeometry(QtCore.QRect(40, 35, 150, 25))
         self.pyatnov_label.setFont(self.font_l_13)
         self.pyatnov_label.setStyleSheet("color: grey;")
         self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
         self.pyatnov_label.setObjectName("pyatnov_label")
+
+        self.pyatnov_name.setEnabled(False)
+        self.pyatnov_name.setGeometry(QtCore.QRect(200, 35, 390, 25))
+        self.pyatnov_name.setFont(self.font_l_12)
+        self.pyatnov_name.setObjectName("pyatnov_name")
+
+        self.pyatnov_kata_label.setGeometry(QtCore.QRect(660, 35, 60, 25))
+        self.pyatnov_kata_label.setFont(self.font_l_13)
+        self.pyatnov_kata_label.setStyleSheet("color: grey;")
+        self.pyatnov_kata_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_kata_label.setObjectName("pyatnov_kata_label")
+
+        self.pyatnov_kata_name.setEnabled(False)
+        self.pyatnov_kata_name.setGeometry(QtCore.QRect(720, 35, 160, 25))
+        self.pyatnov_kata_name.setFont(self.font_l_12)
+        self.pyatnov_kata_name.setObjectName("pyatnov_kata_name")
 
         self.btn_clearData.hide()
         self.btn_clearData.setGeometry(QtCore.QRect(710, 385, 170, 30))
@@ -528,8 +543,11 @@ class KataMainWindow_Ui(QWidget):
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
 
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(300, 400, 300, 25))
-        self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
-        self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        # self.lineEdit_region_red_1.setStyleSheet(self.LEdit_style_1)
+        # self.lineEdit_region_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
+        # self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
+        self.lineEdit_region_red_1.setStyleSheet(self.combo_style_2)
+        self.lineEdit_region_red_1.setFont(self.font_l_13)
         self.lineEdit_region_red_1.setObjectName("lineEdit_region_red_1")
 
         self.Calc_Button.setGeometry(QtCore.QRect(60, 330, 170, 45))
@@ -897,6 +915,11 @@ class KataMainWindow_Ui(QWidget):
 
         self.label_name_red_1.setText("ФАМИЛИЯ")
         self.label_region_red_1.setText("регион")
+        self.lineEdit_name_red_1.clear()
+        try:
+            self.lineEdit_region_red_1.lineEdit().clear()
+        except:
+            self.lineEdit_region_red_1.clear()
 
         self.KataSecondWindow.label_sum2.setText('')
         self.KataSecondWindow.input_referee1.setText('')
@@ -932,11 +955,11 @@ class KataMainWindow_Ui(QWidget):
     def setSportsmanName(self):
         self.setMatchName()
         self.label_name_red_1.setText(self.lineEdit_name_red_1.text())
-        self.label_region_red_1.setText(self.lineEdit_region_red_1.text())
+        self.label_region_red_1.setText(self.lineEdit_region_red_1.currentText())
         first_window_name_red = self.lineEdit_name_red_1.fontMetrics().\
             boundingRect(self.lineEdit_name_red_1.text()).width()
         first_window_region_red = self.lineEdit_region_red_1.fontMetrics().\
-            boundingRect(self.lineEdit_region_red_1.text()).width()
+            boundingRect(self.lineEdit_region_red_1.currentText()).width()
 
         if first_window_name_red > 145:
             n = "background-color: none; font-family: Gotham-Medium; font-size: " \
@@ -954,4 +977,4 @@ class KataMainWindow_Ui(QWidget):
             self.KataSecondWindow.label_region_red_2.setStyleSheet(
                 "background-color: None; font-family: Gotham-Medium; font-size: 53px;")
         self.KataSecondWindow.label_name_red_2.setText(self.lineEdit_name_red_1.text())
-        self.KataSecondWindow.label_region_red_2.setText(self.lineEdit_region_red_1.text())
+        self.KataSecondWindow.label_region_red_2.setText(self.lineEdit_region_red_1.currentText())
