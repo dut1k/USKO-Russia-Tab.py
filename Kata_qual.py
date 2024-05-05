@@ -706,3 +706,4 @@ class KataQual_MainWindow_Ui(QWidget):
         self.KataQual_SecondWindow.label_winner.show()
         self.KataQual_SecondWindow.frame_white2.show()
         self.KataQual_SecondWindow.frame_red2.hide()
+        print("           setWinnerWhite")

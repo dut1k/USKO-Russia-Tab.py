@@ -753,12 +753,16 @@ class KataMainWindow_Ui(QWidget):
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
                                display_coord_x1_secW, display_coord_y1_secW):
-        self.KataSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
-        self.KataSecondWindow.show()
-        self.show()
-        coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
-        coord_y1 = display_coord_y1 + (display_height - self.size().height())//2
-        self.move(coord_x1, coord_y1)
+        try:
+            self.KataSecondWindow = KataSecondWindow()
+            self.KataSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
+            self.KataSecondWindow.show()
+            self.show()
+            coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
+            coord_y1 = display_coord_y1 + (display_height - self.size().height())//2
+            self.move(coord_x1, coord_y1)
+        except Exception as e:
+            print('_______Exception calc_display_moveCoord:', e)
 
     def closeSecondWin(self):
         self.KataSecondWindow.close()

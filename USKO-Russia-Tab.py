@@ -1,9 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QFileDialog, QComboBox
 import pandas as pd
 import numpy as np
 from screeninfo import get_monitors
-from Kata_final import KataMainWindow_Ui  # KataSecondWindow
+from Kata_final import KataMainWindow_Ui, KataSecondWindow # KataSecondWindow
 from Kata_qual import KataQual_MainWindow_Ui  # KataQual_SecondWindow
 from Kumite import KumiteMainWindow_Ui  # KumiteSecondWindow
 import styleCSS as css
@@ -17,6 +18,28 @@ import win32com.client
 import threading
 import pythoncom
 import os
+
+
+# Класс для записи в потоке данных в файл excel
+# class Worker(QObject):
+class Worker(QThread):
+    finished = pyqtSignal(QtCore.QVariant)
+
+    def __init__(self, result):
+        super().__init__()
+        self.result = result
+
+    def run(self):
+        try:
+            print('              check_to_change_interface', self.result)
+            self.finished.emit(self.result)
+            # Закрываем поток
+            self.quit()
+            self.deleteLater()
+
+        except Exception as e:
+            print('_______Exception check_to_change_interface:', e)
+            self.finished.emit(str(e))
 
 
 class Ui_Form0(object):
@@ -74,7 +97,6 @@ class Ui_Form0(object):
         self.user_choice_list = list()
         self.xl = str()
         self.x = int()
-        self.loaded_file_data_type = None
 
         # создаем кнопки в Главном меню
         self.btn_select_file.setGeometry(QtCore.QRect(60, 50, 240, 30))
@@ -187,6 +209,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.sportsmans_ages_dict = {}
         self.matchName_dict = {}
         self.tatamiName = ""
+        self.sportsmans_in_teams_dict = {}
 
         self.category_label = ""
 
@@ -199,6 +222,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.sportsmen_list = None  # Для списка Пятнова
         self.pyatnov_winner = None
+        self.loaded_file_data_type = None
         self.sheet_name_aka_shiro = ''  # Название листа Aka+Shiro
         self.sheet_name_final = ''  # Название листа Финал
 
@@ -214,7 +238,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataQual = KataQual_MainWindow_Ui()  # Окно с КАТА по флажкам
         # self.ui_kataQualSecondWindow = KataQual_SecondWindow()
         self.ui_kataFinal = KataMainWindow_Ui()  # Окно с КАТА финал (по балам)
-        # self.ui_kataFinalSecondWindow = KataSecondWindow()
+        self.ui_kataFinalSecondWindow = KataSecondWindow()
         self.ui_kumite = KumiteMainWindow_Ui()  # Окно КУМИТЕ
         # self.ui_kumiteSecondWindow = KumiteSecondWindow()
         self.ui_KataQualToKataFinal = KataQualToKataFinal()  # ДИАЛ.окно из КАТА отбороч. при нажатии кнопки "КАТА ФИНАЛ"
@@ -291,9 +315,9 @@ class MenuWindow(QWidget, Ui_Form0):
         # Все окна операторов (кроме главного меню) имею кастомную панель с кнопками свернуть, закрыть.
         # выпадающий список (Frame_Header.combo) - выбор программы,
         # в которую можно перейти, тут перечислены такие методы
-        self.ui_kataQual.Frame_Header.combo.activated[str].connect(self.choiceCompitition_kataQual)
-        self.ui_kataFinal.Frame_Header.combo.activated[str].connect(self.choiceCompitition_kataFinal)
-        self.ui_kumite.Frame_Header.combo.activated[str].connect(self.choiceCompitition_Kumite)
+        self.ui_kataQual.Frame_Header.combo.activated[str].connect(self.choiceCompetition_kataQual)
+        self.ui_kataFinal.Frame_Header.combo.activated[str].connect(self.choiceCompetition_kataFinal)
+        self.ui_kumite.Frame_Header.combo.activated[str].connect(self.choiceCompetition_Kumite)
 
         # Кнопки и списки из окна Ката по флажкам,
         # отображаются только в случае, если загружен список участников из Excel
@@ -539,56 +563,48 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.font_b_13 = css.font_b_13
 
+
     # Выпадающее меню в окне Кумите с выбором видов соревнований
-    def choiceCompitition_Kumite(self):
+    def choiceCompetition_Kumite(self):
         try:
             if self.loaded_file_data_type == 'file_pyatnov':
                 self.check_to_wopf()
             if self.ui_kumite.Frame_Header.combo.currentText() == "Главное меню":
                 self.showKumiteMenu()
-                # self.showDialogWindow("kumite - Главное меню")
             elif self.ui_kumite.Frame_Header.combo.currentText() == "Ката отбороч.":
                 self.showDialogWindowKumiteToKataQual()
-                # self.showDialogWindow("kumite - Ката отбороч.")
             elif self.ui_kumite.Frame_Header.combo.currentText() == "Ката финал":
                 self.showDialogWindowKumiteToKataFinal()
-                # self.showDialogWindow("kumite - Ката финал")
         except Exception as e:
-            print('   choiceCompitition_Kumite:', e)
+            print('_______Exception choiceCompetition_Kumite:', e)
 
     # Выпадающее меню в окне Ката по флажкам с выбором видов соревнований
-    def choiceCompitition_kataQual(self):
+    def choiceCompetition_kataQual(self):
         try:
             if self.loaded_file_data_type == 'file_pyatnov':
                 self.check_to_wopf()
             if self.ui_kataQual.Frame_Header.combo.currentText() == "Главное меню":
                 self.showKataQualMenu()
-                # self.showDialogWindow("kataQual - Главное меню")
             elif self.ui_kataQual.Frame_Header.combo.currentText() == "Ката финал":
                 self.showDialogWindowKataQualToKataFinal()
-                # self.showDialogWindow("kataQual - Ката финал")
             elif self.ui_kataQual.Frame_Header.combo.currentText() == "Кумите":
                 self.showDialogWindowKataQualToKumite()
-                # self.showDialogWindow("kataQual - Кумите")
         except Exception as e:
-            print('   choiceCompitition_kataQual:', e)
+            print('_______Exception choiceCompetition_kataQual:', e)
 
     # Выпадающее меню в окне Ката финал с выбором видов соревнований
-    def choiceCompitition_kataFinal(self):
+    def choiceCompetition_kataFinal(self):
         try:
             if self.loaded_file_data_type == 'file_pyatnov':
                 self.check_to_wopf()
             if self.ui_kataFinal.Frame_Header.combo.currentText() == "Главное меню":
                 self.showKataFinalMenu()
-                # self.showDialogWindow("kataQual - Главное меню")
             elif self.ui_kataFinal.Frame_Header.combo.currentText() == "Ката отбороч.":
                 self.showDialogWindowKataFinalToKataQual()
-                # self.showDialogWindow("kataQual - Кумите")
             elif self.ui_kataFinal.Frame_Header.combo.currentText() == "Кумите":
                 self.showDialogWindowKataFinalToKumite()
-                # self.showDialogWindow("kataQual - Ката финал")
         except Exception as e:
-            print('   choiceCompitition_kataFinal:', e)
+            print('_______Exception choiceCompetition_kataFinal:', e)
 
     # Метод, очищающий все словари, списки, множества со спортсменами, импортированными их Excel
     # (применяется, если выбран неверный лист. Старые данные удаляются)
@@ -612,6 +628,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.male_label_dict = {}
         self.female_label_dict = {}
         self.sportsmans_ages_dict = {}
+        self.sportsmans_in_teams_dict = {}
         self.matchName_dict = {}
         self.df_Single_names = []
         self.df_Group_names = []
@@ -677,8 +694,9 @@ class MenuWindow(QWidget, Ui_Form0):
             if len(pyatnov_check) == len(pyatnov_lst):
                 print(111)
                 self.user_choice = 0
-                self.pyatnov_processing(sheet_lst=sheets11_list, aka_shiro=self.sheet_name_aka_shiro,
-                                        setka_num=setka_num, sheet_name_final=self.sheet_name_final)
+                # self.pyatnov_processing(sheet_lst=sheets11_list, aka_shiro=self.sheet_name_aka_shiro,
+                #                         setka_num=setka_num, sheet_name_final=self.sheet_name_final)
+                self.pyatnov_processing()
                 self.combo.hide()
                 print(222)
             # Прочие шаблоны - нужно выбрать лист соревнований
@@ -749,12 +767,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.frame_sportsmans.show()
         self.ui_kumite.frame_sportsmans.show()
 
-        self.ui_kataQual.Frame_Header.combo.model().item(1).setEnabled(True)
-        self.ui_kataQual.Frame_Header.combo.model().item(2).setEnabled(True)
-        self.ui_kataFinal.Frame_Header.combo.model().item(1).setEnabled(True)
-        self.ui_kataFinal.Frame_Header.combo.model().item(2).setEnabled(True)
-        self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(True)
-        self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(True)
+        self.frame_header_combo_enabled()
 
         self.ui_kataQual.lineEdit_name_red_1.setEnabled(True)
         self.ui_kataQual.lineEdit_region_red_1.setEnabled(True)
@@ -766,6 +779,24 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.reset_all(self.flags_dict)
         print('    show_with_load_file_interface')
+
+    def frame_header_combo_enabled(self):
+        # Отображаем все пункты в выпадающем списке Главное меню-Ката-Кумите
+        self.ui_kataQual.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kataQual.Frame_Header.combo.model().item(2).setEnabled(False)
+        self.ui_kataFinal.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kataFinal.Frame_Header.combo.model().item(2).setEnabled(False)
+        self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(False)
+
+    def frame_header_combo_disabled(self):
+        # Скрытие все пункты кроме "Главное меню" в выпадающем списке Главное меню-Ката-Кумите
+        self.ui_kataQual.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kataQual.Frame_Header.combo.model().item(2).setEnabled(False)
+        self.ui_kataFinal.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kataFinal.Frame_Header.combo.model().item(2).setEnabled(False)
+        self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(False)
+        self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(False)
 
     def show_pyatnov_kata_interface(self):
         self.btn_Kumite.setEnabled(False)
@@ -803,7 +834,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.lineEdit_name_red_1.setEnabled(False)
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(False)
 
-    def show_pyatnov_kumite_interface(self):
+    def show_pyatnov_kumite_interface(self, team=False):
         self.btn_Kumite.setEnabled(True)
         self.btn_Kata_qual.setEnabled(False)
         self.btn_Kata_final.setEnabled(False)
@@ -828,25 +859,50 @@ class MenuWindow(QWidget, Ui_Form0):
         self.user_choice = self.user_choice_list.index(self.combo.currentText())
         self.data_processing()
 
-    def pyatnov_processing(self, sheet_lst, aka_shiro, setka_num, sheet_name_final):
-        print('  _pyatnov_processing', 1)
+    def pyatnov_processing(self):
+        # Обработка excel
+        sheets11 = self.xl.book.worksheets
+        setka_num = 1000
+        aka_shiro = None
+
+        sheet_lst = []
+        for sheet in sheets11:
+            sh_t = sheet.title
+            if sheet.sheet_state == 'visible':
+                sheet_lst.append(sh_t)
+                if not sh_t.find('СЕТКА ('):
+                    sh_t_lst_index = sh_t.find('_') if sh_t.find('_') >= 0 else sh_t.find(')')
+                    setka_num = int(sh_t[7:sh_t_lst_index]) if sh_t[7:sh_t_lst_index].isdigit() else 1000
+                if not sh_t.find('Aka+Shiro'):
+                    aka_shiro = sh_t
+                if sh_t.find('ФИНАЛ') >= 0:
+                    sheet_name_final = sh_t
+        self.xl.close()
+        # Создание списков
+        if not aka_shiro:
+            self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
+            self.status_file.setText(f'Данные не загружены. Тип файла определен (Пятнов), но не найден лист <b>aka_shiro</b>')
+            self.clearDataMember()
+            self.show_withOut_load_file_interface()
+            return print('aka_shiro: Лист не найден')
+        print('  _pyatnov_processing', 1111)
         self.filename = str(self.file.split('/')[len(self.file.split('/')) - 1])
         is_semi_final = [False, False]  # [Полуфинал, Финал]
         if_final = False
-        print('  _pyatnov_processing', 2)
+        print('  _pyatnov_processing 2')
         if self.file:
             try:
-                print('  _pyatnov_processing', 3)
+                print('  _pyatnov_processing 3')
                 self.clearDataMember()
 
-                print('  _pyatnov_processing', 4)
+                print('  _pyatnov_processing 4')
                 print(self.file)
                 # self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
-                print('  _pyatnov_processing', '4.0')
+                print('  _pyatnov_processing 4.0')
 
                 competition_data = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols='I:L',
                                                  header=8, nrows=3, names=['I', 'J', 'K', 'L'])
-                print('  _pyatnov_processing', 4.1)
+                print('  _pyatnov_processing 4.1')
                 # Проверка наличия данных о категории
                 if competition_data['I'][0] != 'дисциплина':
                     raise 'Выбран неверный файл или лист'
@@ -863,16 +919,32 @@ class MenuWindow(QWidget, Ui_Form0):
 
                 qual_sportsman_cnt = 32 - final_sportsman_cnt if setka_num < 64 else 64 - final_sportsman_cnt
 
-                # Название категории
-                self.category_label = f"{competition_data['K'][1]}{competition_data['J'][2]}"
-                print('  _pyatnov_processing', 4.2)
+                # Название категории и для кумите КОМ список спортсменов в командах
+                self.category_label = ""
+                if competition_data['L'][0] in ('КОМ.', 'груп.'):
+                    if competition_data['L'][0] == 'КОМ.':
+                        self.category_label = 'КОМАНДНЫЕ. '
+                        # Список спортменов в командах
+                        self.sportsmans_in_teams_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', header=8,
+                                                                      nrows=64, usecols=[1, 6], index_col=0,
+                                                                      names=['team', 'names'])
+                        self.sportsmans_in_teams_dict.dropna(axis=0, how='all', inplace=True)
+                        self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict.to_dict()
+                        self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict['names']
+                        for i in self.sportsmans_in_teams_dict:
+                            self.sportsmans_in_teams_dict[i] = self.sportsmans_in_teams_dict[i].split('\n')
+                    else:
+                        self.category_label = 'ГРУППА. '
+                self.category_label = f"{self.category_label}{competition_data['K'][1]}{competition_data['J'][2]}"
+                print('  _pyatnov_processing 4.2')
+                print(competition_data)
                 pd.options.display.max_columns = None
                 # Создаём датасет из данных на листе Aka+Shiro
                 self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
                                                     header=9, names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
                 # добавляем столбец с номером строки, куда будем записывать очки победителей
                 self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
-                print('  _pyatnov_processing', 4.3)
+                print('  _pyatnov_processing 4.3')
                 # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
                 self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
                 self.sportsmen_list = self.sportsmen_list.query(f'duet < {qual_sportsman_cnt}')
@@ -881,7 +953,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
                 # Удаляем пустые строки
                 self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
-                print('  _pyatnov_processing', 4.4)
+                print('  _pyatnov_processing 4.4')
                 # Удаляем строки, где нет ФИО сиро или ака
                 self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
                 # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
@@ -898,6 +970,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 if not len(self.sportsmen_list):
 
                     if comp_type == 'ката':
+                        # Если полуфинал и финал
                         if sheet_name_final.find('ПФ') >= 0:
                             is_semi_final = [True, False]
                             # Создаём датасет из данных на листе ФИНАЛ
@@ -911,7 +984,7 @@ class MenuWindow(QWidget, Ui_Form0):
                             self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
                                                                 usecols=[1, 3], header=14, names=['name', 'kata'])
                             self.rematch_list['row_num'] = self.rematch_list.index + 16
-                            print(self.rematch_list)
+                            print('self.rematch_list', self.rematch_list)
                             self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
                             self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
 
@@ -932,6 +1005,21 @@ class MenuWindow(QWidget, Ui_Form0):
                                 self.rematch_list['row_num'] = self.rematch_list.index + 31
                                 self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
                                 self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
+                        else:
+                            is_semi_final = [False, True]
+                            self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=4,
+                                                                usecols=[1, 3], header=5,
+                                                                names=['name', 'kata'])
+                            self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                            self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
+                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1]]
+
+                            # Проверяем есть ли переигровка в финале
+                            self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
+                                                              usecols=[1, 3], header=11, names=['name', 'kata'])
+                            self.rematch_list['row_num'] = self.rematch_list.index + 13
+                            self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
+                            self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
 
                         # Если список не пуст, то добавляем сокращённые имена и регионы
                         if len(self.sportsmen_list):
@@ -955,27 +1043,32 @@ class MenuWindow(QWidget, Ui_Form0):
                                                             names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
                         # добавляем столбец с номером строки, куда будем записывать очки победителей
                         self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
-                        print('  _pyatnov_processing', 4.3)
+                        print('  _pyatnov_processing 4.31', aka_shiro)
+
+                        print(self.sportsmen_list)
                         # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
                         self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
                         self.sportsmen_list = self.sportsmen_list.query(f'duet >= {qual_sportsman_cnt}')
                         self.sportsmen_list = self.sportsmen_list.iloc[:, [5, 1, 4, 2, 3]]
                         # Обнуляем индексы
                         self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
+
                         # Удаляем пустые строки
                         self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
-                        print('  _pyatnov_processing', 4.4)
+                        print('  _pyatnov_processing 4.32')
                         # Удаляем строки, где нет ФИО сиро или ака
                         self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
+                        print('  _pyatnov_processing 4.33')
                         # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
                         self.sportsmen_list = \
                             self.sportsmen_list.query(
                                 'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
+                        print('  _pyatnov_processing 4.34')
 
                 if len(self.sportsmen_list):
                     if is_semi_final == [False, False]:
                         # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
-                        print('  _pyatnov_processing', 4.5)
+                        print('  _pyatnov_processing 4.5')
                         self.sportsmen_list['siro_short'] = \
                             self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ' + \
                             self.sportsmen_list['siro'].str.split(' ', expand=True)[1].str[0] + '.'
@@ -1044,6 +1137,8 @@ class MenuWindow(QWidget, Ui_Form0):
                     elif is_semi_final in [[True, False], [False, True]]:
                         print('ката финал')
 
+                        self.ui_kataQual.frame_pyatnov.hide()
+
                         self.ui_kataFinal.pyatnov_name.clear()
                         self.ui_kataFinal.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                         self.ui_kataFinal.pyatnov_name.setEnabled(True)
@@ -1057,6 +1152,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
                         self.btn_Kata_qual.setEnabled(False)
                         self.btn_Kata_final.setEnabled(True)
+
                 elif comp_type == 'кумите':
                     print('кумите')
                     self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
@@ -1064,7 +1160,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
                     self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
 
-                    self.show_pyatnov_kumite_interface()
+                    self.show_pyatnov_kumite_interface(team=True if competition_data['L'][0] == 'КОМ.' else False)
                     self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                     self.ui_kumite.pyatnov_name.setEnabled(True)
                     self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
@@ -1079,21 +1175,21 @@ class MenuWindow(QWidget, Ui_Form0):
                 print(self.sportsmen_list)
                 print('*_-_' * 5)
 
-                # print('self.sportsmen_list 1')
-                # print(self.sportsmen_list)
-                # print('  -----------')
-                # print(self.sportsmen_list.loc[42])
-                # print('  ===========')
-                # print(self.sportsmen_list.loc[43])
-                # print('  -----------')
-                # self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
-                #
-                # for i in range(len(self.sportsmen_list)):
-                #     print(i, self.sportsmen_list.iloc[i, :].values)
-                # print(self.sportsmen_list)
+                # Скрываем все пункты из выпадающего списка Главное меню - Ката - Кумите
+                self.frame_header_combo_disabled()
+
+                threading.current_thread().main_thread_completion_status = True
+                # Если был последний бой в отборочных Ката, то открываем окно Ката финал
+                if comp_type == 'ката' and is_semi_final in [[True, False],
+                                                             [False, True]] and self.ui_kataQual.isVisible():
+                    print('  --------------------------------------------- self.ui_kataQual.isVisible()')
+                    # self.showKataFinalWin()
+                    print('  ---------------------------------------------111')
+                    threading.current_thread().main_thread_completion_status = 'self.showKataFinalWin()'
+                    return 'self.showKataFinalWin()'
 
             except Exception as e:
-                print('   Exception:', e)
+                print('_______Exception pyatnov_processing:', e)
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
                 self.status_file.setText(f'Выбран неверный файл или лист: <b>{str(e)}</b>')
                 self.clearDataMember()
@@ -1122,7 +1218,7 @@ class MenuWindow(QWidget, Ui_Form0):
                         if np.isnan(self.sheet.iloc[4, i]):
                             self.sheet.drop(self.sheet.columns[[i]], axis=1, inplace=True)
                     except Exception as e:
-                        pass
+                        print('_______Exception data_processing1:', e)
 
                 kat_name = set(self.sheet.columns) - {'a10', 'a11', 'a12', 'a13'}
                 self.list_kat_name = list(sorted(kat_name))
@@ -1152,7 +1248,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 # self.ui_kumite.frame_bottom.hide()
             except Exception as e:
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-                print(e)
+                print('_______Exception data_processing2:', e)
                 self.status_file.setText(f'Выбран неверный файл или лист {e}')
                 self.clearDataMember()
                 self.show_withOut_load_file_interface()
@@ -1728,7 +1824,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 else:
                     jj.setText(self.tatamiName + ', ' + self.matchName[list(self.matchName.keys())[self.x]])
             except Exception as e:
-                print(e)
+                print('_______Exception calcTab1:', e)
                 if self.tatamiName == "":
                     jj.setText('Татами №#, ')
                 else:
@@ -1737,7 +1833,7 @@ class MenuWindow(QWidget, Ui_Form0):
             comboBox_name.addItems(sorted(self.df_Single_list[self.x]))
             comboBox_name.setEnabled(True)
         except Exception as e:
-            print(e)
+            print('_______Exception calcTab2:', e)
 
     def setLabel(self):
         try:
@@ -1785,7 +1881,7 @@ class MenuWindow(QWidget, Ui_Form0):
             #                                                       ' ' + name.split('a13')[1].split('a11')[0][0] + '.']))
             # self.ui_kataQual.lineEdit_region_red_1.setText(name.split('a11')[1])
         except Exception as e:
-            print('  Exception setLabel:', e)
+            print('_______Exception setLabel:', e)
 
     def setLabelRed(self):
         name = self.df_Single_list[self.x].get(self.ui_kataQual.comboBox_name_red_1.currentText())
@@ -1867,7 +1963,7 @@ class MenuWindow(QWidget, Ui_Form0):
             else:
                 ui_kata.matchName1.setText(self.matchName[list(self.matchName.keys())[self.x]])
         except Exception as e:
-            print('kata_matchName:', e)
+            print('_______Exception kata_matchName:', e)
             pass
 
     def kumite_matchName(self):
@@ -1921,51 +2017,55 @@ class MenuWindow(QWidget, Ui_Form0):
             lineEdit_region_red_1.setLineEdit(edit_red)
 
         except Exception as e:
-            print('showKataQualWin:\n', e)
+            print('_______Exception showKataQualWin:\n', e)
 
     def showKataFinalWin(self):
-        self.closeAllWin()
-        self.ui_kataFinal.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
-                                                 self.display_height, self.display_coord_x1_secW,
-                                                 self.display_coord_y1_secW)
-        self.close()
-        if self.tatamiName != "":
-            if self.category_label:
-                self.ui_kataFinal.matchName1.setText(self.tatamiName + ", " + self.category_label)
+        try:
+            self.closeAllWin()
+            self.ui_kataFinal.calc_display_moveCoord(self.display_coord_x1, self.display_coord_y1, self.display_width,
+                                                     self.display_height, self.display_coord_x1_secW,
+                                                     self.display_coord_y1_secW)
+            self.close()
+            if self.tatamiName != "":
+                if self.category_label:
+                    self.ui_kataFinal.matchName1.setText(self.tatamiName + ", " + self.category_label)
+                else:
+                    self.ui_kataFinal.matchName1.setText(self.tatamiName + ", Возраст")
+            self.ui_kataFinal.setMatchName()
+
+            # Заполняем списки регионов в выпадающем списке
+            lineEdit_region_red_1 = self.ui_kataFinal.lineEdit_region_red_1
+            lineEdit_region_red_1.addItems([''])
+            lineEdit_region_red_1.addItems(self.flags_set)
+            if self.loaded_file_data_type == 'file_pyatnov':
+                self.ui_kataFinal.lineEdit_name_red_1.setPlaceholderText("Имя спортсмена")
+                edit_red = QtWidgets.QLineEdit(self, placeholderText="Регион")
             else:
-                self.ui_kataFinal.matchName1.setText(self.tatamiName + ", Возраст")
-        self.ui_kataFinal.setMatchName()
+                self.ui_kataFinal.lineEdit_name_red_1.setPlaceholderText("Введите имя спортсмена")
+                edit_red = QtWidgets.QLineEdit(self, placeholderText="Введите регион")
 
-        # Заполняем списки регионов в выпадающем списке
-        lineEdit_region_red_1 = self.ui_kataFinal.lineEdit_region_red_1
-        lineEdit_region_red_1.addItems([''])
-        lineEdit_region_red_1.addItems(self.flags_set)
-        if self.loaded_file_data_type == 'file_pyatnov':
-            self.ui_kataFinal.lineEdit_name_red_1.setPlaceholderText("Имя спортсмена")
-            edit_red = QtWidgets.QLineEdit(self, placeholderText="Регион")
-        else:
-            self.ui_kataFinal.lineEdit_name_red_1.setPlaceholderText("Введите имя спортсмена")
-            edit_red = QtWidgets.QLineEdit(self, placeholderText="Введите регион")
+            edit_red.setFont(self.font_l_15)
+            edit_red.setAlignment(QtCore.Qt.AlignCenter)
+            lineEdit_region_red_1.setLineEdit(edit_red)
 
-        edit_red.setFont(self.font_l_15)
-        edit_red.setAlignment(QtCore.Qt.AlignCenter)
-        lineEdit_region_red_1.setLineEdit(edit_red)
+            # Очищаем данные из полей выбора спортсменов
+            self.ui_kataFinal.male.setAutoExclusive(False)
+            self.ui_kataFinal.female.setAutoExclusive(False)
+            self.ui_kataFinal.male.setChecked(False)
+            self.ui_kataFinal.female.setChecked(False)
+            self.ui_kataFinal.male.setAutoExclusive(True)
+            self.ui_kataFinal.female.setAutoExclusive(True)
+            self.ui_kataFinal.age_1.setFont(self.font_l_13)
+            self.ui_kataFinal.age_1.setStyleSheet("color: grey;")
+            self.ui_kataFinal.comboBox_age.clear()
+            self.ui_kataFinal.comboBox_age.setEnabled(False)
+            self.ui_kataFinal.name_red_1.setFont(self.font_l_13)
+            self.ui_kataFinal.name_red_1.setStyleSheet("color: grey;")
+            self.ui_kataFinal.comboBox_name_red_1.clear()
+            self.ui_kataFinal.comboBox_name_red_1.setEnabled(False)
 
-        # Очищаем данные из полей выбора спортсменов
-        self.ui_kataFinal.male.setAutoExclusive(False)
-        self.ui_kataFinal.female.setAutoExclusive(False)
-        self.ui_kataFinal.male.setChecked(False)
-        self.ui_kataFinal.female.setChecked(False)
-        self.ui_kataFinal.male.setAutoExclusive(True)
-        self.ui_kataFinal.female.setAutoExclusive(True)
-        self.ui_kataFinal.age_1.setFont(self.font_l_13)
-        self.ui_kataFinal.age_1.setStyleSheet("color: grey;")
-        self.ui_kataFinal.comboBox_age.clear()
-        self.ui_kataFinal.comboBox_age.setEnabled(False)
-        self.ui_kataFinal.name_red_1.setFont(self.font_l_13)
-        self.ui_kataFinal.name_red_1.setStyleSheet("color: grey;")
-        self.ui_kataFinal.comboBox_name_red_1.clear()
-        self.ui_kataFinal.comboBox_name_red_1.setEnabled(False)
+        except Exception as e:
+            print('_______Exception showKataFinalWin:', e)
 
     def showKumiteWin(self):
         try:
@@ -2007,9 +2107,10 @@ class MenuWindow(QWidget, Ui_Form0):
             edit_red.setAlignment(QtCore.Qt.AlignCenter)
             lineEdit_region_red_1.setLineEdit(edit_red)
         except Exception as e:
-            print('showKumiteWin:\n', e)
+            print('_______Exception showKumiteWin:\n', e)
 
     def closeAllWin(self):
+        print('        closeAllWin 1')
         self.ui_kumite.closeSecondWin()
         self.ui_kataQual.closeSecondWin()
         self.ui_kataFinal.closeSecondWin()
@@ -2025,6 +2126,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.KumiteWindowsClose.close()
         self.KataQualWindowsClose.close()
         self.KataFinalWindowsClose.close()
+        print('        closeAllWin 16')
 
     def showDialogWindow(self):
         sender = self.sender()
@@ -2145,7 +2247,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 elif sender == self.ui_kumite.btn_show_screen:
                     self.ui_kumite.show_screen(force_hide=0)
         except Exception as e:
-            print('setSportsmanName:', e)
+            print('_______Exception setSportsmanName:', e)
 
     def clearData(self):
         try:
@@ -2165,7 +2267,7 @@ class MenuWindow(QWidget, Ui_Form0):
             if self.loaded_file_data_type == 'file_pyatnov':
                 self.check_to_wopf()
         except Exception as e:
-            print('clearData:', e)
+            print('_______Exception clearData:', e)
 
     def set_winner(self):
         try:
@@ -2255,7 +2357,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.ui_kumite.setWinner()
 
         except Exception as e:
-            print('set_winner:', e)
+            print('_______Exception set_winner:', e)
 
     def check_to_wopf(self):
         print('___________ check_to_wopf')
@@ -2268,10 +2370,16 @@ class MenuWindow(QWidget, Ui_Form0):
             if threading.activeCount() <= 1:
                 thread1 = threading.Thread(target=self.write_on_pyatov_file, daemon=True)
                 thread1.start()
+
+                print('hasattr(threading.current_thread()', hasattr(threading.current_thread(), 'main_thread_completion_status'))
+                print(threading.current_thread().main_thread_completion_status)
+
             else:
                 print('check_to_wopf threading.activeCount() БОЛЬШЕ 1')
+                return
+
         except Exception as e:
-            print('check_to_wopf:', e)
+            print('_______Exception check_to_wopf:', e)
 
     def write_on_pyatov_file(self):
         try:
@@ -2303,7 +2411,6 @@ class MenuWindow(QWidget, Ui_Form0):
                     print(7, 1)
                     self.pyatnov_winner = None
                     print(8, 1)
-                    self.pyatnov_processing()
 
                     print(1111111)
                 except AttributeError:
@@ -2327,17 +2434,34 @@ class MenuWindow(QWidget, Ui_Form0):
                     print(7, 2)
                     self.pyatnov_winner = None
                     print(8, 2)
-                    self.select_file()
 
-                    print(1111111)
+                    print(2222222)
                 except AttributeError:
                     os.system("taskkill /f /im excel.exe")
                     print("Excel terminated using taskkill")
-            return
+            result = self.pyatnov_processing()
+            print('= ' * 10, result)
 
+
+            self.worker = Worker(result=result)
+            self.worker.finished.connect(self.kata_qual_last_fight)
+            # self.worker.finished.connect(self.worke
+            #
+            # .deleteLater)
+            self.worker.start()
 
         except Exception as e:
-            print('write_on_pyatov_file:', e)
+            print('_______Exception write_on_pyatov_file:', e)
+
+    def kata_qual_last_fight(self, result):
+        # Проверка, нужно ли переключать интерфейс при записи в Excel(например из Ката отб в Ката финал)
+        try:
+            print('           ___ kata_qual_last_fight', result)
+            # Если был последний бой в отборочных Ката, то открываем окно Ката финал
+            if result == 'self.showKataFinalWin()':
+                self.showKataFinalWin()
+        except Exception as e:
+            print('_______Exception kata_qual_last_fight:', e)
 
 
 class dialogWindow_Ui(object):
