@@ -750,6 +750,12 @@ class KataMainWindow_Ui(QWidget):
             elif sender == self.lineEdit_referee7:
                 self.KataSecondWindow.input_referee7.setStyleSheet(self.label_style_1)
                 self.KataSecondWindow.input_referee7.setText(text)
+        self.isShowSportsmanName()
+
+    def isShowSportsmanName(self):
+        if not self.label_name_red_1.text() and not self.label_region_red_1.text() or \
+                self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
+            self.setSportsmanName()
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
                                display_coord_x1_secW, display_coord_y1_secW):

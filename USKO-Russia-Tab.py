@@ -211,6 +211,8 @@ class MenuWindow(QWidget, Ui_Form0):
         self.tatamiName = ""
         self.sportsmans_in_teams_dict = {}
 
+        self.matchName = {}
+
         self.category_label = ""
 
         self.sportsmen_dict = {}
@@ -977,8 +979,9 @@ class MenuWindow(QWidget, Ui_Form0):
                             self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=8,
                                                                 usecols=[1, 3], header=5, names=['name', 'kata'])
                             self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                            self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
                             self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
-                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1]]
+                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
                             # Проверяем есть ли переигровка в полуфинале
                             self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
@@ -996,8 +999,9 @@ class MenuWindow(QWidget, Ui_Form0):
                                 self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=4,
                                                                     usecols=[1, 3], header=24, names=['name', 'kata'])
                                 self.sportsmen_list['row_num'] = self.sportsmen_list.index + 26
+                                self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
                                 self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
-                                self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1]]
+                                self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
                                 # Проверяем есть ли переигровка в финале
                                 self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
@@ -1011,8 +1015,9 @@ class MenuWindow(QWidget, Ui_Form0):
                                                                 usecols=[1, 3], header=5,
                                                                 names=['name', 'kata'])
                             self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                            self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
                             self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
-                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1]]
+                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
                             # Проверяем есть ли переигровка в финале
                             self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
@@ -1065,6 +1070,8 @@ class MenuWindow(QWidget, Ui_Form0):
                                 'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
                         print('  _pyatnov_processing 4.34')
 
+                print('       is_semi_final', is_semi_final)
+
                 if len(self.sportsmen_list):
                     if is_semi_final == [False, False]:
                         # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
@@ -1073,7 +1080,7 @@ class MenuWindow(QWidget, Ui_Form0):
                             self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ' + \
                             self.sportsmen_list['siro'].str.split(' ', expand=True)[1].str[0] + '.'
 
-                        print('  _pyatnov_processing', 5)
+                        print('  _pyatnov_processing 5')
                         self.sportsmen_list['aka_short'] = \
                             self.sportsmen_list['aka'].str.split(' ', expand=True)[0] + ' ' + \
                             self.sportsmen_list['aka'].str.split(' ', expand=True)[1].str[0] + '.'
@@ -1095,13 +1102,14 @@ class MenuWindow(QWidget, Ui_Form0):
 
                         pd.options.display.max_columns = None
 
-                    elif is_semi_final == [False, True]:
+                    elif is_semi_final in [[False, True], [True, False]]:
                         self.sportsmen_list['combo_box'] = \
                             self.sportsmen_list['name'] + ' - ' + self.sportsmen_list['region_aka']
-                    print('  _pyatnov_processing', 6)
+                    print('  _pyatnov_processing 6')
+                    print(self.sportsmen_list)
 
                     self.sportsmen_dict = self.sportsmen_list.to_dict()
-                    print('  _pyatnov_processing', 7)
+                    print('  _pyatnov_processing 7')
                     print(f"_{comp_type}_")
 
                 if comp_type == 'ката':
@@ -1166,7 +1174,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
                     self.ui_kumite.matchName12.setText(self.category_label)
 
-                print('  _pyatnov_processing', 8)
+                print('  _pyatnov_processing 8')
                 self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
                 self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
                 self.loaded_file_data_type = 'file_pyatnov'
@@ -1215,7 +1223,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
                 for i in range(len(self.sheet.columns) - 1, 9, -1):
                     try:
-                        if np.isnan(self.sheet.iloc[4, i]):
+                        if pd.isnull(self.sheet.iloc[4, i]):
                             self.sheet.drop(self.sheet.columns[[i]], axis=1, inplace=True)
                     except Exception as e:
                         print('_______Exception data_processing1:', e)
@@ -1956,15 +1964,15 @@ class MenuWindow(QWidget, Ui_Form0):
         try:
             if len(ui_kata.matchName1.text().split(', ')) > 1:
                 self.tatamiName = ui_kata.matchName1.text().split(', ')[0]
-                if ui_kata.matchName1.text() == \
+                if len(self.matchName) and ui_kata.matchName1.text() == \
                         self.tatamiName + ', ' + self.matchName[list(self.matchName.keys())[self.x]]:
                     ui_kata.matchName1.setText(self.tatamiName +
                                                ', ' + self.matchName[list(self.matchName.keys())[self.x]])
             else:
-                ui_kata.matchName1.setText(self.matchName[list(self.matchName.keys())[self.x]])
+                if len(self.matchName):
+                    ui_kata.matchName1.setText(self.matchName[list(self.matchName.keys())[self.x]])
         except Exception as e:
             print('_______Exception kata_matchName:', e)
-            pass
 
     def kumite_matchName(self):
         sender = self.sender()
@@ -2292,14 +2300,28 @@ class MenuWindow(QWidget, Ui_Form0):
             elif sender == self.ui_kataFinal.Calc_Button:
                 self.ui_kataFinal.calcResult()
                 if self.loaded_file_data_type == 'file_pyatnov':
-                    aka_name = self.ui_kataFinal.pyatnov_name.currentText()
-                    print('aka_name', aka_name)
+                    aka_name1 = self.ui_kataFinal.pyatnov_name.currentText()
+
+                    aka_name = self.ui_kataFinal.label_name_red_1.text()
+                    aka_region = self.ui_kataFinal.label_region_red_1.text()
+                    # Находим key по имени и региону
+                    row1 = [k for k, v in
+                                {k: self.sportsmen_dict['name'][k] + str(self.sportsmen_dict['region_aka'][k]) for k in
+                                 self.sportsmen_dict['name']}.items() if v == aka_name + aka_region][0]
+
+                    print('aka_name', aka_name1, f'_{aka_name}_{aka_region}_{row1}_')
                     kata = self.ui_kataFinal.pyatnov_kata_name.currentText()
                     print('kata', kata)
 
-                    row_num = aka_name
-                    row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
+                    # row_num = aka_name1
+                    # row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
+                    # row = self.sportsmen_dict['row_num'][row1]
                     row = self.sportsmen_dict['row_num'][row1]
+                    print('row1, row', f'_{row1}_{row}_')
+                    sp_name = self.sportsmen_dict['name'][row1]
+                    sp_region = self.sportsmen_dict['region_aka'][row1]
+                    sp_cnt = self.sportsmen_dict['ttl_cnt_sp'][row1]
+                    print('sp_cnt - len(self.sportsmen_dict) + 1', f'{sp_cnt} - {len(self.sportsmen_dict["row_num"])} + 1')
                     try:
                         score1 = float(self.ui_kataFinal.lineEdit_referee1.text())
                     except:
@@ -2351,8 +2373,10 @@ class MenuWindow(QWidget, Ui_Form0):
                             score7
                         ]
                         cell_coord = f"D{row}:K{row}"
-
-                    self.pyatnov_winner = {'type': 'ui_kataFinal', 'score': score, 'cell': cell_coord}
+                    number = [sp_cnt - len(self.sportsmen_dict['row_num']) + 1]
+                    number_coord = f"A{row}"
+                    self.pyatnov_winner = {'type': 'ui_kataFinal', 'score': score, 'cell': cell_coord, 'number': number,
+                                           'number_coord': number_coord}
             elif sender == self.ui_kumite.winnerRed or sender == self.ui_kumite.winnerWhite:
                 self.ui_kumite.setWinner()
 
@@ -2427,6 +2451,8 @@ class MenuWindow(QWidget, Ui_Form0):
                     worksheet = workbook.Worksheets(self.sheet_name_final)
                     worksheet.Range(self.pyatnov_winner['cell']).Value = self.pyatnov_winner['score']
                     print(6, 2)
+                    worksheet.Range(self.pyatnov_winner['number_coord']).Value = self.pyatnov_winner['number']
+                    print(6, 3)
                     workbook.Save()
                     workbook.Close()
                     excel.Quit()
