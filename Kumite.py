@@ -723,12 +723,12 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.comboBox_age = QtWidgets.QComboBox(self.frame_sportsmans)
         self.frame_sex = QtWidgets.QFrame(self.frame_sportsmans)
-        self.male = QtWidgets.QRadioButton("М", self.frame_sex)
-        self.female = QtWidgets.QRadioButton("Ж", self.frame_sex)
         self.pers_com_lbl = QtWidgets.QLabel("/", self.frame_sportsmans)
         self.pers_lbl = QtWidgets.QLabel("Личные", self.frame_sportsmans)
         self.com_lbl = QtWidgets.QLabel("Командные", self.frame_sportsmans)
         self.pers_com_qbx = QtWidgets.QCheckBox(self.frame_sportsmans)
+        self.male = QtWidgets.QRadioButton("М", self.frame_sex)
+        self.female = QtWidgets.QRadioButton("Ж", self.frame_sex)
         self.sex_1 = QtWidgets.QLabel("Пол", self.frame_sportsmans)
         self.age_1 = QtWidgets.QLabel("Возраст", self.frame_sportsmans)
         self.comboBox_name_red_1 = QtWidgets.QComboBox(self.frame_sportsmans)
@@ -743,6 +743,7 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.frm_spman_red,
                                                        placeholderText="АКА. Введите имя спортсмена")
+        self.le_comboBox_name_red_1 = QtWidgets.QComboBox(self.frm_spman_red)
         # self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.frm_spman_red, placeholderText="АКА. Введите регион")
         self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.frm_spman_red)
         self.label_name_red_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_red)
@@ -750,6 +751,7 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.lineEdit_name_white_1 = QtWidgets.QLineEdit(self.frm_spman_white,
                                                          placeholderText="СИРО. Введите имя спортсмена")
+        self.le_comboBox_name_white_1 = QtWidgets.QComboBox(self.frm_spman_white)
         # self.lineEdit_region_white_1 = QtWidgets.QLineEdit(self.frm_spman_white, placeholderText="СИРО. Введите регион")
         self.lineEdit_region_white_1 = QtWidgets.QComboBox(self.frm_spman_white)
         self.label_name_white_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_white)
@@ -759,6 +761,8 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
+
+        self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
         self.btn_style_1 = css.btn_style_1
 
@@ -895,53 +899,18 @@ class KumiteMainWindow_Ui(QWidget):
                 }
         """
 
-        self.font_l_10 = QtGui.QFont()
-        self.font_l_10.setFamily("Gotham-Light")
-        self.font_l_10.setPixelSize(10)
-
-        self.font_l_12 = QtGui.QFont()
-        self.font_l_12.setFamily("Gotham-Light")
-        self.font_l_12.setPixelSize(12)
-
-        self.font_l_13 = QtGui.QFont()
-        self.font_l_13.setFamily("Gotham-Light")
-        self.font_l_13.setPixelSize(13)
-
-        self.font_m_13 = QtGui.QFont()
-        self.font_m_13.setFamily("Gotham-Medium")
-        self.font_m_13.setPixelSize(13)
-
-        self.font_b_13 = QtGui.QFont()
-        self.font_b_13.setFamily("Gotham-Bold")
-        self.font_b_13.setPixelSize(13)
-
-        self.font_l_16 = QtGui.QFont()
-        self.font_l_16.setFamily("Gotham-Light")
-        self.font_l_16.setPixelSize(16)
-
-        self.font_m_16 = QtGui.QFont()
-        self.font_m_16.setFamily("Gotham-Medium")
-        self.font_m_16.setPixelSize(16)
-
-        self.font_l_20 = QtGui.QFont()
-        self.font_l_20.setFamily("Gotham-Light")
-        self.font_l_20.setPixelSize(20)
-
-        self.font_m_20 = QtGui.QFont()
-        self.font_m_20.setFamily("Gotham-Medium")
-        self.font_m_20.setPixelSize(20)
-
-        self.font_m_33 = QtGui.QFont()
-        self.font_m_33.setFamily("Gotham-Medium")
-        self.font_m_33.setPixelSize(33)
-
-        self.font_l_40 = QtGui.QFont()
-        self.font_l_40.setFamily("Gotham-Light")
-        self.font_l_40.setPixelSize(40)
-
-        self.font_l_46 = QtGui.QFont()
-        self.font_l_46.setFamily("Gotham-Light")
-        self.font_l_46.setPixelSize(46)
+        self.font_l_10 = css.font_l_10
+        self.font_l_12 = css.font_l_12
+        self.font_l_13 = css.font_l_13
+        self.font_m_13 = css.font_m_13
+        self.font_b_13 = css.font_b_13
+        self.font_l_16 = css.font_l_16
+        self.font_m_16 = css.font_m_16
+        self.font_l_20 = css.font_l_20
+        self.font_m_20 = css.font_m_20
+        self.font_m_33 = css.font_m_33
+        self.font_l_40 = css.font_l_40
+        self.font_l_46 = css.font_l_46
 
         self.frame_bottom = QtWidgets.QFrame(self.Form2)
         self.frame_bottom1 = QtWidgets.QFrame(self.Form2)
@@ -1378,6 +1347,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_white_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_white_1.setObjectName("lineEdit_name_white_1")
 
+        self.le_comboBox_name_white_1.hide()
+        self.le_comboBox_name_white_1.setGeometry(QtCore.QRect(50, 60, 350, 30))
+        self.le_comboBox_name_white_1.setStyleSheet(self.combo_style_2)
+        self.le_comboBox_name_white_1.setFont(self.font_l_13)
+        self.le_comboBox_name_white_1.setObjectName("le_comboBox_name_white_1")
+
         self.lineEdit_region_white_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
         self.lineEdit_region_white_1.setStyleSheet(self.combo_style_2)
         self.lineEdit_region_white_1.setFont(self.font_l_13)
@@ -1404,6 +1379,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.lineEdit_name_red_1.setFont(self.font_l_20)
         self.lineEdit_name_red_1.setAlignment(QtCore.Qt.AlignTop | QtCore.Qt.AlignHCenter)
         self.lineEdit_name_red_1.setObjectName("lineEdit_name_red_1")
+
+        self.le_comboBox_name_red_1.hide()
+        self.le_comboBox_name_red_1.setGeometry(QtCore.QRect(50, 60, 350, 30))
+        self.le_comboBox_name_red_1.setStyleSheet(self.combo_style_2)
+        self.le_comboBox_name_red_1.setFont(self.font_l_13)
+        self.le_comboBox_name_red_1.setObjectName("le_comboBox_name_red_1")
 
         self.lineEdit_region_red_1.setGeometry(QtCore.QRect(75, 100, 300, 30))
         self.lineEdit_region_red_1.setStyleSheet(self.combo_style_2)
@@ -1434,20 +1415,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.com_lbl.setObjectName("com_lbl")
 
         self.pers_com_qbx.setGeometry(QtCore.QRect(155, 20, 50, 25))
-        self.pers_com_qbx.setStyleSheet('''
-            QCheckBox::indicator:unchecked {
-                image: url(:/Images/toggle-pers.svg);
-            }
-            QCheckBox::indicator:unchecked:hover {
-                image: url(:/Images/toggle-pers_hover.svg);
-            }
-            QCheckBox::indicator:checked {
-                image: url(:/Images/toggle-group.svg);
-            }
-            QCheckBox::indicator:checked:hover {
-                image: url(:/Images/toggle-group_hover.svg);
-            }
-        ''')
+        self.pers_com_qbx.setStyleSheet(self.pers_com_qbx_style_1)
         self.pers_com_qbx.setObjectName("pers_com_lbl")
 
         self.frame_sex.setGeometry(QtCore.QRect(270, 20, 151, 25))
@@ -1511,7 +1479,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_pyatnov.setObjectName("frame_pyatnov")
 
         self.pyatnov_name.setEnabled(False)
-        self.pyatnov_name.setGeometry(QtCore.QRect(270, 12, 390, 25))
+        self.pyatnov_name.setGeometry(QtCore.QRect(270, 12, 500, 25))
         self.pyatnov_name.setStyleSheet(self.combo_style_2)
         self.pyatnov_name.setFont(self.font_l_16)
         self.pyatnov_name.setObjectName("pyatnov_name")
@@ -1808,6 +1776,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_region_white_1.setText("регион")
         self.lineEdit_name_red_1.clear()
         self.lineEdit_name_white_1.clear()
+        self.comboBox_name_red_1.clear()
         try:
             self.lineEdit_region_red_1.lineEdit().clear()
             self.lineEdit_region_white_1.lineEdit().clear()
@@ -1833,29 +1802,6 @@ class KumiteMainWindow_Ui(QWidget):
         self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
                             self.KumiteSecondWindow.j_w3)
         self.KumiteSecondWindow.label_kum_jw0.setText(None)
-
-    def setWinner2(self):
-        self.show_screen()
-        radio = self.sender()
-        if radio.isChecked():
-            if radio.text() == "Победил АКА":
-                self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.frame_red2_win)
-                self.KumiteSecondWindow.label_score21.setGeometry(QtCore.QRect(265, 0, 350, 420))
-                self.KumiteSecondWindow.background_red21.setGeometry(QtCore.QRect(0, 0, 880, 450))
-                self.KumiteSecondWindow.lcd2.hide()
-                self.KumiteSecondWindow.label_winner.show()
-                self.KumiteSecondWindow.frame_red2.show()
-                self.KumiteSecondWindow.frame_white2.hide()
-                self.winnerWhite.setChecked(False)
-            elif radio.text() == "Победил СИРО":
-                self.KumiteSecondWindow.frame_white2.setGeometry(self.KumiteSWindow_Ui.frame_white2_win)
-                self.KumiteSecondWindow.label_score22.setGeometry(QtCore.QRect(265, 0, 350, 420))
-                self.KumiteSecondWindow.background_white21.setGeometry(QtCore.QRect(0, 0, 880, 450))
-                self.KumiteSecondWindow.lcd2.hide()
-                self.KumiteSecondWindow.label_winner.show()
-                self.KumiteSecondWindow.frame_white2.show()
-                self.KumiteSecondWindow.frame_red2.hide()
-                self.winnerRed.setChecked(False)
 
     def setWinner(self):
         self.show_screen()
@@ -2069,8 +2015,8 @@ class KumiteMainWindow_Ui(QWidget):
 
     def setRegionsFlags(self, region_white, region_red):
         try:
-            region_white = region_white.replace(" ", "").lower()
-            region_red = region_red.replace(" ", "").lower()
+            region_white = region_white.split(' - ком')[0].replace(" ", "").lower()
+            region_red = region_red.split(' - ком')[0].replace(" ", "").lower()
 
             if region_white in self.flags_dict.keys() and region_red in self.flags_dict.keys():
                 self.KumiteSecondWindow.label_name_white_2.setGeometry(self.KumiteSecondWindow.coo_label_name_white_flag)

@@ -369,6 +369,21 @@ QRadioButton:checked {
 }
 """
 
+pers_com_qbx_style_1 = """
+QCheckBox::indicator:unchecked {
+    image: url(:/Images/toggle-pers.svg);
+}
+QCheckBox::indicator:unchecked:hover {
+    image: url(:/Images/toggle-pers_hover.svg);
+}
+QCheckBox::indicator:checked {
+    image: url(:/Images/toggle-group.svg);
+}
+QCheckBox::indicator:checked:hover {
+    image: url(:/Images/toggle-group_hover.svg);
+}
+"""
+
 font_l_10 = QtGui.QFont()
 font_l_10.setFamily("Gotham-Light")
 font_l_10.setPixelSize(10)

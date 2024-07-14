@@ -266,6 +266,10 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.comboBox_age = QtWidgets.QComboBox(self.frame_sportsmans)
         self.frame_sex = QtWidgets.QFrame(self.frame_sportsmans)
+        self.pers_com_lbl = QtWidgets.QLabel("/", self.frame_sportsmans)
+        self.pers_lbl = QtWidgets.QLabel("Личные", self.frame_sportsmans)
+        self.com_lbl = QtWidgets.QLabel("Командные", self.frame_sportsmans)
+        self.pers_com_qbx = QtWidgets.QCheckBox(self.frame_sportsmans)
         self.male = QtWidgets.QRadioButton("М", self.frame_sex)
         self.female = QtWidgets.QRadioButton("Ж", self.frame_sex)
         self.sex_1 = QtWidgets.QLabel("Пол", self.frame_sportsmans)
@@ -290,6 +294,8 @@ class KataQual_MainWindow_Ui(QWidget):
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
+        self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
+
         self.btn_style_1 = css.btn_style_1
 
         self.btn_style_2 = css.btn_style_2
@@ -299,11 +305,9 @@ class KataQual_MainWindow_Ui(QWidget):
         self.combo_style_2 = css.combo_style_2
 
         self.font_l_12 = css.font_l_12
-
         self.font_l_13 = css.font_l_13
-
         self.font_m_13 = css.font_m_13
-
+        self.font_b_13 = css.font_b_13
         self.font_l_20 = css.font_l_20
 
         self.frame_bottom = QtWidgets.QFrame(self.Form21)
@@ -386,6 +390,28 @@ class KataQual_MainWindow_Ui(QWidget):
         self.frame_sportsmans.setGeometry(QtCore.QRect(0, 420, 900, 95))
         self.frame_sportsmans.setStyleSheet("background-color: none;")
         self.frame_sportsmans.setObjectName("frame_sportsmans")
+
+        self.pers_com_lbl.setGeometry(QtCore.QRect(178, 0, 7, 13))
+        self.pers_com_lbl.setFont(self.font_b_13)
+        self.pers_com_lbl.setStyleSheet("color: black;")
+        self.pers_com_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.pers_com_lbl.setObjectName("pers_com_lbl")
+
+        self.pers_lbl.setGeometry(QtCore.QRect(97, 0, 80, 13))
+        self.pers_lbl.setFont(self.font_b_13)
+        self.pers_lbl.setStyleSheet("color: black;")
+        self.pers_lbl.setAlignment(QtCore.Qt.AlignRight)
+        self.pers_lbl.setObjectName("pers_lbl")
+
+        self.com_lbl.setGeometry(QtCore.QRect(186, 0, 80, 13))
+        self.com_lbl.setFont(self.font_l_13)
+        self.com_lbl.setStyleSheet("color: grey;")
+        self.com_lbl.setAlignment(QtCore.Qt.AlignLeft)
+        self.com_lbl.setObjectName("com_lbl")
+
+        self.pers_com_qbx.setGeometry(QtCore.QRect(155, 20, 50, 25))
+        self.pers_com_qbx.setStyleSheet(self.pers_com_qbx_style_1)
+        self.pers_com_qbx.setObjectName("pers_com_lbl")
 
         self.frame_sex.setGeometry(QtCore.QRect(270, 20, 151, 25))
         self.frame_sex.setFrameShape(QtWidgets.QFrame.StyledPanel)

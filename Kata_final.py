@@ -339,6 +339,10 @@ class KataMainWindow_Ui(QWidget):
         self.frame_sex = QtWidgets.QFrame(self.frame_sportsmans)
         self.label_name_red_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.Form11)
         self.label_region_red_1 = QtWidgets.QLabel("регион", self.Form11)
+        self.pers_com_lbl = QtWidgets.QLabel("/", self.frame_sportsmans)
+        self.pers_lbl = QtWidgets.QLabel("Личные", self.frame_sportsmans)
+        self.com_lbl = QtWidgets.QLabel("Командные", self.frame_sportsmans)
+        self.pers_com_qbx = QtWidgets.QCheckBox(self.frame_sportsmans)
         self.male = QtWidgets.QRadioButton("М", self.frame_sex)
         self.female = QtWidgets.QRadioButton("Ж", self.frame_sex)
         self.sex_1 = QtWidgets.QLabel("Пол", self.frame_sportsmans)
@@ -382,6 +386,8 @@ class KataMainWindow_Ui(QWidget):
         self.frame_bottom = QtWidgets.QFrame(self.Form11)
         self.frame_left = QtWidgets.QFrame(self.Form11)
         self.frame_right = QtWidgets.QFrame(self.Form11)
+
+        self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
         self.btn_style_1 = css.btn_style_1
 
@@ -496,12 +502,34 @@ class KataMainWindow_Ui(QWidget):
         self.frame_sportsmans.setStyleSheet("background-color: none;")
         self.frame_sportsmans.setObjectName("frame_sportsmans")
 
+        self.pers_com_lbl.setGeometry(QtCore.QRect(88, 0, 7, 13))
+        self.pers_com_lbl.setFont(self.font_b_13)
+        self.pers_com_lbl.setStyleSheet("color: black;")
+        self.pers_com_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.pers_com_lbl.setObjectName("pers_com_lbl")
+
+        self.pers_lbl.setGeometry(QtCore.QRect(7, 0, 80, 13))
+        self.pers_lbl.setFont(self.font_b_13)
+        self.pers_lbl.setStyleSheet("color: black;")
+        self.pers_lbl.setAlignment(QtCore.Qt.AlignRight)
+        self.pers_lbl.setObjectName("pers_lbl")
+
+        self.com_lbl.setGeometry(QtCore.QRect(96, 0, 80, 13))
+        self.com_lbl.setFont(self.font_l_13)
+        self.com_lbl.setStyleSheet("color: grey;")
+        self.com_lbl.setAlignment(QtCore.Qt.AlignLeft)
+        self.com_lbl.setObjectName("com_lbl")
+
+        self.pers_com_qbx.setGeometry(QtCore.QRect(65, 20, 50, 25))
+        self.pers_com_qbx.setStyleSheet(self.pers_com_qbx_style_1)
+        self.pers_com_qbx.setObjectName("pers_com_lbl")
+
         self.comboBox_age.setEnabled(False)
-        self.comboBox_age.setGeometry(QtCore.QRect(250, 20, 111, 25))
+        self.comboBox_age.setGeometry(QtCore.QRect(380, 20, 111, 25))
         self.comboBox_age.setFont(self.font_l_13)
         self.comboBox_age.setObjectName("comboBox_age")
 
-        self.frame_sex.setGeometry(QtCore.QRect(60, 20, 150, 25))
+        self.frame_sex.setGeometry(QtCore.QRect(200, 20, 150, 25))
         self.frame_sex.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_sex.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_sex.setObjectName("frame_sex")
@@ -514,24 +542,24 @@ class KataMainWindow_Ui(QWidget):
         self.female.setFont(self.font_b_20)
         self.female.setObjectName("female")
 
-        self.sex_1.setGeometry(QtCore.QRect(60, 0, 150, 13))
+        self.sex_1.setGeometry(QtCore.QRect(200, 0, 150, 13))
         self.sex_1.setFont(self.font_b_13)
         self.sex_1.setStyleSheet("color: black;")
         self.sex_1.setAlignment(QtCore.Qt.AlignCenter)
         self.sex_1.setObjectName("sex_1")
 
-        self.age_1.setGeometry(QtCore.QRect(250, 0, 110, 13))
+        self.age_1.setGeometry(QtCore.QRect(380, 0, 110, 13))
         self.age_1.setFont(self.font_l_13)
         self.age_1.setStyleSheet("color: grey;")
         self.age_1.setAlignment(QtCore.Qt.AlignCenter)
         self.age_1.setObjectName("age_1")
 
         self.comboBox_name_red_1.setEnabled(False)
-        self.comboBox_name_red_1.setGeometry(QtCore.QRect(400, 20, 350, 25))
+        self.comboBox_name_red_1.setGeometry(QtCore.QRect(510, 20, 350, 25))
         self.comboBox_name_red_1.setFont(self.font_l_13)
         self.comboBox_name_red_1.setObjectName("comboBox_name_red_1")
 
-        self.name_red_1.setGeometry(QtCore.QRect(400, 0, 350, 16))
+        self.name_red_1.setGeometry(QtCore.QRect(510, 0, 350, 16))
         self.name_red_1.setFont(self.font_l_13)
         self.name_red_1.setStyleSheet("color: grey;")
         self.name_red_1.setAlignment(QtCore.Qt.AlignCenter)
