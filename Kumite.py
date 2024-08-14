@@ -914,6 +914,7 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.frame_bottom = QtWidgets.QFrame(self.Form2)
         self.frame_bottom1 = QtWidgets.QFrame(self.Form2)
+        self.frame_bottom2 = QtWidgets.QFrame(self.Form2)
         self.frame_bottom3 = QtWidgets.QFrame(self.Form2)
         self.frame_left = QtWidgets.QFrame(self.Form2)
         self.frame_right = QtWidgets.QFrame(self.Form2)
@@ -924,6 +925,9 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_bottom1.setGeometry(QtCore.QRect(25, 559, 850, 1))
         self.frame_bottom1.setStyleSheet("background-color: grey;")
         self.frame_bottom1.setObjectName("frame_bottom1")
+        self.frame_bottom2.setGeometry(QtCore.QRect(0, 609, 900, 1))
+        self.frame_bottom2.setStyleSheet("background-color: grey;")
+        self.frame_bottom2.setObjectName("frame_bottom")
         self.frame_bottom3.setGeometry(QtCore.QRect(0, 669, 900, 1))
         self.frame_bottom3.setStyleSheet("background-color: grey;")
         self.frame_bottom3.setObjectName("frame_bottom1")
@@ -1516,12 +1520,16 @@ class KumiteMainWindow_Ui(QWidget):
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
                                display_coord_x1_secW, display_coord_y1_secW):
+
+
         self.KumiteSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
         self.KumiteSecondWindow.show()
         self.show()
         coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
         coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2
         self.move(coord_x1, coord_y1)
+        print('________________________ calc_display_moveCoord', display_coord_x1, display_coord_y1, display_width,
+              display_height, display_coord_x1_secW, display_coord_y1_secW, self.size().width(), self.size().height())
 
     def closeSecondWin(self):
         self.show_screen()
@@ -1740,6 +1748,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.screen_frame_white.show()
         self.KumiteSecondWindow.screen_frame_red.show()
         self.show_screen()
+
 
     def reset_all(self, flags_dict=''):
         if flags_dict:
