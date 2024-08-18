@@ -717,16 +717,6 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.status_file.setText(f'В файле  <b>{self.filename}</b> несколько листов, выберите нужный')
                 self.combo.show()
                 self.combo.addItems(self.xl.sheet_names)
-                if self.loaded_file_data_type == 'file_pyatnov':
-                    print("if self.loaded_file_data_type == 'file_pyatnov':")
-                    self.show_withOut_load_file_interface()
-
-                    self.ui_kumite.lineEdit_name_white_1.setEnabled(True)
-                    self.ui_kumite.lineEdit_region_white_1.setEnabled(True)
-                    self.ui_kumite.lineEdit_name_red_1.setEnabled(True)
-                    self.ui_kumite.lineEdit_region_red_1.setEnabled(True)
-
-                    self.clearDataMember()
 
             else:
                 self.combo.hide()
@@ -752,7 +742,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.Form2.setFixedSize(900, 560)
         self.ui_kumite.frame_bottom.show()
         self.ui_kumite.frame_bottom1.hide()
-        self.ui_kumite.frame_bottom2.hide()
+        self.ui_kumite.frame_bottom3.hide()
 
         self.ui_kataQual.frame_pyatnov.hide()
         self.ui_kataFinal.frame_pyatnov.hide()
@@ -771,17 +761,13 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kataFinal.lineEdit_name_red_1.setEnabled(True)
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(True)
-
-        self.ui_kumite.lineEdit_name_red_1.setEnabled(True)
-        self.ui_kumite.lineEdit_region_red_1.setEnabled(True)
-        self.ui_kumite.lineEdit_name_white_1.setEnabled(True)
-        self.ui_kumite.lineEdit_region_white_1.setEnabled(True)
         print('show_withOut_load_file_interface')
 
     def show_with_load_file_interface(self):
+        # Файл Юткина
         self.ui_kumite.Form2.setFixedSize(900, 670)
         self.ui_kumite.frame_bottom1.show()
-        self.ui_kumite.frame_bottom2.hide()
+        self.ui_kumite.frame_bottom3.show()
         self.ui_kumite.frame_bottom.hide()
 
         self.ui_kataQual.frame_pyatnov.hide()
@@ -801,11 +787,6 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kataFinal.lineEdit_name_red_1.setEnabled(True)
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(True)
-
-        self.ui_kumite.lineEdit_name_white_1.setEnabled(True)
-        self.ui_kumite.lineEdit_region_white_1.setEnabled(True)
-        self.ui_kumite.lineEdit_name_red_1.setEnabled(True)
-        self.ui_kumite.lineEdit_region_red_1.setEnabled(True)
 
         self.ui_kumite.reset_all(self.flags_dict)
         print('    show_with_load_file_interface')
@@ -843,16 +824,13 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.frame_sportsmans.hide()
         self.ui_kumite.frame_sportsmans.hide()
 
-        self.ui_kumite.Form2.setFixedSize(900, 640)
+        self.ui_kumite.Form2.setFixedSize(900, 610)
         self.ui_kumite.frame_bottom1.hide()
-        self.ui_kumite.frame_bottom2.hide()
+        self.ui_kumite.frame_bottom3.hide()
         self.ui_kumite.frame_bottom.show()
 
         self.ui_kataQual.Frame_Header.combo.model().item(2).setEnabled(False)
         self.ui_kataFinal.Frame_Header.combo.model().item(2).setEnabled(False)
-
-        # self.ui_kataFinal.lineEdit_name_red_1.hide()
-        # self.ui_kataFinal.lineEdit_region_red_1.hide()
 
         self.ui_kataQual.lineEdit_name_red_1.show()
         self.ui_kataQual.lineEdit_region_red_1.show()
@@ -866,7 +844,6 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kataFinal.lineEdit_name_red_1.setEnabled(False)
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(False)
-        print('show_pyatnov_kata_interface')
 
     def show_pyatnov_kumite_interface(self, team=False):
         self.btn_Kumite.setEnabled(True)
@@ -883,12 +860,33 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.Form2.setFixedSize(900, 610)
         self.ui_kumite.frame_bottom1.show()
-        self.ui_kumite.frame_bottom2.show()
         self.ui_kumite.frame_bottom.hide()
 
         self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(False)
         self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(False)
-        print('show_pyatnov_kumite_interface')
+
+        if team:
+            self.ui_kumite.pyatnov_label.setText('Выбор команд')
+            self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 35))
+
+            self.ui_kumite.lineEdit_region_white_1.hide()
+            self.ui_kumite.le_comboBox_name_white_1.hide()
+            self.ui_kumite.lineEdit_region_red_1.hide()
+            self.ui_kumite.le_comboBox_name_red_1.hide()
+
+            self.ui_kumite.lineEdit_name_white_1.hide()
+            self.ui_kumite.lineEdit_name_red_1.hide()
+        else:
+            self.ui_kumite.pyatnov_label.setText('Выберите пару')
+            self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 50))
+
+            self.ui_kumite.lineEdit_region_white_1.show()
+            self.ui_kumite.le_comboBox_name_white_1.show()
+            self.ui_kumite.lineEdit_region_red_1.show()
+            self.ui_kumite.le_comboBox_name_red_1.show()
+
+            self.ui_kumite.lineEdit_name_white_1.show()
+            self.ui_kumite.lineEdit_name_red_1.show()
 
     def userChoice(self):
         self.user_choice_list = self.xl.sheet_names
@@ -896,411 +894,424 @@ class MenuWindow(QWidget, Ui_Form0):
         self.data_processing()
 
     def pyatnov_processing(self):
-        try:
-            # Обработка excel
-            sheets11 = self.xl.book.worksheets
-            setka_num = 1000
-            aka_shiro = None
+        # Обработка excel
+        sheets11 = self.xl.book.worksheets
+        setka_num = 1000
+        aka_shiro = None
 
-            sheet_lst = []
-            for sheet in sheets11:
-                sh_t = sheet.title
-                if sheet.sheet_state == 'visible':
-                    sheet_lst.append(sh_t)
-                    if not sh_t.find('СЕТКА ('):
-                        sh_t_lst_index = sh_t.find('_') if sh_t.find('_') >= 0 else sh_t.find(')')
-                        setka_num = int(sh_t[7:sh_t_lst_index]) if sh_t[7:sh_t_lst_index].isdigit() else 1000
-                    if not sh_t.find('Aka+Shiro'):
-                        aka_shiro = sh_t
-                    if sh_t.find('ФИНАЛ') >= 0:
-                        sheet_name_final = sh_t
-            self.xl.close()
-            # Создание списков
-            if not aka_shiro:
-                self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-                self.status_file.setText(
-                    f'Данные не загружены. Тип файла определен (Пятнов), но не найден лист <b>aka_shiro</b>')
+        sheet_lst = []
+        for sheet in sheets11:
+            sh_t = sheet.title
+            if sheet.sheet_state == 'visible':
+                sheet_lst.append(sh_t)
+                if not sh_t.find('СЕТКА ('):
+                    sh_t_lst_index = sh_t.find('_') if sh_t.find('_') >= 0 else sh_t.find(')')
+                    setka_num = int(sh_t[7:sh_t_lst_index]) if sh_t[7:sh_t_lst_index].isdigit() else 1000
+                if not sh_t.find('Aka+Shiro'):
+                    aka_shiro = sh_t
+                if sh_t.find('ФИНАЛ') >= 0:
+                    sheet_name_final = sh_t
+        self.xl.close()
+        # Создание списков
+        if not aka_shiro:
+            self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
+            self.status_file.setText(
+                f'Данные не загружены. Тип файла определен (Пятнов), но не найден лист <b>aka_shiro</b>')
+            self.clearDataMember()
+            self.show_withOut_load_file_interface()
+            return print('aka_shiro: Лист не найден')
+        # print('  _pyatnov_processing', 1111)
+        self.filename = str(self.file.split('/')[len(self.file.split('/')) - 1])
+        is_semi_final = [False, False]  # [Полуфинал, Финал]
+        if_final = False
+        # print('  _pyatnov_processing 2')
+        if self.file:
+            try:
+                # print('  _pyatnov_processing 3')
                 self.clearDataMember()
-                self.show_withOut_load_file_interface()
-                return print('aka_shiro: Лист не найден')
-            # print('  _pyatnov_processing', 1111)
-            self.filename = str(self.file.split('/')[len(self.file.split('/')) - 1])
-            is_semi_final = [False, False]  # [Полуфинал, Финал]
-            if_final = False
-            # print('  _pyatnov_processing 2')
-            if self.file:
-                try:
-                    # print('  _pyatnov_processing 3')
-                    self.clearDataMember()
 
-                    # print('  _pyatnov_processing 4')
-                    # print(self.file)
-                    # self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
-                    # print('  _pyatnov_processing 4.0')
+                # print('  _pyatnov_processing 4')
+                # print(self.file)
+                # self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
+                # print('  _pyatnov_processing 4.0')
 
-                    competition_data = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols='I:L',
-                                                     header=8, nrows=3, names=['I', 'J', 'K', 'L'])
-                    # print('  _pyatnov_processing 4.1')
-                    # Проверка наличия данных о категории
-                    if competition_data['I'][0] != 'дисциплина':
-                        raise 'Выбран неверный файл или лист'
-                    comp_type = competition_data['K'][0]
+                competition_data = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols='I:L',
+                                                 header=8, nrows=3, names=['I', 'J', 'K', 'L'])
+                # print('  _pyatnov_processing 4.1')
+                # Проверка наличия данных о категории
+                if competition_data['I'][0] != 'дисциплина':
+                    raise 'Выбран неверный файл или лист'
+                comp_type = competition_data['K'][0]
 
-                    qual_sportsman_cnt = 0  # Номер последней пары в отборочных
-                    final_sportsman_cnt = 3
+                qual_sportsman_cnt = 0  # Номер последней пары в отборочных
+                final_sportsman_cnt = 3
+                if comp_type == 'ката':
+                    for sheet_name in sheet_lst:
+                        if not sheet_name.find('ПФ_и_ ФИНАЛ_КАТА'):
+                            final_sportsman_cnt = 7
+                        elif not sheet_name.find('ФИНАЛ_КАТА'):
+                            final_sportsman_cnt = 3
+
+                qual_sportsman_cnt = 32 - final_sportsman_cnt if setka_num < 64 else 64 - final_sportsman_cnt
+
+                # Название категории и для кумите КОМ список спортсменов в командах
+                self.category_label = ""
+                self.sportsmans_in_teams_dict = {}
+                if competition_data['L'][0] in ('КОМ.', 'груп.'):
+                    if competition_data['L'][0] == 'КОМ.':
+                        self.category_label = 'КОМАНДНЫЕ. '
+                        # Список спортменов в командах
+                        self.sportsmans_in_teams_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', header=8,
+                                                                      nrows=64, usecols=[1, 6], index_col=0,
+                                                                      names=['team', 'names'])
+                        self.sportsmans_in_teams_dict.dropna(axis=0, how='all', inplace=True)
+                        self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict.to_dict()
+                        self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict['names']
+                        for i in self.sportsmans_in_teams_dict:
+                            self.sportsmans_in_teams_dict[i] = self.sportsmans_in_teams_dict[i].split('\n')
+                        print('self.sportsmans_in_teams_dict')
+                        print(self.sportsmans_in_teams_dict)
+
+                        referee_protocol = pd.read_excel(self.file, sheet_name='Прот_арб', header=0,
+                        usecols=[0, 1, 2,
+                                   3, 4, 5, 6, 7,
+                                   8,
+                                   9,
+                                   10, 11, 12, 13, 14,
+                                   15, 17
+                                 ],
+                        names=[
+                        '1_siro_num', '2_siro_sportsman', '3_siro_region',
+                        '4_siro_rating_1', '5_siro_rating_2', '6_siro_rating_3', '7_siro_rating_4', '8_siro_rating_5',
+                        '9_siro_score',
+                        '10_aka_score',
+                        '11_aka_rating_1', '12_aka_rating_2', '13_aka_rating_3', '14_aka_rating_4', '15_aka_rating_5',
+                        '17_aka_sportsman', '18_aka_num'
+                        ]
+                                                         )
+                        use11cols = [0, 1, 2,
+                                   3, 4, 5, 6, 7,
+                                   8,
+                                   9,
+                                   10, 11, 12, 13, 14,
+                                   10, 15, 17]
+                        use22cols = [1, 2, 3,
+                                   4, 5, 6, 7, 8,
+                                   9,
+                                   10,
+                                   11, 12, 13, 14, 15,
+                                   12, 16, 18]
+                        name11s=[
+                        '1_siro_num', '2_siro_sportsman', '3_siro_region',
+                        '4_siro_rating_1', '5_siro_rating_2', '6_siro_rating_3', '7_siro_rating_4', '8_siro_rating_5',
+                        '9_siro_score',
+                        '10_aka_score',
+                        '11_aka_rating_1', '12_aka_rating_2', '13_aka_rating_3', '14_aka_rating_4', '15_aka_rating_5',
+                        '16_aka_region', '17_aka_sportsman', '18_aka_num'
+                        ]
+                        print('referee_protocol')
+                        print(len(referee_protocol.columns), len(name11s))
+                        print(referee_protocol.columns)
+                        dct1 = referee_protocol.iloc[21::53, [0, 2, 10]].to_dict()
+                        print(dct1)
+                        print(referee_protocol.iloc[21::53, [0, 2, 10]])
+                        for i in referee_protocol:
+                            print(i)
+                    else:
+                        self.category_label = 'ГРУППА. '
+                self.category_label = f"{self.category_label}{competition_data['K'][1]}{competition_data['J'][2]}"
+                # print('  _pyatnov_processing 4.2')
+                # print(competition_data)
+                pd.options.display.max_columns = None
+                # Создаём датасет из данных на листе Aka+Shiro
+                self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
+                                                    header=9, names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
+                # добавляем столбец с номером строки, куда будем записывать очки победителей
+                self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
+                # print('  _pyatnov_processing 4.3')
+                # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
+                self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
+                self.sportsmen_list = self.sportsmen_list.query(f'duet < {qual_sportsman_cnt}')
+                self.sportsmen_list = self.sportsmen_list.iloc[:, [5, 1, 4, 2, 3]]
+                # Обнуляем индексы
+                self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
+                # Удаляем пустые строки
+                self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
+                # print('  _pyatnov_processing 4.4')
+                # Удаляем строки, где нет ФИО сиро или ака
+                self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
+                # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
+                self.sportsmen_list = \
+                    self.sportsmen_list.query('score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
+
+                # print(self.sportsmen_list)
+                # Регионы спортсменов
+                self.region_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols=[1, 4, 6], header=8,
+                                                 names=['name', 'region', 'team_list'])
+                self.region_dict.dropna(axis=0, how='all', inplace=True)
+
+                # Если датасет пустой, значит остались только финальные сетки
+                if not len(self.sportsmen_list):
+
                     if comp_type == 'ката':
-                        for sheet_name in sheet_lst:
-                            if not sheet_name.find('ПФ_и_ ФИНАЛ_КАТА'):
-                                final_sportsman_cnt = 7
-                            elif not sheet_name.find('ФИНАЛ_КАТА'):
-                                final_sportsman_cnt = 3
+                        # Если полуфинал и финал
+                        if sheet_name_final.find('ПФ') >= 0:
+                            is_semi_final = [True, False]
+                            # Создаём датасет из данных на листе ФИНАЛ
+                            self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=8,
+                                                                usecols=[1, 3], header=5, names=['name', 'kata'])
+                            self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                            self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
+                            self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
+                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
-                    qual_sportsman_cnt = 32 - final_sportsman_cnt if setka_num < 64 else 64 - final_sportsman_cnt
+                            # Проверяем есть ли переигровка в полуфинале
+                            self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
+                                                              usecols=[1, 3], header=14, names=['name', 'kata'])
+                            self.rematch_list['row_num'] = self.rematch_list.index + 16
+                            # print('self.rematch_list', self.rematch_list)
+                            self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
+                            self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
 
-                    # Название категории и для кумите КОМ список спортсменов в командах
-                    self.category_label = ""
-                    self.sportsmans_in_teams_dict = {}
-                    if competition_data['L'][0] in ('КОМ.', 'груп.'):
-                        if competition_data['L'][0] == 'КОМ.':
-                            self.category_label = 'КОМАНДНЫЕ. '
-                            # Список спортменов в командах
-                            self.sportsmans_in_teams_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', header=8,
-                                                                          nrows=64, usecols=[1, 6], index_col=0,
-                                                                          names=['team', 'names'])
-                            self.sportsmans_in_teams_dict.dropna(axis=0, how='all', inplace=True)
-                            self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict.to_dict()
-                            self.sportsmans_in_teams_dict = self.sportsmans_in_teams_dict['names']
-                            for i in self.sportsmans_in_teams_dict:
-                                self.sportsmans_in_teams_dict[i] = self.sportsmans_in_teams_dict[i].split('\n')
-                            print('self.sportsmans_in_teams_dict')
-                            print(self.sportsmans_in_teams_dict)
-                        else:
-                            self.category_label = 'ГРУППА. '
-                    self.category_label = f"{self.category_label}{competition_data['K'][1]}{competition_data['J'][2]}"
-                    # print('  _pyatnov_processing 4.2')
-                    # print(competition_data)
-                    pd.options.display.max_columns = None
-                    # Создаём датасет из данных на листе Aka+Shiro
-                    self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
-                                                        header=9, names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
-                    # добавляем столбец с номером строки, куда будем записывать очки победителей
-                    self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
-                    # print('  _pyatnov_processing 4.3')
-                    # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
-                    self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
-                    self.sportsmen_list = self.sportsmen_list.query(f'duet < {qual_sportsman_cnt}')
-                    self.sportsmen_list = self.sportsmen_list.iloc[:, [5, 1, 4, 2, 3]]
-                    # Обнуляем индексы
-                    self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
-                    # Удаляем пустые строки
-                    self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
-                    # print('  _pyatnov_processing 4.4')
-                    # Удаляем строки, где нет ФИО сиро или ака
-                    self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
-                    # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
-                    self.sportsmen_list = \
-                        self.sportsmen_list.query('score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
+                            self.sportsmen_list = pd.concat([self.sportsmen_list, self.rematch_list], sort=False)
 
-                    # print(self.sportsmen_list)
-                    # Регионы спортсменов
-                    self.region_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols=[1, 4, 6], header=8,
-                                                     names=['name', 'region', 'team_list'])
-                    self.region_dict.dropna(axis=0, how='all', inplace=True)
-
-                    # Если датасет пустой, значит остались только финальные сетки
-                    if not len(self.sportsmen_list):
-
-                        if comp_type == 'ката':
-                            # Если полуфинал и финал
-                            if sheet_name_final.find('ПФ') >= 0:
-                                is_semi_final = [True, False]
-                                # Создаём датасет из данных на листе ФИНАЛ
-                                self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=8,
-                                                                    usecols=[1, 3], header=5, names=['name', 'kata'])
-                                self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
-                                self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
-                                self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
-                                self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
-
-                                # Проверяем есть ли переигровка в полуфинале
-                                self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
-                                                                  usecols=[1, 3], header=14, names=['name', 'kata'])
-                                self.rematch_list['row_num'] = self.rematch_list.index + 16
-                                # print('self.rematch_list', self.rematch_list)
-                                self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
-                                self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
-
-                                self.sportsmen_list = pd.concat([self.sportsmen_list, self.rematch_list], sort=False)
-
-                                # Если все полуфиналы отыграны смотрим на финалы
-                                if not len(self.sportsmen_list):
-                                    is_semi_final = [False, True]
-                                    self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=4,
-                                                                        usecols=[1, 3], header=24, names=['name', 'kata'])
-                                    self.sportsmen_list['row_num'] = self.sportsmen_list.index + 26
-                                    self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
-                                    self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
-                                    self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
-
-                                    # Проверяем есть ли переигровка в финале
-                                    self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
-                                                                      usecols=[1, 3], header=29, names=['name', 'kata'])
-                                    self.rematch_list['row_num'] = self.rematch_list.index + 31
-                                    self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
-                                    self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
-                            else:
+                            # Если все полуфиналы отыграны смотрим на финалы
+                            if not len(self.sportsmen_list):
                                 is_semi_final = [False, True]
                                 self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=4,
-                                                                    usecols=[1, 3], header=5,
-                                                                    names=['name', 'kata'])
-                                self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                                                                    usecols=[1, 3], header=24, names=['name', 'kata'])
+                                self.sportsmen_list['row_num'] = self.sportsmen_list.index + 26
                                 self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
                                 self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
                                 self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
                                 # Проверяем есть ли переигровка в финале
                                 self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
-                                                                  usecols=[1, 3], header=11, names=['name', 'kata'])
-                                self.rematch_list['row_num'] = self.rematch_list.index + 13
+                                                                  usecols=[1, 3], header=29, names=['name', 'kata'])
+                                self.rematch_list['row_num'] = self.rematch_list.index + 31
                                 self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
                                 self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
-
-                            # Если список не пуст, то добавляем сокращённые имена и регионы
-                            if len(self.sportsmen_list):
-                                self.sportsmen_list['name_short'] = \
-                                    self.sportsmen_list['name'].str.split(' ', expand=True)[0] + ' ' + \
-                                    self.sportsmen_list['name'].str.split(' ', expand=True)[1].str[0] + '.'
-
-                                self.region_dict.rename(columns={'name': 'name1'}, inplace=True)
-                                self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name1', 'region']],
-                                                               left_on='name', right_on='name1', how='left')
-
-                                self.sportsmen_list.drop('name1', axis=1, inplace=True)
-                                self.sportsmen_list.rename(columns={'region': 'region_aka'}, inplace=True)
-
-                                self.sportsmen_dict = self.sportsmen_list.to_dict()
-
-                        elif comp_type == 'кумите':
-                            print("not len(self.sportsmen_list)")
-                            # Создаём датасет из данных на листе Aka+Shiro
-                            self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
-                                                                header=9,
-                                                                names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
-                            # добавляем столбец с номером строки, куда будем записывать очки победителей
-                            self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
-                            # print('  _pyatnov_processing 4.31', aka_shiro)
-
-                            # print(self.sportsmen_list)
-                            # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
-                            self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
-                            self.sportsmen_list = self.sportsmen_list.query(f'duet >= {qual_sportsman_cnt}')
-                            self.sportsmen_list = self.sportsmen_list.iloc[:, [5, 1, 4, 2, 3]]
-                            # Обнуляем индексы
-                            self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
-
-                            # Удаляем пустые строки
-                            self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
-                            # print('  _pyatnov_processing 4.32')
-                            # Удаляем строки, где нет ФИО сиро или ака
-                            self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
-                            # print('  _pyatnov_processing 4.33')
-                            # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
-                            self.sportsmen_list = \
-                                self.sportsmen_list.query(
-                                    'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
-                            # print('  _pyatnov_processing 4.34')
-
-                    print('       is_semi_final', is_semi_final, len(self.sportsmen_list))
-
-                    if len(self.sportsmen_list):
-                        if is_semi_final == [False, False]:
-                            # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
-                            # print('  _pyatnov_processing 4.5')
-                            if self.sportsmans_in_teams_dict:
-                                print("self.sportsmen_list['siro'].str.split('  -  ', expand=True)")
-                                print(self.sportsmen_list['siro'])
-                                print("*-   -*   *-   -*   *-   -*   *-   -*   *-   -*   *-   -*   ")
-                                team_num_siro = list(self.sportsmen_list['siro'].str.split(' - ком ', expand=True))[-1]
-                                print(self.sportsmen_list['siro'].str.split(' - ком ', expand=True))
-                                print("_________________________________________________________________ team_num:", team_num_siro)
-                                self.sportsmen_list['siro_short'] = \
-                                    self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ком ' + \
-                                    self.sportsmen_list['siro'].str.split(' - ком ', expand=True)[team_num_siro]
-
-                                # print('  _pyatnov_processing 5')
-                                team_num_aka = list(self.sportsmen_list['aka'].str.split(' - ком ', expand=True))[-1]
-                                self.sportsmen_list['aka_short'] = \
-                                    self.sportsmen_list['aka'].str.split(' ', expand=True)[0] + ' ком ' + \
-                                    self.sportsmen_list['aka'].str.split(' - ком ', expand=True)[team_num_aka]
-
-                                self.sportsmen_list['combo_box'] = \
-                                    self.sportsmen_list['siro_short'] + ' - ' + self.sportsmen_list['aka_short']
-                            else:
-                                self.sportsmen_list['siro_short'] = \
-                                    self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ' + \
-                                    self.sportsmen_list['siro'].str.split(' ', expand=True)[1].str[0] + '.'
-
-                                # print('  _pyatnov_processing 5')
-                                self.sportsmen_list['aka_short'] = \
-                                    self.sportsmen_list['aka'].str.split(' ', expand=True)[0] + ' ' + \
-                                    self.sportsmen_list['aka'].str.split(' ', expand=True)[1].str[0] + '.'
-
-                                self.sportsmen_list['combo_box'] = \
-                                    self.sportsmen_list['siro_short'] + ' - ' + self.sportsmen_list['aka_short']
-                            print('sportsmen_list')
-                            print(self.sportsmen_list)
-                            # Добавляем регион участников
-                            if self.sportsmans_in_teams_dict:
-                                self.sportsmen_list['region_siro'] = self.sportsmen_list['siro']
-                                self.sportsmen_list['region_aka'] = self.sportsmen_list['aka']
-                            else:
-                                self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name', 'region']],
-                                                               left_on='siro',
-                                                               right_on='name', how='left')
-
-                                self.sportsmen_list.drop('name', axis=1, inplace=True)
-                                self.sportsmen_list.rename(columns={'region': 'region_siro'}, inplace=True)
-                                self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name', 'region']],
-                                                               left_on='aka', right_on='name', how='left')
-                                self.sportsmen_list.drop('name', axis=1, inplace=True)
-                                self.sportsmen_list.rename(columns={"region": "region_aka"}, inplace=True)
-
-                            pd.options.display.max_columns = None
-
-                        elif is_semi_final in [[False, True], [True, False]]:
-                            self.sportsmen_list['combo_box'] = \
-                                self.sportsmen_list['name'] + ' - ' + self.sportsmen_list['region_aka']
-                        # print('  _pyatnov_processing 6')
-                        # print(self.sportsmen_list)
-
-                        self.sportsmen_dict = self.sportsmen_list.to_dict()
-                        # print('  _pyatnov_processing 7')
-                        # print(f"_{comp_type}_")
-                    else:
-                        self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-                        self.status_file.setText(f'Список спортсменов пуст')
-                        self.clearDataMember()
-                        self.show()
-                        self.btn_Kumite.setEnabled(True)
-                        self.btn_Kata_qual.setEnabled(True)
-                        self.btn_Kata_final.setEnabled(True)
-                        self.ui_kataQual.frame_pyatnov.hide()
-                        self.ui_kataFinal.frame_pyatnov.hide()
-                        self.ui_kumite.frame_pyatnov.hide()
-                        self.closeAllWin()
-                        self.show_withOut_load_file_interface()
-                        return
-
-                    if comp_type == 'ката':
-                        self.show_pyatnov_kata_interface()
-                        self.ui_kumite.matchName12.setText(self.category_label)
-
-                        if self.tatamiName == "":
-                            self.ui_kataQual.matchName1.setText('Татами №#, ' + self.category_label)
-                            self.ui_kataFinal.matchName1.setText('Татами №#, ' + self.category_label)
                         else:
-                            self.ui_kataQual.matchName1.setText(self.tatamiName + ', ' + self.category_label)
-                            self.ui_kataFinal.matchName1.setText(self.tatamiName + ', ' + self.category_label)
+                            is_semi_final = [False, True]
+                            self.sportsmen_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=4,
+                                                                usecols=[1, 3], header=5,
+                                                                names=['name', 'kata'])
+                            self.sportsmen_list['row_num'] = self.sportsmen_list.index + 7
+                            self.sportsmen_list['ttl_cnt_sp'] = len(self.sportsmen_list.query(f'name.notna()'))
+                            self.sportsmen_list = self.sportsmen_list.query(f'name.notna() and kata.isna()')
+                            self.sportsmen_list = self.sportsmen_list.iloc[:, [2, 0, 1, 3]]
 
-                        if is_semi_final == [False, False]:
-                            # print('ката отборочные', self.setLabelRed)
+                            # Проверяем есть ли переигровка в финале
+                            self.rematch_list = pd.read_excel(self.file, sheet_name=sheet_name_final, nrows=2,
+                                                              usecols=[1, 3], header=11, names=['name', 'kata'])
+                            self.rematch_list['row_num'] = self.rematch_list.index + 13
+                            self.rematch_list = self.rematch_list.query(f'name.notna() and kata.isna()')
+                            self.rematch_list = self.rematch_list.iloc[:, [2, 0, 1]]
 
-                            # self.ui_kataQual.comboBox_name_red_1.activated[str].connect(self.setLabelRed)
-                            self.ui_kataQual.pyatnov_name.clear()
-                            self.ui_kataQual.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
-                            self.ui_kataQual.pyatnov_name.setEnabled(True)
-                            # self.ui_kataQual.pyatnov_name.activated[str].connect(self.setLabel)
+                        # Если список не пуст, то добавляем сокращённые имена и регионы
+                        if len(self.sportsmen_list):
+                            self.sportsmen_list['name_short'] = \
+                                self.sportsmen_list['name'].str.split(' ', expand=True)[0] + ' ' + \
+                                self.sportsmen_list['name'].str.split(' ', expand=True)[1].str[0] + '.'
 
-                            self.btn_Kata_qual.setEnabled(True)
-                            self.btn_Kata_final.setEnabled(False)
+                            self.region_dict.rename(columns={'name': 'name1'}, inplace=True)
+                            self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name1', 'region']],
+                                                           left_on='name', right_on='name1', how='left')
 
-                            # self.ui_kataFinal.male.hide()
-                            # self.ui_kataFinal.female.hide()
-                            # self.ui_kataFinal.sex_1.hide()
-                            # self.ui_kataFinal.age_1.hide()
-                            # self.ui_kataFinal.comboBox_age.hide()
-                            # self.ui_kataFinal.lineEdit_name_red_1.setEnabled(False)
-                            # self.ui_kataFinal.lineEdit_region_red_1.setEnabled(False)
-                        elif is_semi_final in [[True, False], [False, True]]:
-                            # print('ката финал')
+                            self.sportsmen_list.drop('name1', axis=1, inplace=True)
+                            self.sportsmen_list.rename(columns={'region': 'region_aka'}, inplace=True)
 
-                            self.ui_kataQual.frame_pyatnov.hide()
-
-                            self.ui_kataFinal.pyatnov_name.clear()
-                            self.ui_kataFinal.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
-                            self.ui_kataFinal.pyatnov_name.setEnabled(True)
-                            # self.ui_kataFinal.pyatnov_name.activated[str].connect(self.setLabel)
-
-                            # Список ката
-                            self.ui_kataFinal.pyatnov_kata_name.clear()
-                            self.ui_kataFinal.pyatnov_kata_name.addItems(self.kata_list)
-                            self.ui_kataFinal.pyatnov_kata_name.setEnabled(True)
-                            self.ui_kataFinal.pyatnov_kata_name.activated[str].connect(self.setLabel)
-
-                            self.btn_Kata_qual.setEnabled(False)
-                            self.btn_Kata_final.setEnabled(True)
+                            self.sportsmen_dict = self.sportsmen_list.to_dict()
 
                     elif comp_type == 'кумите':
-                        # print('кумите')
-                        self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
-                        self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
-                        self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
-                        self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
+                        # Создаём датасет из данных на листе Aka+Shiro
+                        self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
+                                                            header=9,
+                                                            names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
+                        # добавляем столбец с номером строки, куда будем записывать очки победителей
+                        self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
+                        # print('  _pyatnov_processing 4.31', aka_shiro)
 
-                        self.show_pyatnov_kumite_interface(team=True if competition_data['L'][0] == 'КОМ.' else False)
-                        self.ui_kumite.pyatnov_name.clear()
-                        self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
-                        self.ui_kumite.pyatnov_name.setEnabled(True)
-                        # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
-                        self.ui_kumite.matchName12.setText(self.category_label)
+                        # print(self.sportsmen_list)
+                        # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
+                        self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
+                        self.sportsmen_list = self.sportsmen_list.query(f'duet >= {qual_sportsman_cnt}')
+                        self.sportsmen_list = self.sportsmen_list.iloc[:, [5, 1, 4, 2, 3]]
+                        # Обнуляем индексы
+                        self.sportsmen_list = self.sportsmen_list.reset_index(drop=True)
 
-                        # Если командные соревнования, создаём список выступающих пар спортсменов,
-                        # и что-то делаем с командами, для которых не были указаны данные на листе "Прот_арб"
-                        if competition_data['L'][0] == 'КОМ.':
-                            self.referee_protocol = pd.read_excel(self.file, sheet_name='Прот_арб', usecols=range(1, 19))
-                            print('self.referee_protocol')
-                            print(self.referee_protocol)
+                        # Удаляем пустые строки
+                        self.sportsmen_list.dropna(axis=0, how='all', inplace=True)
+                        # print('  _pyatnov_processing 4.32')
+                        # Удаляем строки, где нет ФИО сиро или ака
+                        self.sportsmen_list.dropna(axis=0, subset=["siro", "aka"], inplace=True)
+                        # print('  _pyatnov_processing 4.33')
+                        # Оставляем строки только для пар, где, или результат 0-0, или другой одинаковый (1-1, 2-2 и тд)
+                        self.sportsmen_list = \
+                            self.sportsmen_list.query(
+                                'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
+                        # print('  _pyatnov_processing 4.34')
 
-                    # print('  _pyatnov_processing 8')
-                    self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
-                    self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
-                    self.loaded_file_data_type = 'file_pyatnov'
+                # print('       is_semi_final', is_semi_final)
 
-                    # print('*_-_' * 5)
+                if len(self.sportsmen_list):
+                    if is_semi_final == [False, False]:
+                        # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
+                        # print('  _pyatnov_processing 4.5')
+                        if self.sportsmans_in_teams_dict:
+                            print("self.sportsmen_list['siro'].str.split('  -  ', expand=True)")
+                            print(self.sportsmen_list['siro'])
+                            print("*-   -*   *-   -*   *-   -*   *-   -*   *-   -*   *-   -*   ")
+                            team_num_siro = list(self.sportsmen_list['siro'].str.split(' - ком ', expand=True))[-1]
+                            print(self.sportsmen_list['siro'].str.split(' - ком ', expand=True))
+                            print("_________________________________________________________________ team_num:", team_num_siro)
+                            self.sportsmen_list['siro_short'] = \
+                                self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ком ' + \
+                                self.sportsmen_list['siro'].str.split(' - ком ', expand=True)[team_num_siro]
+
+                            # print('  _pyatnov_processing 5')
+                            team_num_aka = list(self.sportsmen_list['aka'].str.split(' - ком ', expand=True))[-1]
+                            self.sportsmen_list['aka_short'] = \
+                                self.sportsmen_list['aka'].str.split(' ', expand=True)[0] + ' ком ' + \
+                                self.sportsmen_list['aka'].str.split(' - ком ', expand=True)[team_num_aka]
+
+                            self.sportsmen_list['combo_box'] = \
+                                self.sportsmen_list['siro_short'] + ' - ' + self.sportsmen_list['aka_short']
+
+
+                        else:
+                            self.sportsmen_list['siro_short'] = \
+                                self.sportsmen_list['siro'].str.split(' ', expand=True)[0] + ' ' + \
+                                self.sportsmen_list['siro'].str.split(' ', expand=True)[1].str[0] + '.'
+
+                            # print('  _pyatnov_processing 5')
+                            self.sportsmen_list['aka_short'] = \
+                                self.sportsmen_list['aka'].str.split(' ', expand=True)[0] + ' ' + \
+                                self.sportsmen_list['aka'].str.split(' ', expand=True)[1].str[0] + '.'
+
+                            self.sportsmen_list['combo_box'] = \
+                                self.sportsmen_list['siro_short'] + ' - ' + self.sportsmen_list['aka_short']
+                        print('sportsmen_list')
+                        print(self.sportsmen_list)
+                        # Добавляем регион участников
+                        if self.sportsmans_in_teams_dict:
+                            self.sportsmen_list['region_siro'] = self.sportsmen_list['siro']
+                            self.sportsmen_list['region_aka'] = self.sportsmen_list['aka']
+                        else:
+                            self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name', 'region']],
+                                                           left_on='siro',
+                                                           right_on='name', how='left')
+
+                            self.sportsmen_list.drop('name', axis=1, inplace=True)
+                            self.sportsmen_list.rename(columns={'region': 'region_siro'}, inplace=True)
+                            self.sportsmen_list = pd.merge(self.sportsmen_list, self.region_dict[['name', 'region']],
+                                                           left_on='aka', right_on='name', how='left')
+                            self.sportsmen_list.drop('name', axis=1, inplace=True)
+                            self.sportsmen_list.rename(columns={"region": "region_aka"}, inplace=True)
+
+                        pd.options.display.max_columns = None
+
+                    elif is_semi_final in [[False, True], [True, False]]:
+                        self.sportsmen_list['combo_box'] = \
+                            self.sportsmen_list['name'] + ' - ' + self.sportsmen_list['region_aka']
+                    # print('  _pyatnov_processing 6')
                     # print(self.sportsmen_list)
-                    # print('*_-_' * 5)
 
-                    # Скрываем все пункты из выпадающего списка Главное меню - Ката - Кумите
-                    self.frame_header_combo_disabled()
+                    self.sportsmen_dict = self.sportsmen_list.to_dict()
+                    # print('  _pyatnov_processing 7')
+                    # print(f"_{comp_type}_")
 
-                    threading.current_thread().main_thread_completion_status = True
-                    # Если был последний бой в отборочных Ката, то открываем окно Ката финал
-                    if comp_type == 'ката' and is_semi_final in [[True, False],
-                                                                 [False, True]] and self.ui_kataQual.isVisible():
-                        # print('  --------------------------------------------- self.ui_kataQual.isVisible()')
-                        # # self.showKataFinalWin()
-                        # print('  ---------------------------------------------111')
-                        threading.current_thread().main_thread_completion_status = 'self.showKataFinalWin()'
-                        return 'self.showKataFinalWin()'
+                if comp_type == 'ката':
+                    self.show_pyatnov_kata_interface()
+                    self.ui_kumite.matchName12.setText(self.category_label)
 
-                except Exception as e:
-                    print('_______Exception pyatnov_processing:', e)
-                    self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-                    self.status_file.setText(f'Выбран неверный файл или лист: <b>{str(e)}</b>')
-                    self.clearDataMember()
-                    self.show()
-                    self.closeAllWin()
-                    # MenuWindow.show(self)
-                    # self.showMainMenu()
-                    self.show_withOut_load_file_interface()
-        except Exception as e:
-            print('_______Exception pyatnov_processing2:', e)
-            self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
-            self.status_file.setText(f'Ошибка обработки файла. Выбран неверный файл или лист: <b>{str(e)}</b>')
-            self.clearDataMember()
-            self.closeAllWin()
-            MenuWindow.show(self)
-            self.show_withOut_load_file_interface()
+                    if self.tatamiName == "":
+                        self.ui_kataQual.matchName1.setText('Татами №#, ' + self.category_label)
+                        self.ui_kataFinal.matchName1.setText('Татами №#, ' + self.category_label)
+                    else:
+                        self.ui_kataQual.matchName1.setText(self.tatamiName + ', ' + self.category_label)
+                        self.ui_kataFinal.matchName1.setText(self.tatamiName + ', ' + self.category_label)
+
+                    if is_semi_final == [False, False]:
+                        # print('ката отборочные', self.setLabelRed)
+
+                        # self.ui_kataQual.comboBox_name_red_1.activated[str].connect(self.setLabelRed)
+                        self.ui_kataQual.pyatnov_name.clear()
+                        self.ui_kataQual.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
+                        self.ui_kataQual.pyatnov_name.setEnabled(True)
+                        # self.ui_kataQual.pyatnov_name.activated[str].connect(self.setLabel)
+
+                        self.btn_Kata_qual.setEnabled(True)
+                        self.btn_Kata_final.setEnabled(False)
+
+                        # self.ui_kataFinal.male.hide()
+                        # self.ui_kataFinal.female.hide()
+                        # self.ui_kataFinal.sex_1.hide()
+                        # self.ui_kataFinal.age_1.hide()
+                        # self.ui_kataFinal.comboBox_age.hide()
+                        # self.ui_kataFinal.lineEdit_name_red_1.setEnabled(False)
+                        # self.ui_kataFinal.lineEdit_region_red_1.setEnabled(False)
+                    elif is_semi_final in [[True, False], [False, True]]:
+                        # print('ката финал')
+
+                        self.ui_kataQual.frame_pyatnov.hide()
+
+                        self.ui_kataFinal.pyatnov_name.clear()
+                        self.ui_kataFinal.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
+                        self.ui_kataFinal.pyatnov_name.setEnabled(True)
+                        # self.ui_kataFinal.pyatnov_name.activated[str].connect(self.setLabel)
+
+                        # Список ката
+                        self.ui_kataFinal.pyatnov_kata_name.clear()
+                        self.ui_kataFinal.pyatnov_kata_name.addItems(self.kata_list)
+                        self.ui_kataFinal.pyatnov_kata_name.setEnabled(True)
+                        self.ui_kataFinal.pyatnov_kata_name.activated[str].connect(self.setLabel)
+
+                        self.btn_Kata_qual.setEnabled(False)
+                        self.btn_Kata_final.setEnabled(True)
+
+                elif comp_type == 'кумите':
+                    # print('кумите')
+                    self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
+
+                    self.show_pyatnov_kumite_interface(team=True if competition_data['L'][0] == 'КОМ.' else False)
+                    self.ui_kumite.pyatnov_name.clear()
+                    self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
+                    self.ui_kumite.pyatnov_name.setEnabled(True)
+                    # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
+                    self.ui_kumite.matchName12.setText(self.category_label)
+
+                # print('  _pyatnov_processing 8')
+                self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
+                self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
+                self.loaded_file_data_type = 'file_pyatnov'
+
+                # print('*_-_' * 5)
+                # print(self.sportsmen_list)
+                # print('*_-_' * 5)
+
+                # Скрываем все пункты из выпадающего списка Главное меню - Ката - Кумите
+                self.frame_header_combo_disabled()
+
+                threading.current_thread().main_thread_completion_status = True
+                # Если был последний бой в отборочных Ката, то открываем окно Ката финал
+                if comp_type == 'ката' and is_semi_final in [[True, False],
+                                                             [False, True]] and self.ui_kataQual.isVisible():
+                    # print('  --------------------------------------------- self.ui_kataQual.isVisible()')
+                    # # self.showKataFinalWin()
+                    # print('  ---------------------------------------------111')
+                    threading.current_thread().main_thread_completion_status = 'self.showKataFinalWin()'
+                    return 'self.showKataFinalWin()'
+
+            except Exception as e:
+                print('_______Exception pyatnov_processing:', e)
+                self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
+                self.status_file.setText(f'Выбран неверный файл или лист: <b>{str(e)}</b>')
+                self.clearDataMember()
+                self.show_withOut_load_file_interface()
 
     def data_processing(self):
         self.filename = str(self.file.split('/')[len(self.file.split('/')) - 1])
@@ -1346,7 +1357,10 @@ class MenuWindow(QWidget, Ui_Form0):
                             self.file_dementieva()
                             self.show_with_load_file_interface()
                             break
-
+                # # Для окна Кумите, если загружен список отображается область с выбором категории
+                # self.ui_kumite.Form2.setFixedSize(900, 750)
+                # self.ui_kumite.frame_bottom1.show()
+                # self.ui_kumite.frame_bottom.hide()
             except Exception as e:
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
                 print('_______Exception data_processing2:', e)
@@ -2571,11 +2585,8 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_KumiteMenu.show()
 
     def showMainMenu(self):
-        print('showMainMenu 1')
         self.closeAllWin()
-        print('showMainMenu 2')
         self.show()
-        print('showMainMenu 3')
 
     def calc_monitor_coord(self):
         if self.list_monitor[7] == 'is_primary=True)':
@@ -2744,17 +2755,6 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.ui_kumite.setWinner()
 
                 if self.loaded_file_data_type == 'file_pyatnov':
-
-                    aka_name = self.ui_kumite.lineEdit_name_red_1.text()
-                    siro_name = self.ui_kumite.lineEdit_name_white_1.text()
-                    side = 'siro' if sender == self.ui_kumite.winnerWhite else 'aka'
-                    row_num = siro_name + ' - ' + aka_name
-                    row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
-                    row = self.sportsmen_dict['row_num'][row1]
-                    col_white, col_red = ["G", "L"]
-                    col = col_white if sender == self.ui_kumite.winnerWhite else col_red
-                    cell_coord = f"{col}{row}"
-
                     if self.sportsmans_in_teams_dict:
                         name_white = self.ui_kumite.label_name_white_1.text()
                         region_white = self.ui_kumite.label_region_white_1.text()
@@ -2771,15 +2771,14 @@ class MenuWindow(QWidget, Ui_Form0):
                         print('name_white', name_white, 'region_white', region_white)
                         print('name_red', name_red, 'region_red', region_red)
                         print('СОХРАНИТЬ В EXCEL кум личное')
-                        self.pyatnov_winner = {'type': 'ui_kumite', 'side': side, 'cell': cell_coord}
 
         except Exception as e:
             print('_______Exception set_winner:', e)
 
     def check_to_wopf(self):
-        print('___________ check_to_wopf', self.pyatnov_winner)
+        # print('___________ check_to_wopf')
         if self.pyatnov_winner is None:
-            print('                       self.pyatnov_winner is None')
+            # print('                       self.pyatnov_winner is None')
             return
         try:
             # Записываем данные из переменной, обнуляем переменную и делаем проверку по ней, если она не None,
@@ -2856,28 +2855,6 @@ class MenuWindow(QWidget, Ui_Form0):
                     print(8, 2)
 
                     print(2222222)
-                except AttributeError:
-                    os.system("taskkill /f /im excel.exe")
-                    print("Excel terminated using taskkill")
-
-            elif self.pyatnov_winner['type'] == 'ui_kumite':
-                print(14, 1)
-                try:
-                    print(15, 1)
-                    excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
-                    workbook = excel.Workbooks.Open(excel_file_path)
-                    worksheet = workbook.Worksheets("Aka+Shiro")
-                    worksheet.Range(self.pyatnov_winner['cell']).Value = 1
-                    print(16, 1)
-                    workbook.Save()
-                    workbook.Close()
-                    excel.Quit()
-
-                    print(17, 1)
-                    self.pyatnov_winner = None
-                    print(18, 1)
-
-                    print(100111111)
                 except AttributeError:
                     os.system("taskkill /f /im excel.exe")
                     print("Excel terminated using taskkill")

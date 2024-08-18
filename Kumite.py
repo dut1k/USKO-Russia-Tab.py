@@ -762,6 +762,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
+        self.frame_pyatnov_perebivka = QtWidgets.QFrame(self.Form2)
+        self.pyatnov_perebivka_lbl = QtWidgets.QLabel("Перебивка", self.frame_pyatnov_perebivka)
+        self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka)
+
         self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
         self.btn_style_1 = css.btn_style_1
@@ -914,7 +918,6 @@ class KumiteMainWindow_Ui(QWidget):
 
         self.frame_bottom = QtWidgets.QFrame(self.Form2)
         self.frame_bottom1 = QtWidgets.QFrame(self.Form2)
-        self.frame_bottom2 = QtWidgets.QFrame(self.Form2)
         self.frame_bottom3 = QtWidgets.QFrame(self.Form2)
         self.frame_left = QtWidgets.QFrame(self.Form2)
         self.frame_right = QtWidgets.QFrame(self.Form2)
@@ -925,12 +928,9 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_bottom1.setGeometry(QtCore.QRect(25, 559, 850, 1))
         self.frame_bottom1.setStyleSheet("background-color: grey;")
         self.frame_bottom1.setObjectName("frame_bottom1")
-        self.frame_bottom2.setGeometry(QtCore.QRect(0, 609, 900, 1))
-        self.frame_bottom2.setStyleSheet("background-color: grey;")
-        self.frame_bottom2.setObjectName("frame_bottom")
         self.frame_bottom3.setGeometry(QtCore.QRect(0, 669, 900, 1))
         self.frame_bottom3.setStyleSheet("background-color: grey;")
-        self.frame_bottom3.setObjectName("frame_bottom1")
+        self.frame_bottom3.setObjectName("frame_bottom3")
         self.frame_left.setGeometry(QtCore.QRect(0, 0, 1, 669))
         self.frame_left.setStyleSheet("background-color: grey;")
         self.frame_left.setObjectName("frame_left")
@@ -1479,8 +1479,14 @@ class KumiteMainWindow_Ui(QWidget):
         # --------------------------------------
 
         self.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 50))
-        self.frame_pyatnov.setStyleSheet("background-color: None;")
+        self.frame_pyatnov.setStyleSheet("border-bottom: 1px solid grey; background-color: transparent; ")
         self.frame_pyatnov.setObjectName("frame_pyatnov")
+
+        self.pyatnov_label.setGeometry(QtCore.QRect(150, 12, 110, 25))
+        self.pyatnov_label.setFont(self.font_l_13)
+        self.pyatnov_label.setStyleSheet("color: grey; border-bottom: None;")
+        self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_label.setObjectName("pyatnov_label")
 
         self.pyatnov_name.setEnabled(False)
         self.pyatnov_name.setGeometry(QtCore.QRect(270, 12, 500, 25))
@@ -1488,11 +1494,19 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_name.setFont(self.font_l_16)
         self.pyatnov_name.setObjectName("pyatnov_name")
 
-        self.pyatnov_label.setGeometry(QtCore.QRect(150, 12, 110, 25))
-        self.pyatnov_label.setFont(self.font_l_13)
-        self.pyatnov_label.setStyleSheet("color: grey;")
-        self.pyatnov_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.pyatnov_label.setObjectName("pyatnov_label")
+        self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(550, 475, 90, 100))
+        self.frame_pyatnov_perebivka.setStyleSheet("border: None; background-color: red; ")
+        self.frame_pyatnov_perebivka.setObjectName("frame_pyatnov_perebivka")
+
+        self.pyatnov_perebivka_lbl.setGeometry(QtCore.QRect(0, 0, 90, 13))
+        self.pyatnov_perebivka_lbl.setFont(self.font_l_12)
+        self.pyatnov_perebivka_lbl.setStyleSheet("color: black;")
+        self.pyatnov_perebivka_lbl.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_perebivka_lbl.setObjectName("pyatnov_perebivka_lbl")
+
+        self.pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(0, 20, 50, 50))
+        # self.pyatnov_perebivka_qbx.setStyleSheet(self.pers_com_qbx_style_1)
+        self.pyatnov_perebivka_qbx.setObjectName("pyatnov_perebivka_qbx")
 
         QtCore.QMetaObject.connectSlotsByName(self.Form2)
 
@@ -1520,16 +1534,12 @@ class KumiteMainWindow_Ui(QWidget):
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
                                display_coord_x1_secW, display_coord_y1_secW):
-
-
         self.KumiteSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
         self.KumiteSecondWindow.show()
         self.show()
         coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
         coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2
         self.move(coord_x1, coord_y1)
-        print('________________________ calc_display_moveCoord', display_coord_x1, display_coord_y1, display_width,
-              display_height, display_coord_x1_secW, display_coord_y1_secW, self.size().width(), self.size().height())
 
     def closeSecondWin(self):
         self.show_screen()
@@ -1748,7 +1758,6 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.screen_frame_white.show()
         self.KumiteSecondWindow.screen_frame_red.show()
         self.show_screen()
-
 
     def reset_all(self, flags_dict=''):
         if flags_dict:
@@ -2146,7 +2155,7 @@ class KumiteMainWindow_Ui(QWidget):
                 self.resetSportsmanFramePosition()
                 self.KumiteSecondWindow.sportsman_screen.show()
                 self.btn_show_screen.setText('Скрыть\nэкран ФИО')
-                self.btn_show_screen.setStyleSheet("color: red")
+                self.btn_show_screen.setStyleSheet("color: red; border: 2px solid red")
                 self.btn_show_screen.setToolTip('Скрыть экран с ФИО, отобразится экран с очками')
             else:
                 self.KumiteSecondWindow.sportsman_screen.hide()
