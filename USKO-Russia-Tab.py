@@ -1155,6 +1155,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 # print('       is_semi_final', is_semi_final)
 
                 if len(self.sportsmen_list):
+                    print('len(self.sportsmen_list)', len(self.sportsmen_list))
                     if is_semi_final == [False, False]:
                         # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
                         # print('  _pyatnov_processing 4.5')
@@ -1220,6 +1221,11 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.sportsmen_dict = self.sportsmen_list.to_dict()
                     # print('  _pyatnov_processing 7')
                     # print(f"_{comp_type}_")
+                else:
+                    self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
+                    self.status_file.setText(f'Файл  <b>{self.filename}</b> отработан. Данные не загружены')
+                    self.loaded_file_data_type = 'file_pyatnov'
+                    return 'file was completed'
 
                 if comp_type == 'ката':
                     self.show_pyatnov_kata_interface()
@@ -1279,6 +1285,9 @@ class MenuWindow(QWidget, Ui_Form0):
 
                     self.show_pyatnov_kumite_interface(team=True if competition_data['L'][0] == 'КОМ.' else False)
                     self.ui_kumite.pyatnov_name.clear()
+                    print(self.sportsmen_list.columns)
+
+                    print(self.sportsmen_list.head())
                     self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                     self.ui_kumite.pyatnov_name.setEnabled(True)
                     # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)

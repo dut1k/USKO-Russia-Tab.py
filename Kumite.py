@@ -766,6 +766,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_perebivka_lbl = QtWidgets.QLabel("Перебивка", self.frame_pyatnov_perebivka)
         self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka)
 
+        self.lbl_style_1 = css.lbl_style_1
         self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
         self.btn_style_1 = css.btn_style_1
@@ -1494,19 +1495,21 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_name.setFont(self.font_l_16)
         self.pyatnov_name.setObjectName("pyatnov_name")
 
-        self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(550, 475, 90, 100))
-        self.frame_pyatnov_perebivka.setStyleSheet("border: None; background-color: red; ")
+        self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(405, 530, 90, 13))
+        self.frame_pyatnov_perebivka.setStyleSheet("border: None;")
         self.frame_pyatnov_perebivka.setObjectName("frame_pyatnov_perebivka")
 
-        self.pyatnov_perebivka_lbl.setGeometry(QtCore.QRect(0, 0, 90, 13))
+        self.pyatnov_perebivka_lbl.setGeometry(QtCore.QRect(15, 0, 75, 13))
         self.pyatnov_perebivka_lbl.setFont(self.font_l_12)
-        self.pyatnov_perebivka_lbl.setStyleSheet("color: black;")
+        self.pyatnov_perebivka_lbl.setStyleSheet(self.lbl_style_1)
         self.pyatnov_perebivka_lbl.setAlignment(QtCore.Qt.AlignCenter)
         self.pyatnov_perebivka_lbl.setObjectName("pyatnov_perebivka_lbl")
+        self.pyatnov_perebivka_lbl.setDisabled(False)
 
-        self.pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(0, 20, 50, 50))
+        self.pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(0, 0, 13, 13))
         # self.pyatnov_perebivka_qbx.setStyleSheet(self.pers_com_qbx_style_1)
         self.pyatnov_perebivka_qbx.setObjectName("pyatnov_perebivka_qbx")
+        self.pyatnov_perebivka_qbx.setDisabled(False)
 
         QtCore.QMetaObject.connectSlotsByName(self.Form2)
 
@@ -2165,6 +2168,20 @@ class KumiteMainWindow_Ui(QWidget):
         except Exception as e:
             print('kum show_screen:', e)
 
+    def perebivka_disabled(self):
+        """
+        Функция отключает/включает фрейм с кнопкой перебивка
+        :return:
+        """
+        try:
+            if self.pyatnov_perebivka_qbx.isEnabled():
+                self.pyatnov_perebivka_qbx.setDisabled(True)
+                self.pyatnov_perebivka_lbl.setDisabled(True)
+            else:
+                self.pyatnov_perebivka_qbx.setDisabled(False)
+                self.pyatnov_perebivka_lbl.setDisabled(False)
+        except Exception as e:
+            print('perebivka_disabled:', e)
 
 class dialogWindow_Ui(object):
     def setupUi_dialog(self, Dialog):

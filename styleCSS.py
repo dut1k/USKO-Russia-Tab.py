@@ -384,6 +384,19 @@ QCheckBox::indicator:checked:hover {
 }
 """
 
+lbl_style_1 = """
+    QLabel:hover {
+        border-bottom: 1px solid #3e6ae1;
+        color: #3e6ae1;
+        }
+    QLabel {
+        border: none;
+        color: black;
+    """
+
+#################################################################
+# Стиль текста
+#################################################################
 font_l_10 = QtGui.QFont()
 font_l_10.setFamily("Gotham-Light")
 font_l_10.setPixelSize(10)
