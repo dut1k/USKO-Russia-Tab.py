@@ -210,6 +210,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.matchName_dict = {}
         self.tatamiName = ""
         self.sportsmans_in_teams_dict = {}
+        self.teams_pairs = {}
 
         self.matchName = {}
 
@@ -228,6 +229,12 @@ class MenuWindow(QWidget, Ui_Form0):
         self.loaded_file_data_type = None
         self.sheet_name_aka_shiro = ''  # Название листа Aka+Shiro
         self.sheet_name_final = ''  # Название листа Финал
+
+        # Флаги, какой тип файла Пятнова был подгружен
+        self.flag_pyatnov_kata_single = False  # Ката личное
+        self.flag_pyatnov_kata_team = False  # Ката групповое
+        self.flag_pyatnov_kumite_single = False  # Кумите личное
+        self.flag_pyatnov_kumite_team = False  # Кумите групповое
 
         self.btn_Kata_qual.clicked.connect(self.showKataQualWin)
         self.btn_Kata_final.clicked.connect(self.showKataFinalWin)
@@ -429,9 +436,12 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.btn_show_screen.clicked.connect(self.setSportsmanName)
 
+        self.ui_kumite.pyatnov_perebivka_btn.clicked.connect(self.ui_kumite.perebivka_disabled)
+
         self.ui_kumite.le_comboBox_name_white_1.activated[str].connect(self.setLabel)
         self.ui_kumite.le_comboBox_name_red_1.activated[str].connect(self.setLabel)
         self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
+        self.ui_kumite.pyatnov_pair_name.activated[str].connect(self.setLabel)
         self.ui_kataQual.pyatnov_name.activated[str].connect(self.setLabel)
         self.ui_kataFinal.pyatnov_name.activated[str].connect(self.setLabel)
         ######################################
@@ -645,6 +655,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.df_Group_names = []
         self.df_Group_list = []
         self.df_Group_list_only_group = []
+        self.teams_pairs = {}
 
         self.ui_kataQual.frame_pyatnov.hide()
         self.ui_kataFinal.frame_pyatnov.hide()
@@ -704,10 +715,10 @@ class MenuWindow(QWidget, Ui_Form0):
 
             # Проверка, загруженный файл по шаблону Пятнова
             if len(pyatnov_check) == len(pyatnov_lst):
-                # print(111)
+
+                self.pyatnov_flag()
+
                 self.user_choice = 0
-                # self.pyatnov_processing(sheet_lst=sheets11_list, aka_shiro=self.sheet_name_aka_shiro,
-                #                         setka_num=setka_num, sheet_name_final=self.sheet_name_final)
                 self.pyatnov_processing()
                 self.combo.hide()
                 # print(222)
@@ -866,6 +877,9 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(False)
 
         if team:
+            self.ui_kumite.Form2.setFixedSize(900, 648)
+            self.ui_kumite.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 88))
+
             self.ui_kumite.pyatnov_label.setText('Выбор команд')
             self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 35))
 
@@ -876,6 +890,9 @@ class MenuWindow(QWidget, Ui_Form0):
 
             self.ui_kumite.lineEdit_name_white_1.hide()
             self.ui_kumite.lineEdit_name_red_1.hide()
+
+            self.ui_kumite.pyatnov_pair_label.show()
+            self.ui_kumite.pyatnov_pair_name.show()
         else:
             self.ui_kumite.pyatnov_label.setText('Выберите пару')
             self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 50))
@@ -887,6 +904,9 @@ class MenuWindow(QWidget, Ui_Form0):
 
             self.ui_kumite.lineEdit_name_white_1.show()
             self.ui_kumite.lineEdit_name_red_1.show()
+
+            self.ui_kumite.pyatnov_pair_label.hide()
+            self.ui_kumite.pyatnov_pair_name.hide()
 
     def userChoice(self):
         self.user_choice_list = self.xl.sheet_names
@@ -959,6 +979,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.sportsmans_in_teams_dict = {}
                 if competition_data['L'][0] in ('КОМ.', 'груп.'):
                     if competition_data['L'][0] == 'КОМ.':
+                        self.pyatnov_flag(f4=True)
                         self.category_label = 'КОМАНДНЫЕ. '
                         # Список спортменов в командах
                         self.sportsmans_in_teams_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', header=8,
@@ -1009,16 +1030,132 @@ class MenuWindow(QWidget, Ui_Form0):
                         '11_aka_rating_1', '12_aka_rating_2', '13_aka_rating_3', '14_aka_rating_4', '15_aka_rating_5',
                         '16_aka_region', '17_aka_sportsman', '18_aka_num'
                         ]
-                        print('referee_protocol')
+                        print('referee_protocol 1')
+                        print(referee_protocol)
+
+                        referee_protocol = referee_protocol.fillna('')
+                        print('referee_protocol 2')
+                        print(referee_protocol)
                         print(len(referee_protocol.columns), len(name11s))
                         print(referee_protocol.columns)
-                        dct1 = referee_protocol.iloc[21::53, [0, 2, 10]].to_dict()
-                        print(dct1)
+                        t_name_dict = referee_protocol.iloc[21::53, [0, 2, 10]].to_dict()
+                        print('t_name_dict')
+                        print(t_name_dict)
                         print(referee_protocol.iloc[21::53, [0, 2, 10]])
                         for i in referee_protocol:
                             print(i)
+
+                        # Список пар участвующих (competing_pairs_)
+                        competing_pairs_1 = referee_protocol.iloc[24::53, [0, 1, 15]].to_dict()
+                        competing_pairs_2 = referee_protocol.iloc[26::53, [0, 1, 15]].to_dict()
+                        competing_pairs_3 = referee_protocol.iloc[28::53, [0, 1, 15]].to_dict()
+                        competing_pairs_4 = referee_protocol.iloc[30::53, [0, 1, 15]].to_dict()
+                        print('competing_pairs_1', competing_pairs_1)
+                        print('competing_pairs_2', competing_pairs_2)
+                        print('competing_pairs_3', competing_pairs_3)
+                        print('competing_pairs_4', competing_pairs_4)
+
+                        self.teams_pairs = dict()
+                        print(len(competing_pairs_1['1_siro_num'].items()), "competing_pairs_1['1_siro_num'].items()", competing_pairs_1['1_siro_num'].items())
+                        for key in competing_pairs_2['1_siro_num'].keys():
+                            print(key,'___2')
+                            team_siro = t_name_dict['3_siro_region'][key - 5]
+                            team_aka = t_name_dict['11_aka_rating_1'][key - 5]
+
+                            if team_siro == '' and team_aka == '':
+                                continue
+
+                            team_siro_short = team_siro
+                            team_aka_short = team_aka
+
+                            if len(team_siro.split(' ')) > 1:
+                                team_siro_short = team_siro.split(' ')[0] + ' ком ' + team_siro.split(' ком ')[1]
+                            if len(team_aka.split(' ')) > 1:
+                                team_aka_short = team_aka.split(' ')[0] + ' ком ' + team_aka.split(' ком ')[1]
+
+                            tmp_teams_name = team_siro_short + ' - ' + team_aka_short
+                            print(key, '___3')
+                            siro_man_1 = competing_pairs_1['2_siro_sportsman'][key - 2]
+                            siro_man_2 = competing_pairs_2['2_siro_sportsman'][key]
+                            siro_man_3 = competing_pairs_3['2_siro_sportsman'][key + 2]
+                            siro_man_4 = competing_pairs_4['2_siro_sportsman'][key + 4]
+                            aka_man_1 = competing_pairs_1['17_aka_sportsman'][key - 2]
+                            aka_man_2 = competing_pairs_2['17_aka_sportsman'][key]
+                            aka_man_3 = competing_pairs_3['17_aka_sportsman'][key + 2]
+                            aka_man_4 = competing_pairs_4['17_aka_sportsman'][key + 4]
+
+                            siro_short_man_1, siro_short_man_2, siro_short_man_3, siro_short_man_4 = ['', '', '', '']
+                            aka_short_man_1, aka_short_man_2, aka_short_man_3, aka_short_man_4 = ['', '', '', '']
+                            men_pair_1, men_pair_2, men_pair_3, men_pair_4 = ['', '', '', '']
+
+                            print(len(siro_man_1.split(' ')), type(siro_man_1), siro_man_1)
+                            print(len(siro_man_2.split(' ')), type(siro_man_2), siro_man_2)
+                            print(len(siro_man_3.split(' ')), type(siro_man_3), siro_man_3)
+                            print(len(siro_man_4.split(' ')), type(siro_man_4), siro_man_4)
+                            print(len(aka_man_1.split(' ')), type(aka_man_1), aka_man_1)
+                            print(len(aka_man_2.split(' ')), type(aka_man_2), aka_man_2)
+                            print(len(aka_man_3.split(' ')), type(aka_man_3), aka_man_3)
+                            print(len(aka_man_4.split(' ')), type(aka_man_4), aka_man_4)
+
+                            if len(siro_man_1.split(' ')) > 1:
+                                siro_short_man_1 = siro_man_1.split(' ')[0] + ' ' + siro_man_1.split(' ')[1][0] + '.'
+                            if len(siro_man_2.split(' ')) > 1:
+                                siro_short_man_2 = siro_man_2.split(' ')[0] + ' ' + siro_man_2.split(' ')[1][0] + '.'
+                            if len(siro_man_3.split(' ')) > 1:
+                                siro_short_man_3 = siro_man_3.split(' ')[0] + ' ' + siro_man_3.split(' ')[1][0] + '.'
+                            if len(siro_man_4.split(' ')) > 1:
+                                siro_short_man_4 = siro_man_4.split(' ')[0] + ' ' + siro_man_4.split(' ')[1][0] + '.'
+
+                            if len(aka_man_1.split(' ')) > 1:
+                                aka_short_man_1 = aka_man_1.split(' ')[0] + ' ' + aka_man_1.split(' ')[1][0] + '.'
+                            if len(aka_man_2.split(' ')) > 1:
+                                aka_short_man_2 = aka_man_2.split(' ')[0] + ' ' + aka_man_2.split(' ')[1][0] + '.'
+                            if len(aka_man_3.split(' ')) > 1:
+                                aka_short_man_3 = aka_man_3.split(' ')[0] + ' ' + aka_man_3.split(' ')[1][0] + '.'
+                            if len(aka_man_4.split(' ')) > 1:
+                                aka_short_man_4 = aka_man_4.split(' ')[0] + ' ' + aka_man_4.split(' ')[1][0] + '.'
+
+                            if siro_man_1 != '' or aka_man_1 != '':
+                                men_pair_1 = f"{siro_short_man_1} -  {aka_short_man_1}"
+                            if siro_man_2 != '' or aka_man_2 != '':
+                                men_pair_2 = f"{siro_short_man_2} -  {aka_short_man_2}"
+                            if siro_man_3 != '' or aka_man_3 != '':
+                                men_pair_3 = f"{siro_short_man_3} -  {aka_short_man_3}"
+                            if siro_man_4 != '' or aka_man_4 != '':
+                                men_pair_4 = f"{siro_short_man_4} -  {aka_short_man_4}"
+
+                            self.teams_pairs[tmp_teams_name] = {
+                                'team_siro': team_siro,
+                                'team_aka': team_aka,
+                                'siro_man_1': siro_man_1,
+                                'siro_man_2': siro_man_2,
+                                'siro_man_3': siro_man_3,
+                                'siro_man_4': siro_man_4,
+                                'aka_man_1': aka_man_1,
+                                'aka_man_2': aka_man_2,
+                                'aka_man_3': aka_man_3,
+                                'aka_man_4': aka_man_4,
+                                'men_pair_1': men_pair_1,
+                                'men_pair_2': men_pair_2,
+                                'men_pair_3': men_pair_3,
+                                'men_pair_4': men_pair_4,
+                                'row_num_1': key,
+                                'row_num_2': key+2,
+                                'row_num_3': key+4,
+                                'row_num_4': key+6,
+                            }
+                        print("self.teams_pairs")
+                        for k,v in self.teams_pairs.items():
+                            print(k)
+                            print('    ', v)
                     else:
                         self.category_label = 'ГРУППА. '
+                        self.pyatnov_flag(f2=True)
+                else:
+                    if comp_type == 'ката':
+                        self.pyatnov_flag(f1=True)
+                    else:
+                        self.pyatnov_flag(f3=True)
                 self.category_label = f"{self.category_label}{competition_data['K'][1]}{competition_data['J'][2]}"
                 # print('  _pyatnov_processing 4.2')
                 # print(competition_data)
@@ -1277,21 +1414,32 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.btn_Kata_final.setEnabled(True)
 
                 elif comp_type == 'кумите':
-                    # print('кумите')
                     self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
                     self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
                     self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
                     self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
 
-                    self.show_pyatnov_kumite_interface(team=True if competition_data['L'][0] == 'КОМ.' else False)
-                    self.ui_kumite.pyatnov_name.clear()
-                    print(self.sportsmen_list.columns)
+                    if self.flag_pyatnov_kumite_single:
+                        self.show_pyatnov_kumite_interface(team=False)
+                        self.ui_kumite.pyatnov_name.clear()
+                        print(self.sportsmen_list.columns)
 
-                    print(self.sportsmen_list.head())
-                    self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
-                    self.ui_kumite.pyatnov_name.setEnabled(True)
-                    # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
-                    self.ui_kumite.matchName12.setText(self.category_label)
+                        print(self.sportsmen_list.head())
+                        self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
+                        self.ui_kumite.pyatnov_name.setEnabled(True)
+                        # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
+                        self.ui_kumite.matchName12.setText(self.category_label)
+                    elif self.flag_pyatnov_kumite_team:
+                        self.show_pyatnov_kumite_interface(team=True)
+                        self.ui_kumite.pyatnov_name.clear()
+                        print(self.sportsmen_list.columns)
+
+                        print(self.sportsmen_list.head())
+                        self.ui_kumite.pyatnov_name.addItem('Выберите команды...')
+                        self.ui_kumite.pyatnov_name.addItems(self.teams_pairs.keys())
+                        self.ui_kumite.pyatnov_name.setEnabled(True)
+                        # self.ui_kumite.pyatnov_name.activated[str].connect(self.setLabel)
+                        self.ui_kumite.matchName12.setText(self.category_label)
 
                 # print('  _pyatnov_processing 8')
                 self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
@@ -2095,58 +2243,123 @@ class MenuWindow(QWidget, Ui_Form0):
     def setLabel(self):
         try:
             sender = self.sender()
-            # Нажали для кумите
+
+            if self.ui_kumite.pyatnov_name.currentText() in ['Выберите пару...', 'Выберите команды...']:
+                return
+            else:
+                self.ui_kumite.pyatnov_name.removeItem(0)  # Remove placeholder after selection
+
+            # Нажали для кумите Выбор региона
             if sender == self.ui_kumite.pyatnov_name:
-
-                zzzz = self.sportsmen_list[
-                    self.sportsmen_list['combo_box'] == self.ui_kumite.pyatnov_name.currentText()]
-
                 self.ui_kumite.le_comboBox_name_white_1.clear()
                 self.ui_kumite.le_comboBox_name_red_1.clear()
 
-                if self.sportsmans_in_teams_dict:
-                    self.ui_kumite.le_comboBox_name_white_1.setEnabled(True)
-                    self.ui_kumite.le_comboBox_name_red_1.setEnabled(True)
-
-                    sportsman_list_white = self.sportsmans_in_teams_dict[zzzz['siro'].values[0]]
-                    le_comboBox_name_white_1 = self.ui_kumite.le_comboBox_name_white_1
-                    le_comboBox_name_white_1.addItems([''])
-                    le_comboBox_name_white_1.addItems(sportsman_list_white)
-                    edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Выберите спортсмена")
-                    edit_white.setFont(self.font_l_15)
-                    edit_white.setAlignment(QtCore.Qt.AlignCenter)
-                    le_comboBox_name_white_1.setLineEdit(edit_white)
-
-                    sportsman_list_red = self.sportsmans_in_teams_dict[zzzz['aka'].values[0]]
-                    le_comboBox_name_red_1 = self.ui_kumite.le_comboBox_name_red_1
-                    le_comboBox_name_red_1.addItems([''])
-                    le_comboBox_name_red_1.addItems(sportsman_list_red)
-                    edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Выберите спортсмена")
-                    edit_red.setFont(self.font_l_15)
-                    edit_red.setAlignment(QtCore.Qt.AlignCenter)
-                    le_comboBox_name_red_1.setLineEdit(edit_red)
-                else:
-                    self.ui_kumite.lineEdit_name_white_1.setText(zzzz['siro_short'].values[0])
+                # Для личных
+                if self.flag_pyatnov_kumite_single:
+                    # Выбранное значение команды или спортсмена
+                    c_box_choice = self.sportsmen_list[
+                        self.sportsmen_list['combo_box'] == self.ui_kumite.pyatnov_name.currentText()]
+                    self.ui_kumite.lineEdit_name_white_1.setText(c_box_choice['siro_short'].values[0])
                     self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
-                    self.ui_kumite.lineEdit_name_red_1.setText(zzzz['aka_short'].values[0])
+                    self.ui_kumite.lineEdit_name_red_1.setText(c_box_choice['aka_short'].values[0])
                     self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
 
-                self.ui_kumite.lineEdit_region_white_1.lineEdit().setText(zzzz['region_siro'].values[0])
-                self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
-                self.ui_kumite.lineEdit_region_red_1.lineEdit().setText(zzzz['region_aka'].values[0])
-                self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_region_white_1.lineEdit().setText(c_box_choice['region_siro'].values[0])
+                    self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_region_red_1.lineEdit().setText(c_box_choice['region_aka'].values[0])
+                    self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
 
-            # Выбрали ФИО в кумите команда
-            elif sender == self.ui_kumite.le_comboBox_name_white_1:
-                full_name = self.ui_kumite.le_comboBox_name_white_1.currentText()
-                full_name = full_name.split(' ')[0] + ' ' + full_name.split(' ')[1][0] + '.'
-                self.ui_kumite.lineEdit_name_white_1.setText(full_name)
-            elif sender == self.ui_kumite.le_comboBox_name_red_1:
-                full_name = self.ui_kumite.le_comboBox_name_red_1.currentText()
-                full_name = full_name.split(' ')[0] + ' ' + full_name.split(' ')[1][0] + '.'
-                self.ui_kumite.lineEdit_name_red_1.setText(full_name)
+                # Для командных. Если всё ок, то весь код выше нужно перетащить сюда
+                elif self.flag_pyatnov_kumite_team:
+                    self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
+                    self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
+
+
+                    print('2 c_box_choice', self.ui_kumite.pyatnov_name.currentText())
+                    print('3 c_box_choice', self.teams_pairs.keys())
+
+                    # Выбранное значение команды или спортсмена
+                    c_box_choice = self.teams_pairs[self.ui_kumite.pyatnov_name.currentText()]
+                    print('4 c_box_choice', c_box_choice)
+                    print('5 c_box_choice', type(c_box_choice))
+
+                    # Находим все пары спортсменов
+                    pair_name_list = list()
+                    for i in [c_box_choice['men_pair_1'], c_box_choice['men_pair_2'], c_box_choice['men_pair_3'],
+                              c_box_choice['men_pair_4']]:
+                        if i != '':
+                            pair_name_list.append(i)
+                    # Очищаем список спортсменов на экране
+                    self.ui_kumite.pyatnov_pair_name.clear()
+                    print(self.sportsmen_list.columns)
+
+                    print(self.sportsmen_list.head())
+                    self.ui_kumite.pyatnov_pair_name.addItem('Выберите пару...')
+                    self.ui_kumite.pyatnov_pair_name.addItems(pair_name_list)
+                    self.ui_kumite.pyatnov_pair_name.setEnabled(True)
+
+                # # Выбранное значение команды или спортсмена
+                # c_box_choice = self.sportsmen_list[
+                #     self.sportsmen_list['combo_box'] == self.ui_kumite.pyatnov_name.currentText()]
+                #
+                # self.ui_kumite.le_comboBox_name_white_1.clear()
+                # self.ui_kumite.le_comboBox_name_red_1.clear()
+
+                # if self.sportsmans_in_teams_dict:
+                #     self.ui_kumite.le_comboBox_name_white_1.setEnabled(True)
+                #     self.ui_kumite.le_comboBox_name_red_1.setEnabled(True)
+                #
+                #     sportsman_list_white = self.sportsmans_in_teams_dict[c_box_choice['siro'].values[0]]
+                #     le_comboBox_name_white_1 = self.ui_kumite.le_comboBox_name_white_1
+                #     le_comboBox_name_white_1.addItems([''])
+                #     le_comboBox_name_white_1.addItems(sportsman_list_white)
+                #     edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Выберите спортсмена")
+                #     edit_white.setFont(self.font_l_15)
+                #     edit_white.setAlignment(QtCore.Qt.AlignCenter)
+                #     le_comboBox_name_white_1.setLineEdit(edit_white)
+                #
+                #     sportsman_list_red = self.sportsmans_in_teams_dict[c_box_choice['aka'].values[0]]
+                #     le_comboBox_name_red_1 = self.ui_kumite.le_comboBox_name_red_1
+                #     le_comboBox_name_red_1.addItems([''])
+                #     le_comboBox_name_red_1.addItems(sportsman_list_red)
+                #     edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Выберите спортсмена")
+                #     edit_red.setFont(self.font_l_15)
+                #     edit_red.setAlignment(QtCore.Qt.AlignCenter)
+                #     le_comboBox_name_red_1.setLineEdit(edit_red)
+                #
+                #     # Для командных. Если всё ок, то весь код выше нужно перетащить сюда
+                #     if self.flag_pyatnov_kumite_team:
+                #         self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
+                #         self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
+                #
+                #         self.ui_kumite.pyatnov_pair_name.setEnabled(True)
+
+            #     else:
+            #         self.ui_kumite.lineEdit_name_white_1.setText(c_box_choice['siro_short'].values[0])
+            #         self.ui_kumite.lineEdit_name_white_1.setEnabled(False)
+            #         self.ui_kumite.lineEdit_name_red_1.setText(c_box_choice['aka_short'].values[0])
+            #         self.ui_kumite.lineEdit_name_red_1.setEnabled(False)
+            #
+            #     self.ui_kumite.lineEdit_region_white_1.lineEdit().setText(c_box_choice['region_siro'].values[0])
+            #     self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
+            #     self.ui_kumite.lineEdit_region_red_1.lineEdit().setText(c_box_choice['region_aka'].values[0])
+            #     self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
+            #
+            # # Выбрали ФИО в кумите команда
+            # elif sender == self.ui_kumite.le_comboBox_name_white_1:
+            #     full_name = self.ui_kumite.le_comboBox_name_white_1.currentText()
+            #     full_name = full_name.split(' ')[0] + ' ' + full_name.split(' ')[1][0] + '.'
+            #     self.ui_kumite.lineEdit_name_white_1.setText(full_name)
+            # elif sender == self.ui_kumite.le_comboBox_name_red_1:
+            #     full_name = self.ui_kumite.le_comboBox_name_red_1.currentText()
+            #     full_name = full_name.split(' ')[0] + ' ' + full_name.split(' ')[1][0] + '.'
+            #     self.ui_kumite.lineEdit_name_red_1.setText(full_name)
 
             # Нажали для ката отбор
+
+            # Нажали для кумите Выбор пары спорстменов для КОМАНДЫ
+            elif sender == self.ui_kumite.pyatnov_pair_name:
+                pass
             elif sender == self.ui_kataQual.pyatnov_name:
                 value = [i for i in self.sportsmen_dict['combo_box'] if
                          self.sportsmen_dict['combo_box'][i] == self.ui_kataQual.pyatnov_name.currentText()][0]
@@ -2454,16 +2667,22 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
                 self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
 
+                placeholder_text_white = 'СИРО. Выберите спортсмена'
+                placeholder_text_red = 'АКА. Выберите спортсмена'
+                if self.flag_pyatnov_kumite_team:
+                    placeholder_text_white = 'СИРО. Выберите пару'
+                    placeholder_text_red = 'АКА. Выберите пару'
+
                 le_comboBox_name_white_1 = self.ui_kumite.le_comboBox_name_white_1
                 le_comboBox_name_white_1.clear()
-                edit_white = QtWidgets.QLineEdit(self, placeholderText="СИРО. Выберите спортсмена")
+                edit_white = QtWidgets.QLineEdit(self, placeholderText=placeholder_text_white)
                 edit_white.setFont(self.font_l_15)
                 edit_white.setAlignment(QtCore.Qt.AlignCenter)
                 le_comboBox_name_white_1.setLineEdit(edit_white)
 
                 le_comboBox_name_red_1 = self.ui_kumite.le_comboBox_name_red_1
                 le_comboBox_name_red_1.clear()
-                edit_red = QtWidgets.QLineEdit(self, placeholderText="АКА. Выберите спортсмена")
+                edit_red = QtWidgets.QLineEdit(self, placeholderText=placeholder_text_red)
                 edit_red.setFont(self.font_l_15)
                 edit_red.setAlignment(QtCore.Qt.AlignCenter)
                 le_comboBox_name_red_1.setLineEdit(edit_red)
@@ -2889,6 +3108,13 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.showKataFinalWin()
         except Exception as e:
             print('_______Exception kata_qual_last_fight:', e)
+
+    def pyatnov_flag(self, f1:bool=False, f2:bool=False, f3:bool=False, f4:bool=False):
+        # Обновляем значение флага, в соответствии с тем, какой тип файла был загружен
+        self.flag_pyatnov_kata_single = f1
+        self.flag_pyatnov_kata_team = f2
+        self.flag_pyatnov_kumite_single = f3
+        self.flag_pyatnov_kumite_team = f4
 
 
 class dialogWindow_Ui(object):

@@ -762,8 +762,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
+        # Для командных - выбор пары спортсменов
+        self.pyatnov_pair_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
+        self.pyatnov_pair_name = QtWidgets.QComboBox(self.frame_pyatnov)
+
         self.frame_pyatnov_perebivka = QtWidgets.QFrame(self.Form2)
-        self.pyatnov_perebivka_lbl = QtWidgets.QLabel("Перебивка", self.frame_pyatnov_perebivka)
+        self.pyatnov_perebivka_btn = QtWidgets.QPushButton("Перебивка", self.frame_pyatnov_perebivka)
         self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka)
 
         self.lbl_style_1 = css.lbl_style_1
@@ -772,6 +776,8 @@ class KumiteMainWindow_Ui(QWidget):
         self.btn_style_1 = css.btn_style_1
 
         self.btn_style_2 = css.btn_style_2
+
+        self.btn_style_3 = css.btn_style_3
 
         self.combo_style_2 = css.combo_style_2
 
@@ -1495,16 +1501,28 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_name.setFont(self.font_l_16)
         self.pyatnov_name.setObjectName("pyatnov_name")
 
+        self.pyatnov_pair_label.setGeometry(QtCore.QRect(150, 49, 110, 25))
+        self.pyatnov_pair_label.setFont(self.font_l_13)
+        self.pyatnov_pair_label.setStyleSheet("color: grey; border-bottom: None;")
+        self.pyatnov_pair_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.pyatnov_pair_label.setObjectName("pyatnov_pair_label")
+
+        self.pyatnov_pair_name.setEnabled(False)
+        self.pyatnov_pair_name.setGeometry(QtCore.QRect(270, 49, 500, 25))
+        self.pyatnov_pair_name.setStyleSheet(self.combo_style_2)
+        self.pyatnov_pair_name.setFont(self.font_l_16)
+        self.pyatnov_pair_name.setObjectName("pyatnov_pair_name")
+
         self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(405, 530, 90, 13))
         self.frame_pyatnov_perebivka.setStyleSheet("border: None;")
         self.frame_pyatnov_perebivka.setObjectName("frame_pyatnov_perebivka")
 
-        self.pyatnov_perebivka_lbl.setGeometry(QtCore.QRect(15, 0, 75, 13))
-        self.pyatnov_perebivka_lbl.setFont(self.font_l_12)
-        self.pyatnov_perebivka_lbl.setStyleSheet(self.lbl_style_1)
-        self.pyatnov_perebivka_lbl.setAlignment(QtCore.Qt.AlignCenter)
-        self.pyatnov_perebivka_lbl.setObjectName("pyatnov_perebivka_lbl")
-        self.pyatnov_perebivka_lbl.setDisabled(False)
+        self.pyatnov_perebivka_btn.setGeometry(QtCore.QRect(15, 0, 75, 13))
+        self.pyatnov_perebivka_btn.setStyleSheet(self.btn_style_3)
+        self.pyatnov_perebivka_btn.setFont(self.font_l_12)
+        self.pyatnov_perebivka_btn.setToolTip('Выбрать пару спортсменов для перебивки')
+        self.pyatnov_perebivka_btn.setObjectName("pyatnov_perebivka_btn")
+        self.pyatnov_perebivka_btn.setDisabled(False)
 
         self.pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(0, 0, 13, 13))
         # self.pyatnov_perebivka_qbx.setStyleSheet(self.pers_com_qbx_style_1)
@@ -2176,10 +2194,10 @@ class KumiteMainWindow_Ui(QWidget):
         try:
             if self.pyatnov_perebivka_qbx.isEnabled():
                 self.pyatnov_perebivka_qbx.setDisabled(True)
-                self.pyatnov_perebivka_lbl.setDisabled(True)
+                self.pyatnov_perebivka_btn.setDisabled(True)
             else:
                 self.pyatnov_perebivka_qbx.setDisabled(False)
-                self.pyatnov_perebivka_lbl.setDisabled(False)
+                self.pyatnov_perebivka_btn.setDisabled(False)
         except Exception as e:
             print('perebivka_disabled:', e)
 

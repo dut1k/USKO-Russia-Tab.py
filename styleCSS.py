@@ -58,6 +58,27 @@ btn_style_2 = """
         }
 """
 
+# Кнопка, как обычный текст
+btn_style_3 = """
+    QPushButton {
+        border: none;
+        color: black;
+        background-color: none;
+        }
+    QPushButton:hover {
+        border-bottom: 1px solid #3e6ae1;
+        color: #3e6ae1;
+        }
+    QPushButton:pressed {
+        border-bottom: 1px solid white;
+        background-color: #3e6ae1;
+        color: white;
+        }
+    QPushButton:disabled {
+        color: #dad7cd;
+        }
+"""
+
 combo_style_header = """
     QComboBox {
         border-top: none;
