@@ -211,6 +211,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.tatamiName = ""
         self.sportsmans_in_teams_dict = {}
         self.teams_pairs = {}
+        self.cur_men_pair_num = None  # Номер строки пары спортсменов
 
         self.matchName = {}
 
@@ -656,6 +657,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.df_Group_list = []
         self.df_Group_list_only_group = []
         self.teams_pairs = {}
+        self.cur_men_pair_num = None  # Номер строки пары спортсменов
 
         self.ui_kataQual.frame_pyatnov.hide()
         self.ui_kataFinal.frame_pyatnov.hide()
@@ -876,6 +878,12 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.Frame_Header.combo.model().item(1).setEnabled(False)
         self.ui_kumite.Frame_Header.combo.model().item(2).setEnabled(False)
 
+        # self.ui_kumite.le_comboBox_name_white_1.show()
+        # self.ui_kumite.le_comboBox_name_red_1.show()
+
+        # self.ui_kumite.lineEdit_name_white_1.show()
+        # self.ui_kumite.lineEdit_name_red_1.show()
+
         if team:
             self.ui_kumite.Form2.setFixedSize(900, 648)
             self.ui_kumite.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 88))
@@ -884,12 +892,12 @@ class MenuWindow(QWidget, Ui_Form0):
             self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 35))
 
             self.ui_kumite.lineEdit_region_white_1.hide()
-            self.ui_kumite.le_comboBox_name_white_1.hide()
+            # self.ui_kumite.le_comboBox_name_white_1.hide()
             self.ui_kumite.lineEdit_region_red_1.hide()
-            self.ui_kumite.le_comboBox_name_red_1.hide()
+            # self.ui_kumite.le_comboBox_name_red_1.hide()
 
-            self.ui_kumite.lineEdit_name_white_1.hide()
-            self.ui_kumite.lineEdit_name_red_1.hide()
+            # self.ui_kumite.lineEdit_name_white_1.hide()
+            # self.ui_kumite.lineEdit_name_red_1.hide()
 
             self.ui_kumite.pyatnov_pair_label.show()
             self.ui_kumite.pyatnov_pair_name.show()
@@ -898,12 +906,12 @@ class MenuWindow(QWidget, Ui_Form0):
             self.ui_kumite.btn_show_screen.setGeometry(QtCore.QRect(405, 475, 90, 50))
 
             self.ui_kumite.lineEdit_region_white_1.show()
-            self.ui_kumite.le_comboBox_name_white_1.show()
+            # self.ui_kumite.le_comboBox_name_white_1.show()
             self.ui_kumite.lineEdit_region_red_1.show()
-            self.ui_kumite.le_comboBox_name_red_1.show()
-
-            self.ui_kumite.lineEdit_name_white_1.show()
-            self.ui_kumite.lineEdit_name_red_1.show()
+            # self.ui_kumite.le_comboBox_name_red_1.show()
+            #
+            # self.ui_kumite.lineEdit_name_white_1.show()
+            # self.ui_kumite.lineEdit_name_red_1.show()
 
             self.ui_kumite.pyatnov_pair_label.hide()
             self.ui_kumite.pyatnov_pair_name.hide()
@@ -1056,6 +1064,7 @@ class MenuWindow(QWidget, Ui_Form0):
                         print('competing_pairs_4', competing_pairs_4)
 
                         self.teams_pairs = dict()
+                        self.cur_men_pair_num = None  # Номер строки пары спортсменов
                         print(len(competing_pairs_1['1_siro_num'].items()), "competing_pairs_1['1_siro_num'].items()", competing_pairs_1['1_siro_num'].items())
                         for key in competing_pairs_2['1_siro_num'].keys():
                             print(key,'___2')
@@ -2246,8 +2255,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
             if self.ui_kumite.pyatnov_name.currentText() in ['Выберите пару...', 'Выберите команды...']:
                 return
-            else:
-                self.ui_kumite.pyatnov_name.removeItem(0)  # Remove placeholder after selection
+            # else:
+            #     self.ui_kumite.pyatnov_name.removeItem(0)  # Remove placeholder after selection
 
             # Нажали для кумите Выбор региона
             if sender == self.ui_kumite.pyatnov_name:
@@ -2271,17 +2280,16 @@ class MenuWindow(QWidget, Ui_Form0):
 
                 # Для командных. Если всё ок, то весь код выше нужно перетащить сюда
                 elif self.flag_pyatnov_kumite_team:
-                    self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
-                    self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
-
+                    # self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
+                    # self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
+                    # self.ui_kumite.le_comboBox_name_white_1.clear()
+                    # self.ui_kumite.le_comboBox_name_red_1.clear()
 
                     print('2 c_box_choice', self.ui_kumite.pyatnov_name.currentText())
                     print('3 c_box_choice', self.teams_pairs.keys())
 
                     # Выбранное значение команды или спортсмена
                     c_box_choice = self.teams_pairs[self.ui_kumite.pyatnov_name.currentText()]
-                    print('4 c_box_choice', c_box_choice)
-                    print('5 c_box_choice', type(c_box_choice))
 
                     # Находим все пары спортсменов
                     pair_name_list = list()
@@ -2291,12 +2299,21 @@ class MenuWindow(QWidget, Ui_Form0):
                             pair_name_list.append(i)
                     # Очищаем список спортсменов на экране
                     self.ui_kumite.pyatnov_pair_name.clear()
-                    print(self.sportsmen_list.columns)
 
-                    print(self.sportsmen_list.head())
+                    # Выпадающий список выбора пар
                     self.ui_kumite.pyatnov_pair_name.addItem('Выберите пару...')
                     self.ui_kumite.pyatnov_pair_name.addItems(pair_name_list)
                     self.ui_kumite.pyatnov_pair_name.setEnabled(True)
+
+                    # Поле отображения регионов
+                    self.ui_kumite.lineEdit_region_white_1.lineEdit().setText(c_box_choice['team_siro'])
+                    self.ui_kumite.lineEdit_region_white_1.setEnabled(False)
+                    self.ui_kumite.lineEdit_region_red_1.lineEdit().setText(c_box_choice['team_aka'])
+                    self.ui_kumite.lineEdit_region_red_1.setEnabled(False)
+
+                    # Поле отображения ФИО
+                    self.ui_kumite.lineEdit_name_white_1.clear()
+                    self.ui_kumite.lineEdit_name_red_1.clear()
 
                 # # Выбранное значение команды или спортсмена
                 # c_box_choice = self.sportsmen_list[
@@ -2333,6 +2350,46 @@ class MenuWindow(QWidget, Ui_Form0):
                 #         self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
                 #
                 #         self.ui_kumite.pyatnov_pair_name.setEnabled(True)
+                    # Нажали для кумите Выбор пары спорстменов для КОМАНДЫ
+            elif sender == self.ui_kumite.pyatnov_pair_name:
+                self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
+                self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
+                self.ui_kumite.le_comboBox_name_white_1.clear()
+                self.ui_kumite.le_comboBox_name_red_1.clear()
+                print('1 pyatnov_name', self.ui_kumite.pyatnov_name.currentText())
+                print('1 pyatnov_pair_name', self.ui_kumite.pyatnov_pair_name.currentText())
+
+                # Определяем номер строки, для заполнения протокола:
+                # Находим пару команд в словаре c_box_choice, у этой пары находим пару спортсменов
+                cur_team_pair = self.teams_pairs[self.ui_kumite.pyatnov_name.currentText()]
+                cur_men_pair = self.ui_kumite.pyatnov_pair_name.currentText()
+                self.cur_men_pair_num = None  # Номер строки пары спортсменов
+                siro_man = ''  # ФИО сиро
+                aka_man = ''  # ФИО ака
+
+                print('cur_men_pair', cur_men_pair)
+
+                if cur_team_pair['men_pair_1'] == cur_men_pair:
+                    self.cur_men_pair_num = cur_team_pair['row_num_1']
+                    siro_man = cur_team_pair['siro_man_1']
+                    aka_man = cur_team_pair['aka_man_1']
+                elif cur_team_pair['men_pair_2'] == cur_men_pair:
+                    self.cur_men_pair_num = cur_team_pair['row_num_2']
+                    siro_man = cur_team_pair['siro_man_2']
+                    aka_man = cur_team_pair['aka_man_2']
+                elif cur_team_pair['men_pair_3'] == cur_men_pair:
+                    self.cur_men_pair_num = cur_team_pair['row_num_3']
+                    siro_man = cur_team_pair['siro_man_3']
+                    aka_man = cur_team_pair['aka_man_3']
+                elif cur_team_pair['men_pair_4'] == cur_men_pair:
+                    self.cur_men_pair_num = cur_team_pair['row_num_4']
+                    siro_man = cur_team_pair['siro_man_4']
+                    aka_man = cur_team_pair['aka_man_4']
+
+                # Поле отображения ФИО
+                self.ui_kumite.lineEdit_name_white_1.setText(siro_man)
+                self.ui_kumite.lineEdit_name_red_1.setText(aka_man)
+
 
             #     else:
             #         self.ui_kumite.lineEdit_name_white_1.setText(c_box_choice['siro_short'].values[0])
@@ -2357,9 +2414,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
             # Нажали для ката отбор
 
-            # Нажали для кумите Выбор пары спорстменов для КОМАНДЫ
-            elif sender == self.ui_kumite.pyatnov_pair_name:
-                pass
+
             elif sender == self.ui_kataQual.pyatnov_name:
                 value = [i for i in self.sportsmen_dict['combo_box'] if
                          self.sportsmen_dict['combo_box'][i] == self.ui_kataQual.pyatnov_name.currentText()][0]
@@ -2658,11 +2713,12 @@ class MenuWindow(QWidget, Ui_Form0):
 
             # Если командное для Пятнова, то отображаем выпадающий список с ФИО спортсменов команд и скрываем lineEdit
             if self.sportsmans_in_teams_dict:
-                self.ui_kumite.le_comboBox_name_white_1.show()
-                self.ui_kumite.le_comboBox_name_red_1.show()
+                if not self.flag_pyatnov_kumite_team:
+                    self.ui_kumite.le_comboBox_name_white_1.show()
+                    self.ui_kumite.le_comboBox_name_red_1.show()
 
-                self.ui_kumite.lineEdit_name_white_1.hide()
-                self.ui_kumite.lineEdit_name_red_1.hide()
+                    self.ui_kumite.lineEdit_name_white_1.hide()
+                    self.ui_kumite.lineEdit_name_red_1.hide()
 
                 self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
                 self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
