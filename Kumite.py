@@ -757,6 +757,9 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_name_white_1 = QtWidgets.QLabel("ФАМИЛИЯ", self.frm_spman_white)
         self.label_region_white_1 = QtWidgets.QLabel("регион", self.frm_spman_white)
 
+        self.blocked_Form2 = QtWidgets.QFrame(self.Form2)
+        self.blocked_label = QtWidgets.QLabel("Выберите спортсмена", self.blocked_Form2)
+
         self.frame_pyatnov = QtWidgets.QFrame(self.Form2)
 
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
@@ -922,6 +925,7 @@ class KumiteMainWindow_Ui(QWidget):
         self.font_m_33 = css.font_m_33
         self.font_l_40 = css.font_l_40
         self.font_l_46 = css.font_l_46
+        self.font_b_60 = css.font_b_60
 
         self.frame_bottom = QtWidgets.QFrame(self.Form2)
         self.frame_bottom1 = QtWidgets.QFrame(self.Form2)
@@ -1482,7 +1486,17 @@ class KumiteMainWindow_Ui(QWidget):
         self.name_white_1.setObjectName("name_white_1")
 
         # --------------------------------------
-
+        # Если выбран файл Пятнова, нельзя начать бой пока не выбрана пара. Визуально блокируем область
+        self.blocked_Form2.setGeometry(QtCore.QRect(5, 5, 890, 520))
+        self.blocked_Form2.setStyleSheet("""
+                    background-color: rgba(245, 245, 245, 128);
+                    border-radius: 10px;
+                """)
+        self.blocked_label.setGeometry(QtCore.QRect(0, 230, 890, 60))
+        self.blocked_label.setFont(self.font_b_60)
+        self.blocked_label.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.blocked_label.setObjectName("blocked_label")
         # --------------------------------------
 
         self.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 50))
