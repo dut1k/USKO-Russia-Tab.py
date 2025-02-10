@@ -206,14 +206,9 @@ class KumiteSWindow_Ui(object):
 
 
         self.img_empty = QtGui.QPixmap(":/Images/Empty.png")
-        self.img_white = QtGui.QPixmap(":/Images/icon_regions/flags/01_Adygea.svg")
+        self.img_white = QtGui.QPixmap()
         self.img_curcle = QtGui.QPixmap(":/Images/icon_regions/flags/00_Curcle.svg")
-        self.img_red = QtGui.QPixmap(":/Images/icon_regions/flags/22_Altai_Krai.svg")
-
-        # self.img_white = self.img_white.scaled(80, 80)
-        # self.img_red = self.img_red.scaled(80, 80)
-        # self.img_white = self.img_white.scaledToHeight(80)
-        # self.img_red = self.img_red.scaledToHeight(78)
+        self.img_red = QtGui.QPixmap()
 
         self.flag_white.setGeometry(QtCore.QRect(1760, 0, 80, 80))
         self.flag_white.setObjectName("flag_white")
@@ -758,7 +753,9 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_region_white_1 = QtWidgets.QLabel("регион", self.frm_spman_white)
 
         self.blocked_Form2 = QtWidgets.QFrame(self.Form2)
-        self.blocked_label = QtWidgets.QLabel("Выберите спортсмена", self.blocked_Form2)
+        self.blocked_label1 = QtWidgets.QLabel("Выберите", self.blocked_Form2)
+        self.blocked_label2 = QtWidgets.QLabel("команду, пару или", self.blocked_Form2)
+        self.blocked_label3 = QtWidgets.QLabel("спортсмена", self.blocked_Form2)
 
         self.frame_pyatnov = QtWidgets.QFrame(self.Form2)
 
@@ -932,6 +929,19 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_bottom3 = QtWidgets.QFrame(self.Form2)
         self.frame_left = QtWidgets.QFrame(self.Form2)
         self.frame_right = QtWidgets.QFrame(self.Form2)
+
+        self.saving_into_kumite_team_Form2 = QtWidgets.QFrame(self.Form2)
+        self.blocked_label4 = QtWidgets.QLabel("Сохранение в файл...", self.saving_into_kumite_team_Form2)
+
+        self.img_saving_into_kumite_team = QtGui.QPixmap(":/Images/111_95.svg")
+        self.pixmap_saving_into_kumite_team = QtWidgets.QLabel(self.blocked_Form2)
+        self.pixmap_saving_into_kumite_team.setGeometry(QtCore.QRect(0, 0, 500, 500))
+        self.pixmap_saving_into_kumite_team.setStyleSheet("background-color: grey;")
+        self.pixmap_saving_into_kumite_team.setPixmap(self.img_saving_into_kumite_team)
+
+
+
+
 
         self.frame_bottom.setGeometry(QtCore.QRect(0, 559, 900, 1))
         self.frame_bottom.setStyleSheet("background-color: grey;")
@@ -1492,11 +1502,35 @@ class KumiteMainWindow_Ui(QWidget):
                     background-color: rgba(245, 245, 245, 128);
                     border-radius: 10px;
                 """)
-        self.blocked_label.setGeometry(QtCore.QRect(0, 230, 890, 60))
-        self.blocked_label.setFont(self.font_b_60)
-        self.blocked_label.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
-        self.blocked_label.setAlignment(QtCore.Qt.AlignCenter)
-        self.blocked_label.setObjectName("blocked_label")
+        self.blocked_label1.setGeometry(QtCore.QRect(0, 170, 890, 70))
+        self.blocked_label1.setFont(self.font_b_60)
+        self.blocked_label1.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label1.setAlignment(QtCore.Qt.AlignCenter)
+        self.blocked_label1.setObjectName("blocked_label1")
+        self.blocked_label2.setGeometry(QtCore.QRect(0, 230, 890, 70))
+        self.blocked_label2.setFont(self.font_b_60)
+        self.blocked_label2.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label2.setAlignment(QtCore.Qt.AlignCenter)
+        self.blocked_label2.setObjectName("blocked_label2")
+        self.blocked_label3.setGeometry(QtCore.QRect(0, 290, 890, 70))
+        self.blocked_label3.setFont(self.font_b_60)
+        self.blocked_label3.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label3.setAlignment(QtCore.Qt.AlignCenter)
+        self.blocked_label3.setObjectName("blocked_label3")
+        # --------------------------------------
+
+        # Для кумите команда Пятнова заглушка экрана при сохранении файла
+        self.saving_into_kumite_team_Form2.setGeometry(QtCore.QRect(5, 5, 890, 638))
+        self.saving_into_kumite_team_Form2.setStyleSheet("""
+                    background-color: red;
+                    border-radius: 10px;
+                """)
+        self.blocked_label4.setGeometry(QtCore.QRect(0, 230, 890, 70))
+        self.blocked_label4.setFont(self.font_b_60)
+        self.blocked_label4.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label4.setAlignment(QtCore.Qt.AlignCenter)
+        self.blocked_label4.setObjectName("blocked_label4")
+        self.saving_into_kumite_team_Form2.hide()
         # --------------------------------------
 
         self.frame_pyatnov.setGeometry(QtCore.QRect(0, 560, 900, 50))
@@ -1566,6 +1600,11 @@ class KumiteMainWindow_Ui(QWidget):
         self.layout2.setSpacing(0)
 
         self.setWindowFlags(Qt.FramelessWindowHint)
+
+    def isShowSportsmanName(self, resetSportsmanFrame=1):
+        if not self.label_name_red_1.text() and not self.label_region_red_1.text() or \
+                self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
+            self.setSportsmanName(resetSportsmanFrame)
 
     def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
                                display_coord_x1_secW, display_coord_y1_secW):
@@ -1651,6 +1690,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.lcd1.display(str(self.tics).split()[1])
             self.KumiteSecondWindow.lcd2.display(str(self.tics).split()[1])
             self.btn_start.setText('► START')
+        self.isShowSportsmanName()
 
     def downTime(self):
         self.show_screen()
@@ -1670,6 +1710,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.lcd1.display(str(self.tics).split()[1])
             self.KumiteSecondWindow.lcd2.display(str(self.tics).split()[1])
             self.btn_start.setText('► START')
+        self.isShowSportsmanName()
 
     def update_time(self):
         self.show_screen()
@@ -1709,6 +1750,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
+        self.isShowSportsmanName()
 
     def reset_timer(self):
         self.show_screen()
@@ -1726,6 +1768,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_reset.setStyleSheet(self.btn_style_1)
             self.btn_pause.setToolTip('Сбросить только секундомер')
             self.btn_reset.setToolTip('Сбросить всё')
+        self.isShowSportsmanName()
 
     def clearKumiteData(self):
         self.show_screen()
@@ -1855,6 +1898,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
                             self.KumiteSecondWindow.j_w3)
         self.KumiteSecondWindow.label_kum_jw0.setText(None)
+        # Если подгружен файл пятнова, очищаем комбобоксы
+        try:
+            self.pyatnov_name.setCurrentIndex(0)
+            self.pyatnov_pair_name.clear()
+        except:
+            pass
 
     def setWinner(self):
         self.show_screen()
@@ -1901,12 +1950,14 @@ class KumiteMainWindow_Ui(QWidget):
         if radio.isChecked():
             self.label_score11.setText(radio.text())
             self.KumiteSecondWindow.label_score21.setText(radio.text())
+            self.isShowSportsmanName()
 
     def onClickedW(self):
         radio = self.sender()
         if radio.isChecked():
             self.label_score12.setText(radio.text())
             self.KumiteSecondWindow.label_score22.setText(radio.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmr1(self):
         penaltyB_hmr = self.sender()
@@ -1915,6 +1966,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 self.KumiteSecondWindow.hm_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmr2(self):
         penaltyB_hmr = self.sender()
@@ -1924,6 +1976,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmr3(self):
         # self.show_screen()
@@ -1935,6 +1988,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmr0.setText(penaltyB_hmr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmr4(self):
         # self.show_screen()
@@ -1943,6 +1997,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.setStyleButton(self.KumiteSecondWindow.hm_r1, self.KumiteSecondWindow.hm_r2,
                                 self.KumiteSecondWindow.hm_r3)
             self.KumiteSecondWindow.label_kum_hmr0.setText(None)
+            self.isShowSportsmanName()
 
     def penaltyButton_jr1(self):
         # self.show_screen()
@@ -1952,6 +2007,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 self.KumiteSecondWindow.j_r3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jr2(self):
         # self.show_screen()
@@ -1962,6 +2018,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jr3(self):
         # self.show_screen()
@@ -1973,6 +2030,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jr0.setText(penaltyB_jr.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jr4(self):
         # self.show_screen()
@@ -1981,6 +2039,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.setStyleButton(self.KumiteSecondWindow.j_r1, self.KumiteSecondWindow.j_r2,
                                 self.KumiteSecondWindow.j_r3)
             self.KumiteSecondWindow.label_kum_jr0.setText(None)
+            self.isShowSportsmanName()
 
     def penaltyButton_hmw1(self):
         # self.show_screen()
@@ -1990,6 +2049,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 self.KumiteSecondWindow.hm_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmw2(self):
         # self.show_screen()
@@ -2000,6 +2060,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmw3(self):
         # self.show_screen()
@@ -2011,6 +2072,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_hmw0.setText(penaltyB_hmw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_hmw4(self):
         # self.show_screen()
@@ -2019,6 +2081,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.setStyleButton(self.KumiteSecondWindow.hm_w1, self.KumiteSecondWindow.hm_w2,
                                 self.KumiteSecondWindow.hm_w3)
             self.KumiteSecondWindow.label_kum_hmw0.setText(None)
+            self.isShowSportsmanName()
 
     def penaltyButton_jw1(self):
         # self.show_screen()
@@ -2028,6 +2091,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 self.KumiteSecondWindow.j_w3,
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jw2(self):
         # self.show_screen()
@@ -2038,6 +2102,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jw3(self):
         # self.show_screen()
@@ -2049,6 +2114,7 @@ class KumiteMainWindow_Ui(QWidget):
                                 'background-color: black; border-radius: 30px; border: 4px solid black;',
                                 'background-color: black; border-radius: 30px; border: 4px solid black;')
             self.KumiteSecondWindow.label_kum_jw0.setText(penaltyB_jw.text())
+            self.isShowSportsmanName()
 
     def penaltyButton_jw4(self):
         # self.show_screen()
@@ -2057,6 +2123,7 @@ class KumiteMainWindow_Ui(QWidget):
             self.setStyleButton(self.KumiteSecondWindow.j_w1, self.KumiteSecondWindow.j_w2,
                                 self.KumiteSecondWindow.j_w3)
             self.KumiteSecondWindow.label_kum_jw0.setText(None)
+            self.isShowSportsmanName()
 
     def setStyleButton(self, rad_S1, rad_S2, rad_S3,
                        rad_S1_FontSize='border-radius: 30px; border: 4px solid grey;',
@@ -2106,7 +2173,7 @@ class KumiteMainWindow_Ui(QWidget):
         except Exception as e:
             print('setMatchName   ', e)
 
-    def setSportsmanName(self):
+    def setSportsmanName(self, resetSportsmanFrame=1):
         try:
             self.setMatchName()
             lrwhi = self.lineEdit_region_white_1.currentText()
@@ -2124,7 +2191,8 @@ class KumiteMainWindow_Ui(QWidget):
             self.KumiteSecondWindow.screen_label_name_white.setText(self.lineEdit_name_white_1.text())
             self.KumiteSecondWindow.screen_label_region_white.setText(lrwhi)
 
-            self.resetSportsmanFramePosition()
+            if resetSportsmanFrame:
+                self.resetSportsmanFramePosition()
 
             first_window_name_red = self.label_name_red_1.fontMetrics().boundingRect(
                 self.label_name_red_1.text()).width()

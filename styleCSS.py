@@ -168,26 +168,26 @@ combo_style_1 = """
 
 combo_style_2 = """
 QLineEdit {
-        border: none;
-        border-radius: 0;
-        background-color: #FAF9F9;
-        color: #555B6E;
-        }
+    border: none;
+    border-radius: 0;
+    background-color: #FAF9F9;
+    color: #555B6E;
+}
     QLineEdit:hover {
         background-color: #fdfdfd;
         color: black;
-        }  
+    }
 QComboBox {
-        border-radius: 0;
-        border: 1px solid gray;
-        background-color: #FAF9F9;
-        color: #555B6E;
-        }
+    border-radius: 0;
+    border: 1px solid gray;
+    background-color: #FAF9F9;
+    color: #555B6E;
+}
     QComboBox:hover {
         border: 1px solid #3e6ae1;
         background-color: #fdfdfd;
         color: black;
-        }
+    }
     QComboBox::drop-down {
         background-color: white;
         width: 30px;
@@ -208,6 +208,9 @@ QComboBox {
     QComboBox QAbstractItemView {
         border: none;
         selection-background-color: #3e6ae1;
+    }
+    QComboBox QAbstractItemView:disabled { 
+        color: grey;
     }
     /* ===================== vertical scroll ===================== */
     /* = шкала = */

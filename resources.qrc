@@ -10,26 +10,114 @@
   <file>Images/emblem_vbe_msk.png</file>
   <file>Images/emblem_vbe_rus.png</file>
   <file>Images/Empty.png</file>
-
   <file>Images/icon.ico</file>
   <file>Images/icon_30px.ico</file>
-  <file>Images/icon_30px11.ico</file>
-  <file>Images/JKA_30px.ico</file>
-  <file>Images/JKA_30px.png</file>
-  <file>Images/JKA_30px11.png</file>
-  <file>Images/radiobutton_checked.png</file>
-  <file>Images/radiobutton_checked_hover.png</file>
-  <file>Images/radiobutton_checked_pressed.png</file>
   <file>Images/radiobutton_unchecked.png</file>
   <file>Images/radiobutton_unchecked_hover.png</file>
   <file>Images/radiobutton_unchecked_pressed.png</file>
-  <file>Images/toggle-group.svg</file>
-  <file>Images/toggle-group_hover.svg</file>
-  <file>Images/toggle-pers.svg</file>
-  <file>Images/toggle-pers_hover.svg</file>
+  <file>Images/radiobutton_checked.png</file>
+  <file>Images/radiobutton_checked_hover.png</file>
+  <file>Images/radiobutton_checked_pressed.png</file>
+  <file>Images/emblem_usko.png</file>
+  <file>Images/emblem_vbe_rus.png</file>
+  <file>Images/emblem_vbe_msk.png</file>
+  <file>Images/111_95.svg</file>
 
-  <file>Images/icon_regions/coat_of_arms</file>
-  <file>Images/icon_regions/flags78</file>
-  <file>Images/icon_regions/flags</file>
+        <file>Images/icon_regions/flags/00_Curcle.svg</file>
+        <file>Images/icon_regions/flags/01.svg</file>
+        <file>Images/icon_regions/flags/02.svg</file>
+        <file>Images/icon_regions/flags/03.svg</file>
+        <file>Images/icon_regions/flags/04.svg</file>
+        <file>Images/icon_regions/flags/05.svg</file>
+        <file>Images/icon_regions/flags/06.svg</file>
+        <file>Images/icon_regions/flags/07.svg</file>
+        <file>Images/icon_regions/flags/08.svg</file>
+        <file>Images/icon_regions/flags/09.svg</file>
+        <file>Images/icon_regions/flags/10.svg</file>
+        <file>Images/icon_regions/flags/11.svg</file>
+        <file>Images/icon_regions/flags/12.svg</file>
+        <file>Images/icon_regions/flags/13.svg</file>
+        <file>Images/icon_regions/flags/14.svg</file>
+        <file>Images/icon_regions/flags/15.svg</file>
+        <file>Images/icon_regions/flags/16.svg</file>
+        <file>Images/icon_regions/flags/17.svg</file>
+        <file>Images/icon_regions/flags/18.svg</file>
+        <file>Images/icon_regions/flags/19.svg</file>
+        <file>Images/icon_regions/flags/21.svg</file>
+        <file>Images/icon_regions/flags/22.svg</file>
+        <file>Images/icon_regions/flags/23.svg</file>
+        <file>Images/icon_regions/flags/24.svg</file>
+        <file>Images/icon_regions/flags/25.svg</file>
+        <file>Images/icon_regions/flags/26.svg</file>
+        <file>Images/icon_regions/flags/27.svg</file>
+        <file>Images/icon_regions/flags/28.svg</file>
+        <file>Images/icon_regions/flags/29.svg</file>
+        <file>Images/icon_regions/flags/30.svg</file>
+        <file>Images/icon_regions/flags/31.svg</file>
+        <file>Images/icon_regions/flags/32.svg</file>
+        <file>Images/icon_regions/flags/33.svg</file>
+        <file>Images/icon_regions/flags/34.svg</file>
+        <file>Images/icon_regions/flags/35.svg</file>
+        <file>Images/icon_regions/flags/36.svg</file>
+        <file>Images/icon_regions/flags/37.svg</file>
+        <file>Images/icon_regions/flags/38.svg</file>
+        <file>Images/icon_regions/flags/39.svg</file>
+        <file>Images/icon_regions/flags/40.svg</file>
+        <file>Images/icon_regions/flags/41.svg</file>
+        <file>Images/icon_regions/flags/42.svg</file>
+        <file>Images/icon_regions/flags/43.svg</file>
+        <file>Images/icon_regions/flags/44.svg</file>
+        <file>Images/icon_regions/flags/45.svg</file>
+        <file>Images/icon_regions/flags/46.svg</file>
+        <file>Images/icon_regions/flags/47.svg</file>
+        <file>Images/icon_regions/flags/48.svg</file>
+        <file>Images/icon_regions/flags/49.svg</file>
+        <file>Images/icon_regions/flags/50.svg</file>
+        <file>Images/icon_regions/flags/51.svg</file>
+        <file>Images/icon_regions/flags/52.svg</file>
+        <file>Images/icon_regions/flags/53.svg</file>
+        <file>Images/icon_regions/flags/54.svg</file>
+        <file>Images/icon_regions/flags/55.svg</file>
+        <file>Images/icon_regions/flags/56.svg</file>
+        <file>Images/icon_regions/flags/57.svg</file>
+        <file>Images/icon_regions/flags/58.svg</file>
+        <file>Images/icon_regions/flags/59.svg</file>
+        <file>Images/icon_regions/flags/60.svg</file>
+        <file>Images/icon_regions/flags/61.svg</file>
+        <file>Images/icon_regions/flags/62.svg</file>
+        <file>Images/icon_regions/flags/63.svg</file>
+        <file>Images/icon_regions/flags/64.svg</file>
+        <file>Images/icon_regions/flags/65.svg</file>
+        <file>Images/icon_regions/flags/66.svg</file>
+        <file>Images/icon_regions/flags/67.svg</file>
+        <file>Images/icon_regions/flags/68.svg</file>
+        <file>Images/icon_regions/flags/69.svg</file>
+        <file>Images/icon_regions/flags/70.svg</file>
+        <file>Images/icon_regions/flags/71.svg</file>
+        <file>Images/icon_regions/flags/72.svg</file>
+        <file>Images/icon_regions/flags/73.svg</file>
+        <file>Images/icon_regions/flags/74.svg</file>
+        <file>Images/icon_regions/flags/75.svg</file>
+        <file>Images/icon_regions/flags/76.svg</file>
+        <file>Images/icon_regions/flags/77.svg</file>
+        <file>Images/icon_regions/flags/78.svg</file>
+        <file>Images/icon_regions/flags/79.svg</file>
+        <file>Images/icon_regions/flags/80.svg</file>
+        <file>Images/icon_regions/flags/81.svg</file>
+        <file>Images/icon_regions/flags/82.svg</file>
+        <file>Images/icon_regions/flags/83.svg</file>
+        <file>Images/icon_regions/flags/84.svg</file>
+        <file>Images/icon_regions/flags/85.svg</file>
+        <file>Images/icon_regions/flags/86.svg</file>
+        <file>Images/icon_regions/flags/87.svg</file>
+        <file>Images/icon_regions/flags/89.svg</file>
+        <file>Images/icon_regions/flags/92.svg</file>
+        <file>Images/icon_regions/flags/95.svg</file>
+        <file>Images/icon_regions/flags/QComboBox_down_arrow.svg</file>
+        <file>Images/icon_regions/flags/QComboBox_down_arrow_disabled.svg</file>
+        <file>Images/icon_regions/flags/QComboBox_down_arrow_on.svg</file>
+        <file>Images/icon_regions/flags/ri_arrow-drop-down-line.svg</file>
+
+
 </qresource>
 </RCC>

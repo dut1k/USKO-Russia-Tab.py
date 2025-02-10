@@ -34,5 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\py_dutik\\PycharmProjects\\usko_tab\\Images\\icon.ico'],
+    icon=['C:\\Users\\user\\PycharmProjects\\USKO-Russia-Tab.py\\Images\\icon.ico'],
 )
