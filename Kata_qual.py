@@ -248,9 +248,12 @@ class KataQual_MainWindow_Ui(QWidget):
         self.Form21.setFixedSize(900, 530)
         self.Form21.setStyleSheet("background-color: white;")
 
+        self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
+
         self.frame_matchName = QtWidgets.QFrame(self.Form21)
         self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
-        self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
+        # self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
+        self.matchName1 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}, Возраст", self.frame_matchName)
         self.btn_clearData = QtWidgets.QPushButton("ОЧИСТИТЬ\nДАННЫЕ", self.Form21)
         self.btn_NewCategory = QtWidgets.QPushButton("НОВАЯ\nКАТЕГОРИЯ", self.Form21)
         self.btn_showData = QtWidgets.QPushButton("ПОКАЗАТЬ\nНА ЭКРАНЕ", self.Form21)
@@ -293,6 +296,8 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
+
+        self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
 
         self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
@@ -682,10 +687,6 @@ class KataQual_MainWindow_Ui(QWidget):
         self.KataQual_SecondWindow.frame_red2.show()
         self.KataQual_SecondWindow.frame_white2.show()
         self.KataQual_SecondWindow.label_winner.hide()
-        # self.KataQual_SecondWindow.label_name_red_2.show()
-        # self.KataQual_SecondWindow.label_region_red_2.show()
-        # self.KataQual_SecondWindow.label_name_white_2.show()
-        # self.KataQual_SecondWindow.label_region_white_2.show()
 
         first_window_name_red = self.label_name_red_1.fontMetrics().boundingRect(self.label_name_red_1.text()).width()
         first_window_region_red = self.label_region_red_1.fontMetrics(). \

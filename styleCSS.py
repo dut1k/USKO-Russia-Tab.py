@@ -1,4 +1,8 @@
 from PyQt5 import QtGui
+import os
+
+#Пытаемся определить номер татами, если это наши ПК
+USKO_PC = os.getlogin().split('USKO ПК-')[1] if 'USKO ПК-' in os.getlogin() else '#'
 
 btn_style_header = """
     QPushButton {

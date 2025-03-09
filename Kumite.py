@@ -31,6 +31,8 @@ class RoundedLabel(QtWidgets.QLabel):
 
 class KumiteSWindow_Ui(object):
     def __init__(self):
+        self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
+
         self.font_b_60 = css.font_b_60
         self.font_m_60 = css.font_m_60
         self.font_m_100 = css.font_m_100
@@ -132,21 +134,12 @@ class KumiteSWindow_Ui(object):
         self.lcd2.setGeometry(QtCore.QRect(580, 275, 760, 280))
         self.lcd2.setStyleSheet("background-color: None; border: None")
 
-        # self.line2.setGeometry(QtCore.QRect(957, 580, 6, 460))
-        # self.line2.setLineWidth(1)
-        # self.line2.setMidLineWidth(6)
-        # self.line2.setFrameShape(QtWidgets.QFrame.VLine)
-        # self.line2.setFrameShadow(QtWidgets.QFrame.Sunken)
-        # self.line2.setObjectName("line")
-
-
         self.label_score22.setGeometry(QtCore.QRect(380, 0, 500, 420))
         self.label_score22.setFont(self.font_m_530)
         self.label_score22.setStyleSheet("background-color: none;")
         self.label_score22.setAlignment(QtCore.Qt.AlignCenter)
         self.label_score22.setObjectName("label_score2")
 
-        # self.frame_red2.setGeometry(QtCore.QRect(40, 150, 880, 850))
         self.frame_red2.setStyleSheet("background-color: None; ")
         self.frame_red2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_red2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -195,8 +188,6 @@ class KumiteSWindow_Ui(object):
         self.flag_white.hide()
         self.flag_red.hide()
 
-        # self.icon_white = QtWidgets.QLabel(self.flag_white)
-        # self.icon_red = QtWidgets.QLabel(self.flag_red)
         ########################
         self.icon_white = RoundedLabel(self.flag_white)
         self.icon_red = RoundedLabel(self.flag_red)
@@ -238,7 +229,6 @@ class KumiteSWindow_Ui(object):
 
         self.label_kum_hmr0.setGeometry(QtCore.QRect(400, 0, 480, 100))
         self.label_kum_hmr0.setFont(self.font_m_100)
-        # self.label_kum_hmr0.setStyleSheet("background-color: None; color: grey;")
         self.label_kum_hmr0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_hmr0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmr0.setObjectName("label_kum_hmr0")
@@ -268,7 +258,6 @@ class KumiteSWindow_Ui(object):
 
         self.label_kum_jr0.setGeometry(QtCore.QRect(400, 0, 480, 100))
         self.label_kum_jr0.setFont(self.font_m_100)
-        # self.label_kum_jr0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jr0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_jr0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jr0.setObjectName("label_kum_jr0")
@@ -291,7 +280,6 @@ class KumiteSWindow_Ui(object):
         self.j_r3.setStyleSheet("border-radius: 30px; border: 4px solid grey;")
         self.j_r3.setObjectName("j_r3")
 
-        # self.frame_white2.setGeometry(QtCore.QRect(1000, 150, 880, 850))
         self.frame_white2.setStyleSheet("background-color: None;")
         self.frame_white2.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame_white2.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -321,7 +309,6 @@ class KumiteSWindow_Ui(object):
 
         self.label_kum_hmw0.setGeometry(QtCore.QRect(400, 0, 480, 100))
         self.label_kum_hmw0.setFont(self.font_m_100)
-        # self.label_kum_hmw0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_hmw0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_hmw0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_hmw0.setObjectName("label_kum_hmw0")
@@ -351,7 +338,6 @@ class KumiteSWindow_Ui(object):
 
         self.label_kum_jw0.setGeometry(QtCore.QRect(400, 0, 480, 100))
         self.label_kum_jw0.setFont(self.font_m_100)
-        # self.label_kum_jw0.setStyleSheet("background-color: None;  color: grey;")
         self.label_kum_jw0.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.label_kum_jw0.setAlignment(QtCore.Qt.AlignCenter)
         self.label_kum_jw0.setObjectName("label_kum_jw0")
@@ -460,7 +446,6 @@ class KumiteSWindow_Ui(object):
 
         self.sportsman_screen.hide()
 
-        # self.line2.raise_()
         self.lcd2.raise_()
 
         self.frame_red2.raise_()
@@ -519,8 +504,9 @@ class KumiteSWindow_Ui(object):
         self.label_score22.setText(_translate("Form", "0"))
         self.label_kum_jw0.setText(_translate("Form", None))
         self.label_kum_jw1.setText(_translate("Form", "J"))
-        self.matchName21.setText(_translate("Form", "Татами №#, Возраст"))
-        # self.matchName22.setText(_translate("Form", "Возраст"))
+        # self.matchName21.setText(_translate("Form", "Татами №#, Возраст"))
+        self.matchName21.setText(_translate("Form", f"Татами №{self.USKO_PC}, Возраст"))
+
         self.label_winner.setText(_translate("Form", "ПОБЕДИТЕЛЬ"))
         self.label_name_white_2.setText(_translate("Form", ""))
         self.label_name_red_2.setText(_translate("Form", ""))
@@ -634,12 +620,15 @@ class KumiteMainWindow_Ui(QWidget):
         QWidget.setWindowTitle(self, "Кумите. Судейское окно")
 
         self.Form2 = QtWidgets.QFrame(self)
-        # self.Form2.setFixedSize(900, 500)
+
         self.Form2.setStyleSheet("background-color: white;")
+
+        self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
 
         self.frame_matchName = QtWidgets.QFrame(self.Form2)
         self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
-        self.matchName11 = QtWidgets.QLineEdit("Татами №#", self.frame_matchName)
+        # self.matchName11 = QtWidgets.QLineEdit("Татами №#", self.frame_matchName)
+        self.matchName11 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}", self.frame_matchName)
         self.matchName12 = QtWidgets.QLineEdit("Возраст", self.frame_matchName)
         self.btn_NewCategory = QtWidgets.QPushButton("НОВАЯ\nКАТЕГОРИЯ", self.frame_matchName)
         self.btn_showData = QtWidgets.QPushButton("ПОКАЗАТЬ\nНА ЭКРАНЕ", self.frame_matchName)
@@ -933,15 +922,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.saving_into_kumite_team_Form2 = QtWidgets.QFrame(self.Form2)
         self.blocked_label4 = QtWidgets.QLabel("Сохранение в файл...", self.saving_into_kumite_team_Form2)
 
-        self.img_saving_into_kumite_team = QtGui.QPixmap(":/Images/111_95.svg")
-        self.pixmap_saving_into_kumite_team = QtWidgets.QLabel(self.blocked_Form2)
-        self.pixmap_saving_into_kumite_team.setGeometry(QtCore.QRect(0, 0, 500, 500))
-        self.pixmap_saving_into_kumite_team.setStyleSheet("background-color: grey;")
-        self.pixmap_saving_into_kumite_team.setPixmap(self.img_saving_into_kumite_team)
+        self.pixmap_saving_into_kumite_team = QtWidgets.QLabel(self.saving_into_kumite_team_Form2)
 
-
-
-
+        self.img_saving_into_kumite_team = QtGui.QMovie(":/Images/image_save_processing_3.gif")
+        self.pixmap_saving_into_kumite_team.setMovie(self.img_saving_into_kumite_team)
 
         self.frame_bottom.setGeometry(QtCore.QRect(0, 559, 900, 1))
         self.frame_bottom.setStyleSheet("background-color: grey;")
@@ -1522,14 +1506,15 @@ class KumiteMainWindow_Ui(QWidget):
         # Для кумите команда Пятнова заглушка экрана при сохранении файла
         self.saving_into_kumite_team_Form2.setGeometry(QtCore.QRect(5, 5, 890, 638))
         self.saving_into_kumite_team_Form2.setStyleSheet("""
-                    background-color: red;
+                    background-color: #21211c;
                     border-radius: 10px;
                 """)
-        self.blocked_label4.setGeometry(QtCore.QRect(0, 230, 890, 70))
+        self.blocked_label4.setGeometry(QtCore.QRect(0, 530, 890, 70))
         self.blocked_label4.setFont(self.font_b_60)
-        self.blocked_label4.setStyleSheet("color: black; border-bottom: None; background-color: transparent; ")
+        self.blocked_label4.setStyleSheet("color: #f0e4d0; border-bottom: None; background-color: transparent; ")
         self.blocked_label4.setAlignment(QtCore.Qt.AlignCenter)
         self.blocked_label4.setObjectName("blocked_label4")
+        self.pixmap_saving_into_kumite_team.setGeometry(QtCore.QRect(195, 15, 500, 500))
         self.saving_into_kumite_team_Form2.hide()
         # --------------------------------------
 

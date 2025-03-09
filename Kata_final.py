@@ -158,7 +158,6 @@ class KataSecondWindow_Ui(object):
         self.input_referee1.setText(_translate("Form12", ""))
         self.input_referee3.setText(_translate("Form12", ""))
         self.input_referee5.setText(_translate("Form12", ""))
-        #self.matchName2.setText(_translate("Form12", "Татами №#, Возраст"))
         self.label_region_red_2.setText(_translate("Form12", "регион"))
         self.label_name_red_2.setText(_translate("Form12", "ФАМИЛИЯ"))
 
@@ -327,6 +326,8 @@ class KataMainWindow_Ui(QWidget):
         self.Form11.setFixedSize(900, 500)
         self.Form11.setStyleSheet("background-color: white;")
 
+        self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
+
         self.Calc_Button = QtWidgets.QPushButton("Рассчитать", self.Form11)
         self.Clear_Button = QtWidgets.QPushButton("Очистить", self.Form11)
         self.heading_sum = QtWidgets.QLabel("Сумма баллов", self.Form11)
@@ -350,11 +351,11 @@ class KataMainWindow_Ui(QWidget):
         self.comboBox_name_red_1 = QtWidgets.QComboBox(self.frame_sportsmans)
         self.name_red_1 = QtWidgets.QLabel("Выберите спортсмена", self.frame_sportsmans)
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите имя спортсмена")
-        # self.lineEdit_region_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите регион")
         self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.Form11)
         self.frame_matchName = QtWidgets.QFrame(self.Form11)
         self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
-        self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
+        # self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
+        self.matchName1 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}, Возраст", self.frame_matchName)
 
         self.frame_pyatnov = QtWidgets.QFrame(self.Form11)
 
