@@ -251,7 +251,7 @@ class KataQual_MainWindow_Ui(QWidget):
         self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
 
         self.frame_matchName = QtWidgets.QFrame(self.Form21)
-        self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
+        self.label_matchName1 = QtWidgets.QLabel('<b>Название категории</b>', self.frame_matchName)
         # self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
         self.matchName1 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}, Возраст", self.frame_matchName)
         self.btn_clearData = QtWidgets.QPushButton("ОЧИСТИТЬ\nДАННЫЕ", self.Form21)

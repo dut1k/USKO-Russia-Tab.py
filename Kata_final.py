@@ -353,7 +353,7 @@ class KataMainWindow_Ui(QWidget):
         self.lineEdit_name_red_1 = QtWidgets.QLineEdit(self.Form11, placeholderText="Введите имя спортсмена")
         self.lineEdit_region_red_1 = QtWidgets.QComboBox(self.Form11)
         self.frame_matchName = QtWidgets.QFrame(self.Form11)
-        self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
+        self.label_matchName1 = QtWidgets.QLabel('<b>Название категории</b>', self.frame_matchName)
         # self.matchName1 = QtWidgets.QLineEdit("Татами №#, Возраст", self.frame_matchName)
         self.matchName1 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}, Возраст", self.frame_matchName)
 

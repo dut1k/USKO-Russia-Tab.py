@@ -971,7 +971,7 @@ class MenuWindow(QWidget, Ui_Form0):
         self.user_choice = self.user_choice_list.index(self.combo.currentText())
         self.data_processing()
 
-    def pyatnov_processing(self):
+    def pyatnov_processing(self, is_kum_team_clear_name=True):
         # Обработка excel
         sheets11 = self.xl.book.worksheets
         setka_num = 1000
@@ -1458,14 +1458,17 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                         self.ui_kumite.pyatnov_name.setEnabled(True)
                         self.ui_kumite.matchName12.setText(self.category_label)
+                        self.ui_kumite.pyatnov_name.setCurrentIndex(0)
                     elif self.flag_pyatnov_kumite_team:
+                        if not is_kum_team_clear_name:
+                            pyatnov_name_index = self.ui_kumite.pyatnov_name.currentIndex()
                         self.show_pyatnov_kumite_interface(team=True)
                         self.ui_kumite.pyatnov_name.clear()
                         self.ui_kumite.pyatnov_name.addItem('Выберите команды...')
                         self.ui_kumite.pyatnov_name.addItems(self.teams_pairs.keys())
                         self.ui_kumite.pyatnov_name.setEnabled(True)
                         self.ui_kumite.matchName12.setText(self.category_label)
-                    self.ui_kumite.pyatnov_name.setCurrentIndex(0)
+                        self.ui_kumite.pyatnov_name.setCurrentIndex(0 if is_kum_team_clear_name else pyatnov_name_index)
 
                 self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
                 self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
@@ -2964,15 +2967,54 @@ class MenuWindow(QWidget, Ui_Form0):
                         # print('name_red', name_red, 'region_red', region_red)
                         # print('СОХРАНИТЬ В EXCEL кум командное')
                         # print('dict_paytnov_kumite_winner', self.dict_paytnov_kumite_winner)
+                        self.pyatnov_winner = {'type': 'ui_kumite'}
                     else:
-                        name_white = self.ui_kumite.label_name_white_1.text()
+                        siro_name = self.ui_kumite.label_name_white_1.text()
                         region_white = self.ui_kumite.label_region_white_1.text()
-                        name_red = self.ui_kumite.label_name_red_1.text()
+                        aka_name = self.ui_kumite.label_name_red_1.text()
                         region_red = self.ui_kumite.label_region_red_1.text()
-                        print('name_white', name_white, 'region_white', region_white)
-                        print('name_red', name_red, 'region_red', region_red)
+                        print('siro_name', siro_name, 'region_white', region_white)
+                        print('aka_name', aka_name, 'region_red', region_red)
                         print('СОХРАНИТЬ В EXCEL кум ЛИЧНОЕ')
-                    self.pyatnov_winner = {'type': 'ui_kumite'}
+
+                        side = 'siro' if sender == self.ui_kumite.winnerWhite.isChecked() else 'aka'
+                        row_num = siro_name + ' - ' + aka_name
+                        row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
+                        row = self.sportsmen_dict['row_num'][row1]
+                        col_white, col_red = ["G", "L"]
+                        col = col_white if sender == self.ui_kumite.winnerWhite.isChecked() else col_red
+
+                        cell_coord = f"{col}{row}"
+                        self.pyatnov_winner = {'type': 'ui_kumite', 'side': side, 'cell': cell_coord}
+
+
+                        # if self.loaded_file_data_type == 'file_pyatnov':
+                        #
+                        #
+                        #
+                        #     side = 'siro' if sender == self.ui_kumite.winnerWhite.isChecked() else 'aka'
+                        #     row_num = siro_name + ' - ' + aka_name
+                        #     row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
+                        #     row = self.sportsmen_dict['row_num'][row1]
+                        #     col_white, col_red = ["G", "L"]
+                        #     col = col_white if sender == self.ui_kumite.winnerWhite.isChecked() else col_red
+                        #
+                        #     cell_coord = f"{col}{row}"
+                        #     self.pyatnov_winner = {'type': 'ui_kumite', 'side': side, 'cell': cell_coord}
+
+
+
+
+                            # aka_name = self.ui_kataQual.lineEdit_name_red_1.text()
+                            # siro_name = self.ui_kataQual.lineEdit_name_white_1.text()
+                            # side = 'siro' if sender == self.ui_kataQual.winnerWhite else 'aka'
+                            # row_num = siro_name + ' - ' + aka_name
+                            # row1 = [k for k, v in self.sportsmen_dict['combo_box'].items() if v == row_num][0]
+                            # row = self.sportsmen_dict['row_num'][row1]
+                            # col_white, col_red = ["G", "L"]
+                            # col = col_white if sender == self.ui_kataQual.winnerWhite else col_red
+                            # cell_coord = f"{col}{row}"
+                            # self.pyatnov_winner = {'type': 'ui_kataQual', 'side': side, 'cell': cell_coord}
 
         except Exception as e:
             print('_______Exception set_winner:', e)
@@ -3066,7 +3108,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
                         # Если self.cur_men_pair_num не указан, получаем его
                         if not self.cur_men_pair_num:
-                            self.cur_men_pair_num = self.cur_team_pair()[0]
+                            self.cur_men_pair_num = self.cur_team_pair()
+                        self.cur_men_pair_num = self.cur_men_pair_num[0]
 
                         print('ЗАПИСЬ В EXCEL на строке:', self.cur_men_pair_num)
                         print('write_on_pyatov_file data_to_write_in_paytnov_referee_protocol', self.data_to_write_in_paytnov_referee_protocol)
@@ -3074,7 +3117,6 @@ class MenuWindow(QWidget, Ui_Form0):
                         workbook = excel.Workbooks.Open(excel_file_path)
                         worksheet = workbook.Worksheets(self.sheet_name_referee)
 
-                        # Determine the range to write data
                         start_row = self.cur_men_pair_num
                         start_col = 4
 
@@ -3083,11 +3125,11 @@ class MenuWindow(QWidget, Ui_Form0):
                             for col_idx, value in enumerate(row, start=start_col):
                                 worksheet.Cells(row_idx, col_idx).Value = value
                     else:
-                        pass
-                        # excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
-                        # workbook = excel.Workbooks.Open(excel_file_path)
-                        # worksheet = workbook.Worksheets("Aka+Shiro")
-                        # worksheet.Range(self.pyatnov_winner['cell']).Value = 1
+                        # pass
+                        excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
+                        workbook = excel.Workbooks.Open(excel_file_path)
+                        worksheet = workbook.Worksheets("Aka+Shiro")
+                        worksheet.Range(self.pyatnov_winner['cell']).Value = 1
                     workbook.Save()
                     workbook.Close()
                     excel.Quit()
@@ -3110,7 +3152,7 @@ class MenuWindow(QWidget, Ui_Form0):
             else:
                 return
             print(' 1 write_on_pyatov_file')
-            result = self.pyatnov_processing()
+            result = self.pyatnov_processing(is_kum_team_clear_name=False)
             print(' 2 write_on_pyatov_file')
             if self.flag_pyatnov_kata_single or self.flag_pyatnov_kata_team:
 
@@ -3233,8 +3275,11 @@ class MenuWindow(QWidget, Ui_Form0):
             print('_______Exception get_data_for_paytnov_kumite_winner:', e)
 
     def paytnov_prepare_data_to_write_to_protocol(self):
+        print('paytnov_prepare_data_to_write_to_protocol')
         # Обрабатываем данные для записи данных в протокол арбитра
         try:
+            if not  self.flag_pyatnov_kumite_team:
+                return
             # Заносим запись о победителе в словарь протокола
             if self.ui_kumite.winnerWhite.isChecked():
                 self.dict_paytnov_kumite_winner['siro']['result'] = 1
@@ -3324,6 +3369,10 @@ class MenuWindow(QWidget, Ui_Form0):
             self.data_to_write_in_paytnov_referee_protocol[1].append('')
             self.data_to_write_in_paytnov_referee_protocol[1].append('')
             self.data_to_write_in_paytnov_referee_protocol[1].extend(self.dict_paytnov_kumite_winner['aka']['hm_j'])
+
+            self.data_to_write_in_paytnov_referee_protocol[2].append(self.cur_team_pair()[0])
+
+            print(self.data_to_write_in_paytnov_referee_protocol)
         except Exception as e:
             print('_______Exception paytnov_prepare_data_to_write_to_protocol:', e)
 

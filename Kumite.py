@@ -626,12 +626,19 @@ class KumiteMainWindow_Ui(QWidget):
         self.USKO_PC = css.USKO_PC  # Номер татами если наши ПК
 
         self.frame_matchName = QtWidgets.QFrame(self.Form2)
-        self.label_matchName1 = QtWidgets.QLabel('<b>Заголовок</b>', self.frame_matchName)
+        self.label_matchName1 = QtWidgets.QLabel('<b>Название категории</b>', self.frame_matchName)
         # self.matchName11 = QtWidgets.QLineEdit("Татами №#", self.frame_matchName)
         self.matchName11 = QtWidgets.QLineEdit(f"Татами №{self.USKO_PC}", self.frame_matchName)
         self.matchName12 = QtWidgets.QLineEdit("Возраст", self.frame_matchName)
         self.btn_NewCategory = QtWidgets.QPushButton("НОВАЯ\nКАТЕГОРИЯ", self.frame_matchName)
         self.btn_showData = QtWidgets.QPushButton("ПОКАЗАТЬ\nНА ЭКРАНЕ", self.frame_matchName)
+
+        self.frame_paytnov_file_save_status = QtWidgets.QFrame(self.frame_matchName)
+        self.pfss_img = QLabel(self.frame_paytnov_file_save_status)
+        self.pfss_pixmap = QtGui.QPixmap(':/Images/icon_30px.ico')
+        self.pfss_pixmap2 = self.pfss_pixmap.scaled(16, 16, QtCore.Qt.KeepAspectRatio)
+        self.pfss_pair_name = QtWidgets.QLabel("Иванов - Петров", self.frame_paytnov_file_save_status)
+        self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
 
         self.control_panel = QtWidgets.QFrame(self.Form2)
         self.lcd1 = QtWidgets.QLCDNumber(self.control_panel)
