@@ -413,6 +413,27 @@ class KataMainWindow_Ui(QWidget):
         self.font_m_33 = css.font_m_33
         self.font_b_40 = css.font_b_40
 
+        self.frame_paytnov_file_save_status = QtWidgets.QFrame(self.frame_matchName)
+        self.pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_save.svg')
+        self.pfss_pixmap2 = self.pfss_pixmap.scaled(16, 16, QtCore.Qt.KeepAspectRatio)
+        self.pfss_pixmap_label = QLabel(self.frame_paytnov_file_save_status)
+        self.pfss_pixmap_label.setGeometry(QtCore.QRect(8, 0, 30, 31))
+        self.pfss_pixmap_label.setStyleSheet("border: none; font-family: Gotham-Medium; font-size: 12px;")
+        self.pfss_pixmap_label.setPixmap(self.pfss_pixmap2)
+        self.pfss_pair_name = QtWidgets.QLabel("Иванов", self.frame_paytnov_file_save_status)
+        self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
+
+        # self.frame_paytnov_file_save_status.hide()
+        self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(300, 0, 200, 40))
+        self.frame_paytnov_file_save_status.setStyleSheet("background-color: none;")
+        self.pfss_pair_name.setGeometry(QtCore.QRect(0, 15, 200, 15))
+        self.pfss_pair_name.setFont(self.font_l_10)
+        self.pfss_pair_name.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setGeometry(QtCore.QRect(0, 0, 200, 15))
+        self.pfss_status.setFont(self.font_l_10)
+        self.pfss_status.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setStyleSheet("color: grey;")
+
         self.frame_bottom.setGeometry(QtCore.QRect(0, 499, 900, 1))
         self.frame_bottom.setStyleSheet("background-color: grey;")
         self.frame_bottom.setObjectName("frame_bottom")

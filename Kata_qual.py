@@ -309,11 +309,36 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.combo_style_2 = css.combo_style_2
 
+        self.font_l_10 = css.font_l_10
         self.font_l_12 = css.font_l_12
         self.font_l_13 = css.font_l_13
         self.font_m_13 = css.font_m_13
         self.font_b_13 = css.font_b_13
         self.font_l_20 = css.font_l_20
+
+        self.frame_paytnov_file_save_status = QtWidgets.QFrame(self.frame_matchName)
+        self.pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_save.svg')
+        self.pfss_pixmap2 = self.pfss_pixmap.scaled(15, 15, QtCore.Qt.KeepAspectRatio)
+        self.pfss_pixmap_label = QLabel(self.frame_paytnov_file_save_status)
+        self.pfss_pixmap_label.setGeometry(QtCore.QRect(0, 0, 15, 15))
+        self.pfss_pixmap_label.setStyleSheet("border: none; font-family: Gotham-Medium; font-size: 12px;")
+        self.pfss_pixmap_label.setPixmap(self.pfss_pixmap2)
+        self.pfss_pair_name = QtWidgets.QLabel("Иванов - Петров", self.frame_paytnov_file_save_status)
+        self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
+
+        # self.frame_paytnov_file_save_status.hide()
+        self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(100, 55, 400, 15))
+        self.frame_paytnov_file_save_status.setStyleSheet("background-color: none;")
+        self.pfss_pair_name.setGeometry(QtCore.QRect(0, 0, 199, 15))
+        self.pfss_pair_name.setFont(self.font_l_10)
+        self.pfss_pair_name.adjustSize()
+        self.pfss_pair_name.setStyleSheet("color: grey; background-color: red;")
+        self.pfss_pair_name.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setGeometry(QtCore.QRect(201, 0, 199, 15))
+        self.pfss_status.setFont(self.font_l_10)
+        self.pfss_status.adjustSize()
+        self.pfss_status.setAlignment(QtCore.Qt.AlignLeft)
+        self.pfss_status.setStyleSheet("color: grey; background-color: green;")
 
         self.frame_bottom = QtWidgets.QFrame(self.Form21)
         self.frame_left = QtWidgets.QFrame(self.Form21)

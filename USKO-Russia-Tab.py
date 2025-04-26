@@ -452,7 +452,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.btn_show_screen.clicked.connect(self.setSportsmanName)
 
-        self.ui_kumite.pyatnov_perebivka_btn.clicked.connect(self.ui_kumite.perebivka_disabled)
+        self.ui_kumite.pyatnov_perebivka_qbx.clicked.connect(self.paytnov_perebivka)
+        self.ui_kumite.pyatnov_perebivka_btn.clicked.connect(self.paytnov_perebivka)
 
         self.ui_kumite.le_comboBox_name_white_1.activated[str].connect(self.setLabel)
         self.ui_kumite.le_comboBox_name_red_1.activated[str].connect(self.setLabel)
@@ -1216,8 +1217,9 @@ class MenuWindow(QWidget, Ui_Form0):
                                 'complete_pair_3': complete_pair_3,
 
                                 'siro_short_perebivka': siro_short_perebivka,
-                                'aka_perebivka': aka_perebivka,
+                                'siro_perebivka': siro_perebivka,
                                 'aka_short_perebivka': aka_short_perebivka,
+                                'aka_perebivka': aka_perebivka,
                                 'perebivka_tmp': perebivka_tmp,
                                 'row_num_perebivka': key+13,
                                 'complete_perebivka': complete_perebivka,
@@ -2246,6 +2248,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.ui_kumite.pyatnov_pair_name.addItem('Выберите пару...')
                     self.ui_kumite.pyatnov_pair_name.addItems(pair_name_list)
                     self.ui_kumite.pyatnov_pair_name.setEnabled(True)
+                    self.ui_kumite.perebivka_disabled(False)
 
                     # Блокируем завершенные выступления и добавляем префикс - "завершено" к ФИО
                     for i in range(len(complete_pair_list)):
@@ -2608,6 +2611,14 @@ class MenuWindow(QWidget, Ui_Form0):
 
             # Если командное для Пятнова, то отображаем выпадающий список с ФИО спортсменов команд и скрываем lineEdit
             if self.sportsmans_in_teams_dict:
+
+                """
+                Пока ничего не делаем с перебивкой. Нужно пересмортерть источник, где мы берем список ФИО ДЛЯ ПЕРЕБИВКИ,
+                т.к. ФИО выступавшего могут не указать в списке первых трёх спортсменов
+                """
+                self.ui_kumite.frame_pyatnov_perebivka.hide()
+
+
                 if not self.flag_pyatnov_kumite_team:
                     self.ui_kumite.le_comboBox_name_white_1.show()
                     self.ui_kumite.le_comboBox_name_red_1.show()
@@ -2880,7 +2891,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     col_white, col_red = ["G", "L"]
                     col = col_white if sender == self.ui_kataQual.winnerWhite else col_red
                     cell_coord = f"{col}{row}"
-                    self.pyatnov_winner = {'type': 'ui_kataQual', 'side': side, 'cell': cell_coord}
+                    self.pyatnov_winner = {'type': 'ui_kataQual', 'side': side, 'cell': cell_coord, 'pfs_name':row_num}
             elif sender == self.ui_kataFinal.Calc_Button:
                 self.ui_kataFinal.calcResult()
                 if self.loaded_file_data_type == 'file_pyatnov':
@@ -2948,7 +2959,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     number = [sp_cnt - len(self.sportsmen_dict['row_num']) + 1]
                     number_coord = f"A{row}"
                     self.pyatnov_winner = {'type': 'ui_kataFinal', 'score': score, 'cell': cell_coord, 'number': number,
-                                           'number_coord': number_coord}
+                                           'number_coord': number_coord, 'pfs_name': aka_name}
             elif sender in [self.ui_kumite.winnerRed, self.ui_kumite.winnerWhite]:
                 self.ui_kumite.isShowSportsmanName(resetSportsmanFrame=0)
                 self.ui_kumite.setWinner()
@@ -2967,7 +2978,7 @@ class MenuWindow(QWidget, Ui_Form0):
                         # print('name_red', name_red, 'region_red', region_red)
                         # print('СОХРАНИТЬ В EXCEL кум командное')
                         # print('dict_paytnov_kumite_winner', self.dict_paytnov_kumite_winner)
-                        self.pyatnov_winner = {'type': 'ui_kumite'}
+                        self.pyatnov_winner = {'type': 'ui_kumite', 'pfs_name': f'{name_white} - {name_red}'}
                     else:
                         siro_name = self.ui_kumite.label_name_white_1.text()
                         region_white = self.ui_kumite.label_region_white_1.text()
@@ -2985,7 +2996,9 @@ class MenuWindow(QWidget, Ui_Form0):
                         col = col_white if sender == self.ui_kumite.winnerWhite.isChecked() else col_red
 
                         cell_coord = f"{col}{row}"
-                        self.pyatnov_winner = {'type': 'ui_kumite', 'side': side, 'cell': cell_coord}
+                        self.pyatnov_winner = {
+                            'type': 'ui_kumite', 'side': side, 'cell': cell_coord, 'pfs_name': row_num
+                        }
 
 
                         # if self.loaded_file_data_type == 'file_pyatnov':
@@ -3031,9 +3044,9 @@ class MenuWindow(QWidget, Ui_Form0):
 
 
             if threading.active_count() <= 1:
-
+                # Статус сохранения файла
                 if self.flag_pyatnov_kumite_team:
-                    pass
+                    self.paytnov_save_status(need_to_close=False)
                     # Если кумите команда отображаем заглушку сохранения
                     # self.ui_kumite.blocked_Form2.hide()
                     # self.ui_kumite.saving_into_kumite_team_Form2.show()
@@ -3137,6 +3150,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
                     self.pyatnov_winner = None
 
+                    self.paytnov_save_status(flag_save=False, need_to_close=False)
+
                 except AttributeError:
                     os.system("taskkill /f /im excel.exe")
                     print("Excel terminated using taskkill")
@@ -3151,16 +3166,15 @@ class MenuWindow(QWidget, Ui_Form0):
 
             else:
                 return
-            print(' 1 write_on_pyatov_file')
+
             result = self.pyatnov_processing(is_kum_team_clear_name=False)
-            print(' 2 write_on_pyatov_file')
+
             if self.flag_pyatnov_kata_single or self.flag_pyatnov_kata_team:
 
                 self.worker = Worker(result=result)
                 self.worker.finished.connect(self.kata_qual_last_fight)
                 self.worker.start()
 
-                print(' 5 write_on_pyatov_file')
             else:
                 self.worker = Worker(result=result)
                 self.worker.start()
@@ -3498,6 +3512,59 @@ class MenuWindow(QWidget, Ui_Form0):
             return lst
         except Exception as e:
             print('_______Exception paytnov_reset_hm_j:', e)
+
+    def paytnov_save_status(self, sender: str='ui_kumite', flag_save: bool = True, need_to_close: bool = True):
+        """Метод управляет надписями статуса сохранения файла Пятнова"""
+        try:
+            # Определяем в каком окне отображать статус
+            karateWidgetWindows = self.ui_kumite
+            if sender == 'ui_kataFinal':
+                karateWidgetWindows = self.ui_kataFinal
+            elif sender == 'ui_kataQual':
+                karateWidgetWindows = self.ui_kataQual
+
+            # Текущее время
+            now_time = datetime.datetime.now().strftime('%H:%M:%S')
+
+            # ФИО кого сохраняем
+            if self.pyatnov_winner and 'pfs_name' in self.pyatnov_winner:
+                pfs_name = self.pyatnov_winner['pfs_name']
+                karateWidgetWindows.pfss_pair_name.setText(pfs_name)
+
+            # Описание статуса
+            if flag_save:
+                pfs_status = f'{now_time}: Сохранение в файл...'
+                karateWidgetWindows.pfss_pair_name.setStyleSheet("color: black;")
+                pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_save.svg')
+            else:
+                pfs_status = f'{now_time}: Сохранено'
+                karateWidgetWindows.pfss_pair_name.setStyleSheet("color: grey;")
+                pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_done.svg')
+            pfss_pixmap2 = pfss_pixmap.scaled(16, 16, QtCore.Qt.KeepAspectRatio)
+            karateWidgetWindows.pfss_pixmap_label.setPixmap(pfss_pixmap2)
+            karateWidgetWindows.pfss_status.setText(pfs_status)
+
+            # Скрыть/отобразить запись
+            if need_to_close:
+                karateWidgetWindows.frame_paytnov_file_save_status.hide()
+            else:
+                karateWidgetWindows.frame_paytnov_file_save_status.show()
+
+        except Exception as e:
+            print('_______Exception paytnov_save_status:', e)
+
+    def paytnov_perebivka(self):
+        """Функция позволяет создать пару для перебивки Кумите команда"""
+        try:
+            if self.ui_kumite.btn_start.text() != '► START':
+                self.ui_kumite.btn_reset.setText('Заверши бой')
+                self.ui_kumite.btn_reset.setStyleSheet("color: red")
+                self.ui_kumite.pyatnov_perebivka_qbx.setChecked(False)
+                return
+            self.ui_kumite.perebivka_disabled()
+        except Exception as e:
+            print('_______Exception paytnov_perebivka:', e)
+
 
 
 class dialogWindow_Ui(object):

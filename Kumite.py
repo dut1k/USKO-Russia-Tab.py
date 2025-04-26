@@ -634,9 +634,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.btn_showData = QtWidgets.QPushButton("ПОКАЗАТЬ\nНА ЭКРАНЕ", self.frame_matchName)
 
         self.frame_paytnov_file_save_status = QtWidgets.QFrame(self.frame_matchName)
-        self.pfss_img = QLabel(self.frame_paytnov_file_save_status)
-        self.pfss_pixmap = QtGui.QPixmap(':/Images/icon_30px.ico')
+        self.pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_save.svg')
         self.pfss_pixmap2 = self.pfss_pixmap.scaled(16, 16, QtCore.Qt.KeepAspectRatio)
+        self.pfss_pixmap_label = QLabel(self.frame_paytnov_file_save_status)
+        self.pfss_pixmap_label.setGeometry(QtCore.QRect(178, 0, 30, 31))
+        self.pfss_pixmap_label.setStyleSheet("border: none; font-family: Gotham-Medium; font-size: 12px;")
+        self.pfss_pixmap_label.setPixmap(self.pfss_pixmap2)
         self.pfss_pair_name = QtWidgets.QLabel("Иванов - Петров", self.frame_paytnov_file_save_status)
         self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
 
@@ -1569,6 +1572,17 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_perebivka_qbx.setObjectName("pyatnov_perebivka_qbx")
         self.pyatnov_perebivka_qbx.setDisabled(False)
 
+        self.frame_paytnov_file_save_status.hide()
+        self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(700, 0, 200, 40))
+        self.frame_paytnov_file_save_status.setStyleSheet("background-color: none;")
+        self.pfss_pair_name.setGeometry(QtCore.QRect(0, 15, 170, 15))
+        self.pfss_pair_name.setFont(self.font_l_10)
+        self.pfss_pair_name.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setGeometry(QtCore.QRect(0, 0, 170, 15))
+        self.pfss_status.setFont(self.font_l_10)
+        self.pfss_status.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setStyleSheet("color: grey;")
+
         QtCore.QMetaObject.connectSlotsByName(self.Form2)
 
         self.KumiteSecondWindow = KumiteSecondWindow()
@@ -1733,6 +1747,9 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
+            # Также блокируем нажатие кнопки "Перебивка" чтобы нельзя было её снять, пока идёт бой
+            self.pyatnov_perebivka_qbx.setDisabled(True)
+            self.pyatnov_perebivka_btn.setDisabled(True)
         else:
             self.timer.stop()
             self.btn_start.setText('► START')
@@ -1894,6 +1911,8 @@ class KumiteMainWindow_Ui(QWidget):
         try:
             self.pyatnov_name.setCurrentIndex(0)
             self.pyatnov_pair_name.clear()
+            self.pyatnov_pair_name.setDisabled(True)
+            self.perebivka_disabled()
         except:
             pass
 
@@ -2260,13 +2279,10 @@ class KumiteMainWindow_Ui(QWidget):
         except Exception as e:
             print('kum show_screen:', e)
 
-    def perebivka_disabled(self):
-        """
-        Функция отключает/включает фрейм с кнопкой перебивка
-        :return:
-        """
+    def perebivka_disabled(self, btn_disable: bool = True):
+        """Функция отключает/включает фрейм с кнопкой перебивка"""
         try:
-            if self.pyatnov_perebivka_qbx.isEnabled():
+            if btn_disable:
                 self.pyatnov_perebivka_qbx.setDisabled(True)
                 self.pyatnov_perebivka_btn.setDisabled(True)
             else:
