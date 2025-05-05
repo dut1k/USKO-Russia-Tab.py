@@ -766,8 +766,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_pair_name = QtWidgets.QComboBox(self.frame_pyatnov)
 
         self.frame_pyatnov_perebivka = QtWidgets.QFrame(self.Form2)
-        self.pyatnov_perebivka_btn = QtWidgets.QPushButton("Перебивка", self.frame_pyatnov_perebivka)
-        self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka)
+        self.frame_pyatnov_perebivka_qch = QtWidgets.QFrame(self.frame_pyatnov_perebivka)
+        self.perebivka_siro = QtWidgets.QComboBox(self.frame_pyatnov_perebivka_qch)
+        self.perebivka_aka = QtWidgets.QComboBox(self.frame_pyatnov_perebivka_qch)
+        self.frame_pyatnov_perebivka_qbx = QtWidgets.QFrame(self.frame_pyatnov_perebivka)
+        self.pyatnov_perebivka_btn = QtWidgets.QPushButton("Перебивка", self.frame_pyatnov_perebivka_qbx)
+        self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka_qbx)
 
         self.lbl_style_1 = css.lbl_style_1
         self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
@@ -1556,9 +1560,16 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_pair_name.setFont(self.font_l_16)
         self.pyatnov_pair_name.setObjectName("pyatnov_pair_name")
 
-        self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(405, 530, 90, 13))
+        self.frame_pyatnov_perebivka.setGeometry(QtCore.QRect(0, 520, 900, 30))
         self.frame_pyatnov_perebivka.setStyleSheet("border: None;")
         self.frame_pyatnov_perebivka.setObjectName("frame_pyatnov_perebivka")
+
+        self.frame_pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(405, 10, 90, 13))
+        self.frame_pyatnov_perebivka_qbx.setObjectName("frame_pyatnov_perebivka_qbx")
+
+        self.frame_pyatnov_perebivka_qch.setGeometry(QtCore.QRect(0, 0, 900, 30))
+        self.frame_pyatnov_perebivka_qch.setObjectName("frame_pyatnov_perebivka_qch")
+        self.frame_pyatnov_perebivka_qch.hide()
 
         self.pyatnov_perebivka_btn.setGeometry(QtCore.QRect(15, 0, 75, 13))
         self.pyatnov_perebivka_btn.setStyleSheet(self.btn_style_3)
@@ -1568,9 +1579,20 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_perebivka_btn.setDisabled(False)
 
         self.pyatnov_perebivka_qbx.setGeometry(QtCore.QRect(0, 0, 13, 13))
-        # self.pyatnov_perebivka_qbx.setStyleSheet(self.pers_com_qbx_style_1)
         self.pyatnov_perebivka_qbx.setObjectName("pyatnov_perebivka_qbx")
         self.pyatnov_perebivka_qbx.setDisabled(False)
+
+        self.perebivka_aka.setEnabled(False)
+        self.perebivka_aka.setGeometry(QtCore.QRect(75, 2, 300, 26))
+        self.perebivka_aka.setStyleSheet(self.combo_style_2)
+        self.perebivka_aka.setFont(self.font_l_13)
+        self.perebivka_aka.setObjectName("perebivka_aka")
+
+        self.perebivka_siro.setEnabled(False)
+        self.perebivka_siro.setGeometry(QtCore.QRect(525, 2, 300, 26))
+        self.perebivka_siro.setStyleSheet(self.combo_style_2)
+        self.perebivka_siro.setFont(self.font_l_13)
+        self.perebivka_siro.setObjectName("perebivka_siro")
 
         self.frame_paytnov_file_save_status.hide()
         self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(700, 0, 200, 40))
@@ -1912,7 +1934,10 @@ class KumiteMainWindow_Ui(QWidget):
             self.pyatnov_name.setCurrentIndex(0)
             self.pyatnov_pair_name.clear()
             self.pyatnov_pair_name.setDisabled(True)
-            self.perebivka_disabled()
+            # self.perebivka_disabled()
+            # self.perebivka_select_name(False)
+            # self.perebivka_select(False)
+            self.perebivka_frame(btn_disable=True, id_show=False, btn_select=False)
         except:
             pass
 
@@ -2279,6 +2304,16 @@ class KumiteMainWindow_Ui(QWidget):
         except Exception as e:
             print('kum show_screen:', e)
 
+    def perebivka_frame(self, btn_disable: bool = True, id_show: bool = True, btn_select: bool = True):
+        try:
+            self.perebivka_disabled(btn_disable)
+            self.perebivka_select_name(id_show)
+            self.perebivka_select(btn_select)
+
+        except Exception as e:
+            print('perebivka_frame:', e)
+
+
     def perebivka_disabled(self, btn_disable: bool = True):
         """Функция отключает/включает фрейм с кнопкой перебивка"""
         try:
@@ -2288,8 +2323,36 @@ class KumiteMainWindow_Ui(QWidget):
             else:
                 self.pyatnov_perebivka_qbx.setDisabled(False)
                 self.pyatnov_perebivka_btn.setDisabled(False)
+
         except Exception as e:
             print('perebivka_disabled:', e)
+
+    def perebivka_select_name(self, id_show: bool = True):
+        """Отображаем выпадающий список спортсменов отдельно для СИРО/АКА"""
+        try:
+            if id_show:
+                self.frame_pyatnov_perebivka_qch.show()
+                self.pyatnov_pair_label.hide()
+                self.pyatnov_pair_name.hide()
+
+            else:
+                self.frame_pyatnov_perebivka_qch.hide()
+                self.pyatnov_pair_label.show()
+                self.pyatnov_pair_name.show()
+        except Exception as e:
+            print('perebivka_select_name:', e)
+
+    def perebivka_select(self, btn_select: bool = True):
+        """Функция реагирует на нажатие кнопки перебивка"""
+        try:
+            if btn_select:
+                self.pyatnov_perebivka_qbx.setChecked(True)
+            else:
+                self.pyatnov_perebivka_qbx.setChecked(False)
+
+        except Exception as e:
+            print('perebivka_select:', e)
+
 
 class dialogWindow_Ui(object):
     def setupUi_dialog(self, Dialog):

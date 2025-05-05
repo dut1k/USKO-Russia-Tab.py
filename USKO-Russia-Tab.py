@@ -2,6 +2,7 @@ from typing import Tuple
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
+# from PyQt5.QtCore.QProcess import sender
 from PyQt5.QtWidgets import QWidget, QFileDialog, QComboBox
 import pandas as pd
 # import numpy as np
@@ -454,6 +455,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.pyatnov_perebivka_qbx.clicked.connect(self.paytnov_perebivka)
         self.ui_kumite.pyatnov_perebivka_btn.clicked.connect(self.paytnov_perebivka)
+        self.ui_kumite.perebivka_siro.activated[str].connect(self.setLabel)
+        self.ui_kumite.perebivka_aka.activated[str].connect(self.setLabel)
 
         self.ui_kumite.le_comboBox_name_white_1.activated[str].connect(self.setLabel)
         self.ui_kumite.le_comboBox_name_red_1.activated[str].connect(self.setLabel)
@@ -1049,7 +1052,8 @@ class MenuWindow(QWidget, Ui_Form0):
                                    8,
                                    9,
                                    10, 11, 12, 13, 14,
-                                   15, 17
+                                   15, 17,
+                                 23, 24, 25, 26, 27
                                  ],
                         names=[
                         '1_siro_num', '2_siro_sportsman', '3_siro_region',
@@ -1057,37 +1061,12 @@ class MenuWindow(QWidget, Ui_Form0):
                         '9_siro_score',
                         '10_aka_score',
                         '11_aka_rating_1', '12_aka_rating_2', '13_aka_rating_3', '14_aka_rating_4', '15_aka_rating_5',
-                        '17_aka_sportsman', '18_aka_num'
+                        '17_aka_sportsman', '18_aka_num',
+                        '19_perebivka_1', '20_perebivka_2', '21_perebivka_3', '22_perebivka_4', '23_perebivka_5',
                         ]
                                                          )
-                        use11cols = [0, 1, 2,
-                                   3, 4, 5, 6, 7,
-                                   8,
-                                   9,
-                                   10, 11, 12, 13, 14,
-                                   10, 15, 17]
-                        use22cols = [1, 2, 3,
-                                   4, 5, 6, 7, 8,
-                                   9,
-                                   10,
-                                   11, 12, 13, 14, 15,
-                                   12, 16, 18]
-                        name11s=[
-                        '1_siro_num', '2_siro_sportsman', '3_siro_region',
-                        '4_siro_rating_1', '5_siro_rating_2', '6_siro_rating_3', '7_siro_rating_4', '8_siro_rating_5',
-                        '9_siro_score',
-                        '10_aka_score',
-                        '11_aka_rating_1', '12_aka_rating_2', '13_aka_rating_3', '14_aka_rating_4', '15_aka_rating_5',
-                        '16_aka_region', '17_aka_sportsman', '18_aka_num'
-                        ]
 
                         referee_protocol = referee_protocol.fillna('')
-                        # print('referee_protocol', len(referee_protocol))
-                        # print(referee_protocol.loc[77])
-                        # # Удаляем выступивших, запрещаем выбор - делаем серым или просто удаляем из списка
-                        # self.sportsmen_list = \
-                        #     self.sportsmen_list.query(
-                        #         'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
 
                         t_name_dict = referee_protocol.iloc[21::53, [0, 2, 10]].to_dict()
 
@@ -1095,19 +1074,10 @@ class MenuWindow(QWidget, Ui_Form0):
                         pairs_1 = referee_protocol.iloc[24::53, [0, 1, 15, 8, 9]].to_dict()
                         pairs_2 = referee_protocol.iloc[26::53, [0, 1, 15, 8, 9]].to_dict()
                         pairs_3 = referee_protocol.iloc[28::53, [0, 1, 15, 8, 9]].to_dict()
+                        team_result = referee_protocol.iloc[34::53, [8, 9]].to_dict()
                         perebivka = referee_protocol.iloc[37::53, [0, 1, 15, 8, 9]].to_dict()
-
-                        # print('pairs_1')
-                        # print(pairs_1)
-                        #
-                        # print('pairs_2')
-                        # print(pairs_2)
-                        #
-                        # print('pairs_3')
-                        # print(pairs_3)
-                        #
-                        # print('perebivka')
-                        # print(perebivka)
+                        perebivka_siro_raw = referee_protocol.iloc[25::53, [17, 18, 19, 20, 21]].to_dict()
+                        perebivka_aka_raw = referee_protocol.iloc[24::53, [17, 18, 19, 20, 21]].to_dict()
 
                         self.teams_pairs = dict()
                         # self.cur_men_pair_num = None  # Номер строки пары спортсменов
@@ -1131,10 +1101,22 @@ class MenuWindow(QWidget, Ui_Form0):
                             siro_man_2 = pairs_2['2_siro_sportsman'][key]
                             siro_man_3 = pairs_3['2_siro_sportsman'][key + 2]
                             siro_perebivka = perebivka['2_siro_sportsman'][key + 11]
+                            siro_perebivka_raw_1 = perebivka_siro_raw['19_perebivka_1'][key - 1]
+                            siro_perebivka_raw_2 = perebivka_siro_raw['20_perebivka_2'][key - 1]
+                            siro_perebivka_raw_3 = perebivka_siro_raw['21_perebivka_3'][key - 1]
+                            siro_perebivka_raw_4 = perebivka_siro_raw['22_perebivka_4'][key - 1]
+                            siro_perebivka_raw_5 = perebivka_siro_raw['23_perebivka_5'][key - 1]
                             aka_man_1 = pairs_1['17_aka_sportsman'][key - 2]
                             aka_man_2 = pairs_2['17_aka_sportsman'][key]
                             aka_man_3 = pairs_3['17_aka_sportsman'][key + 2]
+                            siro_team_result = team_result['9_siro_score'][key + 8]
+                            aka_team_result = team_result['10_aka_score'][key + 8]
                             aka_perebivka = perebivka['17_aka_sportsman'][key + 11]
+                            aka_perebivka_raw_1 = perebivka_aka_raw['19_perebivka_1'][key - 2]
+                            aka_perebivka_raw_2 = perebivka_aka_raw['20_perebivka_2'][key - 2]
+                            aka_perebivka_raw_3 = perebivka_aka_raw['21_perebivka_3'][key - 2]
+                            aka_perebivka_raw_4 = perebivka_aka_raw['22_perebivka_4'][key - 2]
+                            aka_perebivka_raw_5 = perebivka_aka_raw['23_perebivka_5'][key - 2]
 
                             siro_short_man_1, siro_short_man_2, siro_short_man_3 = ['', '', '']
                             aka_short_man_1, aka_short_man_2, aka_short_man_3 = ['', '', '']
@@ -1155,7 +1137,6 @@ class MenuWindow(QWidget, Ui_Form0):
                             if len(siro_perebivka.split(' ')) > 1:
                                 siro_short_perebivka = (
                                         siro_perebivka.split(' ')[0] + ' ' + siro_perebivka.split(' ')[1][0] + '.')
-
 
                             if len(aka_man_1.split(' ')) > 1:
                                 aka_short_man_1 = aka_man_1.split(' ')[0] + ' ' + aka_man_1.split(' ')[1][0] + '.'
@@ -1188,8 +1169,70 @@ class MenuWindow(QWidget, Ui_Form0):
                             if perebivka['9_siro_score'][key + 11] or  perebivka['10_aka_score'][key + 11]:
                                 complete_perebivka = 0
 
+                            # Обрабатываем ФИО перебивок, добавляем вариант с сокращением имя/отчество
+                            (aka_perebivka_short_1, aka_perebivka_short_2, aka_perebivka_short_3,
+                             aka_perebivka_short_4, aka_perebivka_short_5) = ['', '', '', '', '']
+                            (siro_perebivka_short_1, siro_perebivka_short_2, siro_perebivka_short_3,
+                             siro_perebivka_short_4, siro_perebivka_short_5) = ['', '', '', '', '']
+                            combo_box_aka_perebivka = list()
+                            combo_box_aka_perebivka_short = list()
+                            combo_box_siro_perebivka = list()
+                            combo_box_siro_perebivka_short = list()
+                            if not isinstance(aka_perebivka_raw_1, int) and len(aka_perebivka_raw_1.split(' ')) > 1:
+                                aka_perebivka_short_1 = (aka_perebivka_raw_1.split(' ')[0] + ' ' +
+                                                         aka_perebivka_raw_1.split(' ')[1][0] + '.')
+                                combo_box_aka_perebivka.append(aka_perebivka_raw_1)
+                                combo_box_aka_perebivka_short.append(aka_perebivka_short_1)
+                            if not isinstance(aka_perebivka_raw_2, int) and len(aka_perebivka_raw_2.split(' ')) > 1:
+                                aka_perebivka_short_2 = (aka_perebivka_raw_2.split(' ')[0] + ' ' +
+                                                         aka_perebivka_raw_2.split(' ')[1][0] + '.')
+                                combo_box_aka_perebivka.append(aka_perebivka_raw_2)
+                                combo_box_aka_perebivka_short.append(aka_perebivka_short_2)
+                            if not isinstance(aka_perebivka_raw_3, int) and len(aka_perebivka_raw_3.split(' ')) > 1:
+                                aka_perebivka_short_3 = (aka_perebivka_raw_3.split(' ')[0] + ' ' +
+                                                         aka_perebivka_raw_3.split(' ')[1][0] + '.')
+                                combo_box_aka_perebivka.append(aka_perebivka_raw_3)
+                                combo_box_aka_perebivka_short.append(aka_perebivka_short_3)
+                            if not isinstance(aka_perebivka_raw_4, int) and len(aka_perebivka_raw_4.split(' ')) > 1:
+                                aka_perebivka_short_4 = (aka_perebivka_raw_4.split(' ')[0] + ' ' +
+                                                         aka_perebivka_raw_4.split(' ')[1][0] + '.')
+                                combo_box_aka_perebivka.append(aka_perebivka_raw_4)
+                                combo_box_aka_perebivka_short.append(aka_perebivka_short_4)
+                            if not isinstance(aka_perebivka_raw_5, int) and len(aka_perebivka_raw_5.split(' ')) > 1:
+                                aka_perebivka_short_5 = (aka_perebivka_raw_5.split(' ')[0] + ' ' +
+                                                         aka_perebivka_raw_5.split(' ')[1][0] + '.')
+                                combo_box_aka_perebivka.append(aka_perebivka_raw_5)
+                                combo_box_aka_perebivka_short.append(aka_perebivka_short_5)
+                            if not isinstance(siro_perebivka_raw_1, int) and len(siro_perebivka_raw_1.split(' ')) > 1:
+                                siro_perebivka_short_1 = (siro_perebivka_raw_1.split(' ')[0] + ' ' +
+                                                          siro_perebivka_raw_1.split(' ')[1][0] + '.')
+                                combo_box_siro_perebivka.append(siro_perebivka_raw_1)
+                                combo_box_siro_perebivka_short.append(siro_perebivka_short_1)
+                            if not isinstance(siro_perebivka_raw_2, int) and len(siro_perebivka_raw_2.split(' ')) > 1:
+                                siro_perebivka_short_2 = (siro_perebivka_raw_2.split(' ')[0] + ' ' +
+                                                          siro_perebivka_raw_2.split(' ')[1][0] + '.')
+                                combo_box_siro_perebivka.append(siro_perebivka_raw_2)
+                                combo_box_siro_perebivka_short.append(siro_perebivka_short_2)
+                            if not isinstance(siro_perebivka_raw_3, int) and len(siro_perebivka_raw_3.split(' ')) > 1:
+                                siro_perebivka_short_3 = (siro_perebivka_raw_3.split(' ')[0] + ' ' +
+                                                          siro_perebivka_raw_3.split(' ')[1][0] + '.')
+                                combo_box_siro_perebivka.append(siro_perebivka_raw_3)
+                                combo_box_siro_perebivka_short.append(siro_perebivka_short_3)
+                            if not isinstance(siro_perebivka_raw_4, int) and len(siro_perebivka_raw_4.split(' ')) > 1:
+                                siro_perebivka_short_4 = (siro_perebivka_raw_4.split(' ')[0] + ' ' +
+                                                          siro_perebivka_raw_4.split(' ')[1][0] + '.')
+                                combo_box_siro_perebivka.append(siro_perebivka_raw_4)
+                                combo_box_siro_perebivka_short.append(siro_perebivka_short_4)
+                            if not isinstance(siro_perebivka_raw_5, int) and len(siro_perebivka_raw_5.split(' ')) > 1:
+                                siro_perebivka_short_5 = (siro_perebivka_raw_5.split(' ')[0] + ' ' +
+                                                          siro_perebivka_raw_5.split(' ')[1][0] + '.')
+                                combo_box_siro_perebivka.append(siro_perebivka_raw_5)
+                                combo_box_siro_perebivka_short.append(siro_perebivka_short_5)
+
                             #Если все бои завершены и нет перебивки - не добавляем команду
-                            if complete_pair_1==complete_pair_2==complete_pair_3==0 and not (complete_perebivka==1 and perebivka_tmp):
+                            # if (complete_pair_1==complete_pair_2==complete_pair_3==0 and
+                            #         not (complete_perebivka==1 and perebivka_tmp)):
+                            if siro_team_result and aka_team_result:
                                 continue
                             self.teams_pairs[tmp_teams_name] = {
                                 'team_siro': team_siro,
@@ -1215,6 +1258,30 @@ class MenuWindow(QWidget, Ui_Form0):
                                 'complete_pair_1': complete_pair_1,
                                 'complete_pair_2': complete_pair_2,
                                 'complete_pair_3': complete_pair_3,
+                                'siro_perebivka_raw_1': siro_perebivka_raw_1,
+                                'siro_perebivka_raw_2': siro_perebivka_raw_2,
+                                'siro_perebivka_raw_3': siro_perebivka_raw_3,
+                                'siro_perebivka_raw_4': siro_perebivka_raw_4,
+                                'siro_perebivka_raw_5': siro_perebivka_raw_5,
+                                'siro_perebivka_short_1': siro_perebivka_short_1,
+                                'siro_perebivka_short_2': siro_perebivka_short_2,
+                                'siro_perebivka_short_3': siro_perebivka_short_3,
+                                'siro_perebivka_short_4': siro_perebivka_short_4,
+                                'siro_perebivka_short_5': siro_perebivka_short_5,
+                                'aka_perebivka_raw_1': aka_perebivka_raw_1,
+                                'aka_perebivka_raw_2': aka_perebivka_raw_2,
+                                'aka_perebivka_raw_3': aka_perebivka_raw_3,
+                                'aka_perebivka_raw_4': aka_perebivka_raw_4,
+                                'aka_perebivka_raw_5': aka_perebivka_raw_5,
+                                'aka_perebivka_short_1': aka_perebivka_short_1,
+                                'aka_perebivka_short_2': aka_perebivka_short_2,
+                                'aka_perebivka_short_3': aka_perebivka_short_3,
+                                'aka_perebivka_short_4': aka_perebivka_short_4,
+                                'aka_perebivka_short_5': aka_perebivka_short_5,
+                                'combo_box_siro_perebivka': combo_box_siro_perebivka,
+                                'combo_box_siro_perebivka_short': combo_box_siro_perebivka_short,
+                                'combo_box_aka_perebivka': combo_box_aka_perebivka,
+                                'combo_box_aka_perebivka_short': combo_box_aka_perebivka_short,
 
                                 'siro_short_perebivka': siro_short_perebivka,
                                 'siro_perebivka': siro_perebivka,
@@ -2190,6 +2257,16 @@ class MenuWindow(QWidget, Ui_Form0):
         try:
             sender = self.sender()
 
+            #Отдельно обрабатываем Перебивку Кумите Ком
+            if sender == self.ui_kumite.perebivka_siro:
+                if not self.ui_kumite.perebivka_siro.currentIndex():
+                    return
+                return self.ui_kumite.lineEdit_name_red_1.setText(self.ui_kumite.perebivka_siro.currentText())
+            elif sender == self.ui_kumite.perebivka_aka:
+                if not self.ui_kumite.perebivka_aka.currentIndex():
+                    return
+                return self.ui_kumite.lineEdit_name_white_1.setText(self.ui_kumite.perebivka_aka.currentText())
+
             is_sender_paytnov = sender == self.ui_kumite.pyatnov_name
             is_name_none = self.ui_kumite.pyatnov_name.currentText() in ['Выберите пару...', 'Выберите команды...']
             is_sender_paytnov_pair_name = sender == self.ui_kumite.pyatnov_pair_name
@@ -2223,14 +2300,6 @@ class MenuWindow(QWidget, Ui_Form0):
 
                 # Для командных. Если всё ок, то весь код выше нужно перетащить сюда
                 elif self.flag_pyatnov_kumite_team:
-                    # self.ui_kumite.le_comboBox_name_white_1.setEnabled(False)
-                    # self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
-                    # self.ui_kumite.le_comboBox_name_white_1.clear()
-                    # self.ui_kumite.le_comboBox_name_red_1.clear()
-
-                    print('2 c_box_choice', self.ui_kumite.pyatnov_name.currentText())
-                    print('3 c_box_choice', self.teams_pairs.keys())
-
                     # Выбранное значение команды или спортсмена
                     c_box_choice = self.teams_pairs[self.ui_kumite.pyatnov_name.currentText()]
 
@@ -2248,7 +2317,19 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.ui_kumite.pyatnov_pair_name.addItem('Выберите пару...')
                     self.ui_kumite.pyatnov_pair_name.addItems(pair_name_list)
                     self.ui_kumite.pyatnov_pair_name.setEnabled(True)
-                    self.ui_kumite.perebivka_disabled(False)
+
+                    # Панель перебивки и выпадающие списки для перебивки
+                    self.ui_kumite.perebivka_frame(btn_disable=False, id_show=False, btn_select=False)
+                    self.ui_kumite.perebivka_siro.clear()
+                    self.ui_kumite.perebivka_aka.clear()
+                    self.ui_kumite.perebivka_siro.addItem('СИРО. Перебивка')
+                    self.ui_kumite.perebivka_siro.addItems(c_box_choice['combo_box_siro_perebivka_short'])
+                    self.ui_kumite.perebivka_siro.setEnabled(True)
+                    self.ui_kumite.perebivka_siro.model().item(0).setEnabled(False)
+                    self.ui_kumite.perebivka_aka.addItem('АКА. Перебивка')
+                    self.ui_kumite.perebivka_aka.addItems(c_box_choice['combo_box_aka_perebivka_short'])
+                    self.ui_kumite.perebivka_aka.setEnabled(True)
+                    self.ui_kumite.perebivka_aka.model().item(0).setEnabled(False)
 
                     # Блокируем завершенные выступления и добавляем префикс - "завершено" к ФИО
                     for i in range(len(complete_pair_list)):
@@ -2273,36 +2354,11 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.ui_kumite.le_comboBox_name_red_1.setEnabled(False)
                 self.ui_kumite.le_comboBox_name_white_1.clear()
                 self.ui_kumite.le_comboBox_name_red_1.clear()
-                print('1 pyatnov_name', self.ui_kumite.pyatnov_name.currentText())
-                print('1 pyatnov_pair_name', self.ui_kumite.pyatnov_pair_name.currentText())
-
-                # Определяем номер строки, для заполнения протокола:
-                # Находим пару команд в словаре c_box_choice, у этой пары находим пару спортсменов
-                # cur_team_pair = self.teams_pairs[self.ui_kumite.pyatnov_name.currentText()]
-                # cur_men_pair = self.ui_kumite.pyatnov_pair_name.currentText()
-                # self.cur_men_pair_num = None  # Номер строки пары спортсменов
-                siro_man = ''  # ФИО сиро
-                aka_man = ''  # ФИО ака
-
 
                 _cur_men_pair_num, siro_man, aka_man = self.cur_team_pair()
                 # Если данные для протокола пусты, указываем номер строки
                 if self.data_to_write_in_paytnov_referee_protocol == [[], [], []]:
                     self.cur_men_pair_num = _cur_men_pair_num
-
-                print('cur_men_pair', _cur_men_pair_num, self.cur_men_pair_num)
-                # if cur_team_pair['men_pair_1'] == cur_men_pair:
-                #     self.cur_men_pair_num = cur_team_pair['row_num_1']
-                #     siro_man = cur_team_pair['siro_short_man_1']
-                #     aka_man = cur_team_pair['aka_short_man_1']
-                # elif cur_team_pair['men_pair_2'] == cur_men_pair:
-                #     self.cur_men_pair_num = cur_team_pair['row_num_2']
-                #     siro_man = cur_team_pair['siro_short_man_2']
-                #     aka_man = cur_team_pair['aka_short_man_2']
-                # elif cur_team_pair['men_pair_3'] == cur_men_pair:
-                #     self.cur_men_pair_num = cur_team_pair['row_num_3']
-                #     siro_man = cur_team_pair['siro_short_man_3']
-                #     aka_man = cur_team_pair['aka_short_man_3']
 
                 # Поле отображения ФИО
                 self.ui_kumite.lineEdit_name_white_1.setText(siro_man)
@@ -2612,11 +2668,11 @@ class MenuWindow(QWidget, Ui_Form0):
             # Если командное для Пятнова, то отображаем выпадающий список с ФИО спортсменов команд и скрываем lineEdit
             if self.sportsmans_in_teams_dict:
 
-                """
-                Пока ничего не делаем с перебивкой. Нужно пересмортерть источник, где мы берем список ФИО ДЛЯ ПЕРЕБИВКИ,
-                т.к. ФИО выступавшего могут не указать в списке первых трёх спортсменов
-                """
-                self.ui_kumite.frame_pyatnov_perebivka.hide()
+                # """
+                # Пока ничего не делаем с перебивкой. Нужно пересмортерть источник, где мы берем список ФИО ДЛЯ ПЕРЕБИВКИ,
+                # т.к. ФИО выступавшего могут не указать в списке первых трёх спортсменов
+                # """
+                # self.ui_kumite.frame_pyatnov_perebivka.hide()
 
 
                 if not self.flag_pyatnov_kumite_team:
@@ -2971,14 +3027,11 @@ class MenuWindow(QWidget, Ui_Form0):
                         region_white = self.ui_kumite.label_region_white_1.text()
                         name_red = self.ui_kumite.label_name_red_1.text()
                         region_red = self.ui_kumite.label_region_red_1.text()
-                        ####################################################################
-                        #  НИЧЕГО НЕ ДЕЛАЕМ ДЛЯ ЗАПИСИ В ФАЙЛ ПЯТНОВА
-                        ####################################################################
-                        # print('name_white', name_white, 'region_white', region_white)
-                        # print('name_red', name_red, 'region_red', region_red)
-                        # print('СОХРАНИТЬ В EXCEL кум командное')
-                        # print('dict_paytnov_kumite_winner', self.dict_paytnov_kumite_winner)
                         self.pyatnov_winner = {'type': 'ui_kumite', 'pfs_name': f'{name_white} - {name_red}'}
+
+                        # ВРЕМЕННО!!! Если перебивка, данных в pyatnov_winner нет
+                        if self.ui_kumite.pyatnov_perebivka_qbx.isChecked():
+                            self.pyatnov_winner = None
                     else:
                         siro_name = self.ui_kumite.label_name_white_1.text()
                         region_white = self.ui_kumite.label_region_white_1.text()
@@ -3034,8 +3087,12 @@ class MenuWindow(QWidget, Ui_Form0):
 
     def check_to_wopf(self):
         print('___________ check_to_wopf')
+        print(self.pyatnov_winner)
         if self.pyatnov_winner is None:
             print('                       self.pyatnov_winner is None')
+            return
+        # ВРЕМЕННО!!! Если перебивка, в протокол не вносим, потом пофиксится
+        if self.ui_kumite.pyatnov_perebivka_qbx.isChecked():
             return
         try:
             # Записываем данные из переменной, обнуляем переменную и делаем проверку по ней, если она не None,
@@ -3073,6 +3130,12 @@ class MenuWindow(QWidget, Ui_Form0):
                 return
             if self.pyatnov_winner is None:
                 return
+
+            # ВРЕМЕННО!!! Если перебивка, в протокол не вносим, потом пофиксится
+            if self.ui_kumite.pyatnov_perebivka_qbx.isChecked():
+                return
+
+            print('self.pyatnov_winner', self.pyatnov_winner)
             excel_file_path = str(self.file)
 
             if self.pyatnov_winner['type'] == 'ui_kataQual':
@@ -3125,7 +3188,6 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.cur_men_pair_num = self.cur_men_pair_num[0]
 
                         print('ЗАПИСЬ В EXCEL на строке:', self.cur_men_pair_num)
-                        print('write_on_pyatov_file data_to_write_in_paytnov_referee_protocol', self.data_to_write_in_paytnov_referee_protocol)
                         excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
                         workbook = excel.Workbooks.Open(excel_file_path)
                         worksheet = workbook.Worksheets(self.sheet_name_referee)
@@ -3138,7 +3200,6 @@ class MenuWindow(QWidget, Ui_Form0):
                             for col_idx, value in enumerate(row, start=start_col):
                                 worksheet.Cells(row_idx, col_idx).Value = value
                     else:
-                        # pass
                         excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
                         workbook = excel.Workbooks.Open(excel_file_path)
                         worksheet = workbook.Worksheets("Aka+Shiro")
@@ -3146,7 +3207,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     workbook.Save()
                     workbook.Close()
                     excel.Quit()
-                    print('ЗАПИСАНО В EXCEL ')
+                    print(' ЗАПИСАНО В EXCEL')
 
                     self.pyatnov_winner = None
 
@@ -3156,21 +3217,12 @@ class MenuWindow(QWidget, Ui_Form0):
                     os.system("taskkill /f /im excel.exe")
                     print("Excel terminated using taskkill")
 
-                # self.ui_kumite.blocked_Form2.hide()
-                #
-                # # Если кумите команда закрываем заглушку сохранения
-                # if self.flag_pyatnov_kumite_team:
-                #     self.ui_kumite.saving_into_kumite_team_Form2.hide()
-                #     self.ui_kumite.img_saving_into_kumite_team.stop()
-                #     self.ui_kumite.blocked_Form2.show()
-
             else:
                 return
 
             result = self.pyatnov_processing(is_kum_team_clear_name=False)
 
             if self.flag_pyatnov_kata_single or self.flag_pyatnov_kata_team:
-
                 self.worker = Worker(result=result)
                 self.worker.finished.connect(self.kata_qual_last_fight)
                 self.worker.start()
@@ -3185,7 +3237,6 @@ class MenuWindow(QWidget, Ui_Form0):
     def kata_qual_last_fight(self, result):
         # Проверка, нужно ли переключать интерфейс при записи в Excel(например из Ката отб в Ката финал)
         try:
-            # print('           ___ kata_qual_last_fight', result)
             # Если был последний бой в отборочных Ката, то открываем окно Ката финал
             if result == 'self.showKataFinalWin()':
                 self.showKataFinalWin()
@@ -3216,18 +3267,13 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.dict_paytnov_kumite_winner['aka']['score'] = list()
                 elif sender == self.ui_kumite.h_white4:
                     self.paytnov_reset_hm_j('hm', self.dict_paytnov_kumite_winner['siro']['hm_j'], sender.text())
-                    # self.dict_paytnov_kumite_winner['siro']['hm'] = list()
                 elif sender == self.ui_kumite.j_white4:
                     self.paytnov_reset_hm_j('j', self.dict_paytnov_kumite_winner['siro']['hm_j'], sender.text())
-                    # self.dict_paytnov_kumite_winner['siro']['j'] = list()
                 elif sender == self.ui_kumite.h_red4:
                     self.paytnov_reset_hm_j('hm', self.dict_paytnov_kumite_winner['aka']['hm_j'], sender.text())
-                    # self.dict_paytnov_kumite_winner['aka']['hm'] = list()
                 elif sender == self.ui_kumite.j_red4:
                     self.paytnov_reset_hm_j('j', self.dict_paytnov_kumite_winner['aka']['hm_j'], sender.text())
-                    # self.dict_paytnov_kumite_winner['aka']['j'] = list()
                 return True
-
 
             # Проверяем, что нет повторов или меньших очков в списке данных протокола.
             # В таком случае из списка удаляем всё, что стоит дальше
@@ -3289,10 +3335,10 @@ class MenuWindow(QWidget, Ui_Form0):
             print('_______Exception get_data_for_paytnov_kumite_winner:', e)
 
     def paytnov_prepare_data_to_write_to_protocol(self):
-        print('paytnov_prepare_data_to_write_to_protocol')
         # Обрабатываем данные для записи данных в протокол арбитра
         try:
-            if not  self.flag_pyatnov_kumite_team:
+            # ВРЕМЕННО!!! Если не кумите команда или нажата кнопка "перебивка" в протокол не заносим. Пока временно
+            if not  self.flag_pyatnov_kumite_team or self.ui_kumite.pyatnov_perebivka_qbx.isChecked():
                 return
             # Заносим запись о победителе в словарь протокола
             if self.ui_kumite.winnerWhite.isChecked():
@@ -3561,10 +3607,20 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.ui_kumite.btn_reset.setStyleSheet("color: red")
                 self.ui_kumite.pyatnov_perebivka_qbx.setChecked(False)
                 return
-            self.ui_kumite.perebivka_disabled()
+
+            # Если нажали не флажок, а надпись, меняем статус флажка(словно нажали флажок)
+            sender = self.sender()
+
+            if sender == self.ui_kumite.pyatnov_perebivka_btn:
+                self.ui_kumite.perebivka_select(not self.ui_kumite.pyatnov_perebivka_qbx.isChecked())
+            elif sender == self.ui_kumite.pyatnov_perebivka_qbx:
+                self.ui_kumite.perebivka_select(self.ui_kumite.pyatnov_perebivka_qbx.isChecked())
+            self.ui_kumite.perebivka_select_name(self.ui_kumite.pyatnov_perebivka_qbx.isChecked())
+
+            # Разблокировка интерфейса Кумите
+            self.blockedKumiteFrame(False)
         except Exception as e:
             print('_______Exception paytnov_perebivka:', e)
-
 
 
 class dialogWindow_Ui(object):
