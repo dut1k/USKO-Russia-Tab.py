@@ -415,23 +415,37 @@ class KataMainWindow_Ui(QWidget):
 
         self.frame_paytnov_file_save_status = QtWidgets.QFrame(self.frame_matchName)
         self.pfss_pixmap = QtGui.QPixmap(':/Images/pfss_pixmap_save.svg')
-        self.pfss_pixmap2 = self.pfss_pixmap.scaled(16, 16, QtCore.Qt.KeepAspectRatio)
+        self.pfss_pixmap2 = self.pfss_pixmap.scaled(15, 15, QtCore.Qt.KeepAspectRatio)
         self.pfss_pixmap_label = QLabel(self.frame_paytnov_file_save_status)
-        self.pfss_pixmap_label.setGeometry(QtCore.QRect(8, 0, 30, 31))
+        self.pfss_pixmap_label.setGeometry(QtCore.QRect(0, 0, 15, 15))
         self.pfss_pixmap_label.setStyleSheet("border: none; font-family: Gotham-Medium; font-size: 12px;")
         self.pfss_pixmap_label.setPixmap(self.pfss_pixmap2)
-        self.pfss_pair_name = QtWidgets.QLabel("Иванов", self.frame_paytnov_file_save_status)
+        self.pfss_pair_name = QtWidgets.QLabel("Иванов - Петров", self.frame_paytnov_file_save_status)
         self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
 
-        # self.frame_paytnov_file_save_status.hide()
-        self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(300, 0, 200, 40))
+        self.frame_overlay_status = QtWidgets.QFrame(self.Form11)
+        self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")
+        self.img_overlay_online = QtGui.QPixmap(":/Images/overlay_online.svg")
+        self.img_overlay_no_data = QtGui.QPixmap(":/Images/overlay_no_data.svg")
+        self.label_img_overlay_offline = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_online = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_no_data = QtWidgets.QLabel(self.frame_overlay_status)
+
+        self.frame_sportsmans_load_status = QtWidgets.QFrame(self.Form11)
+        self.img_sportsmans_not_loaded = QtGui.QPixmap(":/Images/sportsmans_not_loaded.svg")
+        self.img_spotrsmans_uploaded = QtGui.QPixmap(":/Images/spotrsmans_uploaded.svg")
+        self.label_img_sportsmans_not_loaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
+        self.label_img_spotrsmans_uploaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
+
+        self.frame_paytnov_file_save_status.hide()
+        self.frame_paytnov_file_save_status.setGeometry(QtCore.QRect(0, 55, 500, 15))
         self.frame_paytnov_file_save_status.setStyleSheet("background-color: none;")
-        self.pfss_pair_name.setGeometry(QtCore.QRect(0, 15, 200, 15))
+        self.pfss_pair_name.setGeometry(QtCore.QRect(23, 0, 295, 15))
         self.pfss_pair_name.setFont(self.font_l_10)
-        self.pfss_pair_name.setAlignment(QtCore.Qt.AlignRight)
-        self.pfss_status.setGeometry(QtCore.QRect(0, 0, 200, 15))
+        self.pfss_pair_name.setAlignment(QtCore.Qt.AlignLeft)
+        self.pfss_status.setGeometry(QtCore.QRect(320, 0, 180, 15))
         self.pfss_status.setFont(self.font_l_10)
-        self.pfss_status.setAlignment(QtCore.Qt.AlignRight)
+        self.pfss_status.setAlignment(QtCore.Qt.AlignLeft)
         self.pfss_status.setStyleSheet("color: grey;")
 
         self.frame_bottom.setGeometry(QtCore.QRect(0, 499, 900, 1))
@@ -743,6 +757,36 @@ class KataMainWindow_Ui(QWidget):
         self.layout2.addWidget(self.Form11, 1)
         self.layout2.setContentsMargins(0, 0, 0, 0)
         self.layout2.setSpacing(0)
+
+        self.frame_overlay_status.setGeometry(QtCore.QRect(870, 5, 15, 10))
+        self.frame_overlay_status.setStyleSheet("background-color: none;")
+        self.frame_overlay_status.setObjectName("overlay_status_label")
+
+        self.label_img_overlay_offline.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_overlay_offline.setObjectName("label_img_overlay_offline")
+        self.label_img_overlay_offline.setPixmap(self.img_overlay_offline)
+
+        self.label_img_overlay_online.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_overlay_online.setObjectName("label_img_overlay_online")
+        self.label_img_overlay_online.setPixmap(self.img_overlay_online)
+
+        self.label_img_overlay_no_data.setGeometry(QtCore.QRect(0, 0, 15, 10))
+        self.label_img_overlay_no_data.setObjectName("label_img_overlay_no_data")
+        self.label_img_overlay_no_data.setPixmap(self.img_overlay_no_data)
+
+        self.frame_sportsmans_load_status.setGeometry(QtCore.QRect(885, 5, 15, 10))
+        self.frame_sportsmans_load_status.setStyleSheet("background-color: none;")
+        self.frame_sportsmans_load_status.setObjectName("frame_sportsmans_load_status")
+
+        self.label_img_sportsmans_not_loaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_sportsmans_not_loaded.setObjectName("label_img_sportsmans_not_loaded")
+        self.label_img_sportsmans_not_loaded.setPixmap(self.img_sportsmans_not_loaded)
+
+        self.label_img_spotrsmans_uploaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_spotrsmans_uploaded.setObjectName("label_img_spotrsmans_uploaded")
+        self.label_img_spotrsmans_uploaded.setPixmap(self.img_spotrsmans_uploaded)
+
+        self.label_img_spotrsmans_uploaded.hide()
 
         self.setWindowFlags(Qt.FramelessWindowHint)
 

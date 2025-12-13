@@ -2,6 +2,7 @@ from typing import Tuple
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
+from PyQt5.QtSvg import QSvgRenderer
 # from PyQt5.QtCore.QProcess import sender
 from PyQt5.QtWidgets import QWidget, QFileDialog, QComboBox
 import pandas as pd
@@ -15,12 +16,17 @@ import re
 import datetime
 import resources
 from os import listdir
-# from openpyxl import load_workbook
+from openpyxl import Workbook, load_workbook
 import win32com.client
 # import xlwings as xw
 import threading
 import pythoncom
 import os
+import sys
+import json
+import websocket  # websocket-client
+import requests
+import base64
 
 
 # Класс для записи в потоке данных в файл excel
@@ -47,8 +53,8 @@ class Worker(QThread):
 
 class Ui_Form0(object):
     def __init__(self):
-        self.year = datetime.date.today().year
-        self.program_release_number = 'rev-001'
+        self.year = '2025-12-14'
+        self.program_release_number = 'rev-002'
 
     def setupUi0(self, Form0):
         Form0.setObjectName("Form0")
@@ -64,6 +70,7 @@ class Ui_Form0(object):
         self.btn_Kata_final = QtWidgets.QPushButton(Form0)
         self.btn_Kumite = QtWidgets.QPushButton(Form0)
         self.status_file = QtWidgets.QLabel(Form0)
+        self.btn_settings = QtWidgets.QPushButton(Form0)
         self.frame_combo = QtWidgets.QFrame(Form0)
         self.combo = QtWidgets.QComboBox(self.frame_combo)
         self.frame_logo = QtWidgets.QFrame(Form0)
@@ -75,6 +82,20 @@ class Ui_Form0(object):
         self.label_logo_VBEmos = QtWidgets.QLabel(self.frame_logo)
         self.sponsored_by = QtWidgets.QLabel(self.frame_logo)
         self.legend = QtWidgets.QLabel(Form0)
+        self.frame_overlay_status = QtWidgets.QFrame(Form0)
+        self.overlay_status_label = QtWidgets.QLabel(self.frame_overlay_status)
+        self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")
+        self.img_overlay_online = QtGui.QPixmap(":/Images/overlay_online.svg")
+        self.img_overlay_no_data = QtGui.QPixmap(":/Images/overlay_no_data.svg")
+        self.label_img_overlay_offline = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_online = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_no_data = QtWidgets.QLabel(self.frame_overlay_status)
+
+        self.frame_sportsmans_load_status = QtWidgets.QFrame(Form0)
+        self.img_sportsmans_not_loaded = QtGui.QPixmap(":/Images/sportsmans_not_loaded.svg")
+        self.img_spotrsmans_uploaded = QtGui.QPixmap(":/Images/spotrsmans_uploaded.svg")
+        self.label_img_sportsmans_not_loaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
+        self.label_img_spotrsmans_uploaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
 
         self.btn_style_1 = css.btn_style_1
         self.btn_style_2 = css.btn_style_2
@@ -132,6 +153,29 @@ class Ui_Form0(object):
         self.status_file.setFont(self.font_l_12)
         self.status_file.setObjectName("status_file")
 
+        # Кнопка «настройки» (шестерёнка)
+        self.btn_settings.setGeometry(QtCore.QRect(840, 20, 30, 30))
+        self.btn_settings.setText("⚙")
+        self.btn_settings.setToolTip("Настройки подключения к серверу трансляции")
+        self.btn_settings.setObjectName("btn_settings")
+
+        # Круглая шестерёнка с реакцией на hover/press
+        self.btn_settings.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.btn_settings.setStyleSheet("""
+            QPushButton#btn_settings {
+                background-color: transparent;
+                border: none;
+                font-size: 18px;
+                border-radius: 15px;      /* круг при 30x30 */
+            }
+            QPushButton#btn_settings:hover {
+                background-color: rgba(0, 0, 0, 0.06);
+            }
+            QPushButton#btn_settings:pressed {
+                background-color: rgba(0, 0, 0, 0.15);
+            }
+        """)
+
         self.frame_logo.setGeometry(QtCore.QRect(330, 50, 570, 300))
         self.frame_logo.setStyleSheet("background-color: none;")
         self.frame_logo.setObjectName("frame_logo")
@@ -158,6 +202,41 @@ class Ui_Form0(object):
         self.legend.setAlignment(QtCore.Qt.AlignCenter)
         self.legend.setObjectName("legend")
 
+        self.frame_overlay_status.setGeometry(QtCore.QRect(0, 465, 900, 10))
+        self.frame_overlay_status.setStyleSheet("background-color: none;")
+        self.frame_overlay_status.setObjectName("overlay_status_label")
+
+        self.label_img_overlay_offline.setGeometry(QtCore.QRect(5, 0, 10, 10))
+        self.label_img_overlay_offline.setObjectName("label_img_overlay_offline")
+        self.label_img_overlay_offline.setPixmap(self.img_overlay_offline)
+
+        self.label_img_overlay_online.setGeometry(QtCore.QRect(5, 0, 10, 10))
+        self.label_img_overlay_online.setObjectName("label_img_overlay_online")
+        self.label_img_overlay_online.setPixmap(self.img_overlay_online)
+
+        self.label_img_overlay_no_data.setGeometry(QtCore.QRect(5, 0, 15, 10))
+        self.label_img_overlay_no_data.setObjectName("label_img_overlay_no_data")
+        self.label_img_overlay_no_data.setPixmap(self.img_overlay_no_data)
+
+        self.overlay_status_label.setGeometry(QtCore.QRect(20, 0, 880, 10))
+        self.overlay_status_label.setStyleSheet("font-family: Gotham-Light; color: grey; font-size: 10px;")
+        self.overlay_status_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.overlay_status_label.setObjectName("overlay_status_label")
+
+        self.frame_sportsmans_load_status.setGeometry(QtCore.QRect(885, 5, 15, 10))
+        self.frame_sportsmans_load_status.setStyleSheet("background-color: none;")
+        self.frame_sportsmans_load_status.setObjectName("frame_sportsmans_load_status")
+
+        self.label_img_sportsmans_not_loaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_sportsmans_not_loaded.setObjectName("label_img_sportsmans_not_loaded")
+        self.label_img_sportsmans_not_loaded.setPixmap(self.img_sportsmans_not_loaded)
+
+        self.label_img_spotrsmans_uploaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_spotrsmans_uploaded.setObjectName("label_img_spotrsmans_uploaded")
+        self.label_img_spotrsmans_uploaded.setPixmap(self.img_spotrsmans_uploaded)
+
+        self.label_img_spotrsmans_uploaded.hide()
+
         self.retranslateUi(Form0)
         QtCore.QMetaObject.connectSlotsByName(Form0)
 
@@ -177,6 +256,99 @@ class Ui_Form0(object):
         self.legend.setText(_translate("Form0",
                                        f"Программа «Электронное табло USKO RUSSIA». {self.year} год. "
                                        f"Версия {self.program_release_number}"))
+
+# Сбор настроек на всех листах файла
+def backup_all_page_setups(workbook):
+    setups = {}
+    for sheet in workbook.Worksheets:
+        setups[sheet.Name] = backup_page_setup(sheet)
+        print(f'    backup_all_page_setups:{sheet.Name}', setups[sheet.Name])
+    return setups
+
+# Для сохранения файла Пятнова нужно считать настройки форматирования листа
+def backup_page_setup(worksheet):
+    try:
+        ps = worksheet.PageSetup
+        return {
+            'PrintArea': worksheet.Range(ps.PrintArea).Address if ps.PrintArea else None,
+            'PrintTitleRows': worksheet.Rows(ps.PrintTitleRows).Address if ps.PrintTitleRows else None,
+            'PrintTitleColumns': worksheet.Columns(ps.PrintTitleColumns).Address if ps.PrintTitleColumns else None,
+            'LeftMargin': ps.LeftMargin,
+            'RightMargin': ps.RightMargin,
+            'TopMargin': ps.TopMargin,
+            'BottomMargin': ps.BottomMargin,
+            'HeaderMargin': ps.HeaderMargin,
+            'FooterMargin': ps.FooterMargin,
+            'Orientation': ps.Orientation,
+            'Zoom': ps.Zoom,
+            'FitToPagesWide': ps.FitToPagesWide,
+            'FitToPagesTall': ps.FitToPagesTall,
+            'CenterHorizontally': ps.CenterHorizontally,
+            'CenterVertically': ps.CenterVertically,
+            'PaperSize': ps.PaperSize,
+            'HPageBreaks': [brk.Location.Address for brk in worksheet.HPageBreaks],
+            'VPageBreaks': [brk.Location.Address for brk in worksheet.VPageBreaks],
+        }
+    except Exception as e:
+        print('   ! Exception ____backup_page_setup', str(e))
+        return {}
+
+# В файле пятнова проходим по каждому листу и восстанавливаем настройки листов
+def restore_all_page_setups(workbook, setups):
+    for sheet in workbook.Worksheets:
+        print(f'    {sheet.Name}')
+        if sheet.Name in setups:
+            print(f'        restore_all_page_setups:', setups[sheet.Name])
+            restore_page_setup(sheet, setups[sheet.Name])
+
+# Для сохранения файла Пятнова восстанавливаем форматирование перед сохранением
+def restore_page_setup(worksheet, setup):
+    try:
+        ps = worksheet.PageSetup
+
+        if setup.get('PrintArea'):
+            ps.PrintArea = worksheet.Range(setup['PrintArea']).Address
+        else:
+            ps.PrintArea = ""
+
+        if setup.get('PrintTitleRows'):
+            ps.PrintTitleRows = worksheet.Rows(setup['PrintTitleRows']).Address
+        else:
+            ps.PrintTitleRows = ""
+
+        if setup.get('PrintTitleColumns'):
+            ps.PrintTitleColumns = worksheet.Columns(setup['PrintTitleColumns']).Address
+        else:
+            ps.PrintTitleColumns = ""
+
+        ps.LeftMargin = setup['LeftMargin']
+        ps.RightMargin = setup['RightMargin']
+        ps.TopMargin = setup['TopMargin']
+        ps.BottomMargin = setup['BottomMargin']
+        ps.HeaderMargin = setup['HeaderMargin']
+        ps.FooterMargin = setup['FooterMargin']
+        ps.Orientation = setup['Orientation']
+        ps.Zoom = setup['Zoom']
+        ps.FitToPagesWide = setup['FitToPagesWide']
+        ps.FitToPagesTall = setup['FitToPagesTall']
+        ps.CenterHorizontally = setup['CenterHorizontally']
+        ps.CenterVertically = setup['CenterVertically']
+        ps.PaperSize = setup['PaperSize']
+
+        # Разрывы
+        for i in reversed(range(worksheet.HPageBreaks.Count)):
+            worksheet.HPageBreaks(i + 1).Delete()
+        for i in reversed(range(worksheet.VPageBreaks.Count)):
+            worksheet.VPageBreaks(i + 1).Delete()
+
+        for addr in setup.get('HPageBreaks', []):
+            worksheet.HPageBreaks.Add(Before=worksheet.Range(addr))
+        for addr in setup.get('VPageBreaks', []):
+            worksheet.VPageBreaks.Add(Before=worksheet.Range(addr))
+    except Exception as e:
+        print('   ! Exception restore_page_setup', str(e))
+
+
 
 
 class MenuWindow(QWidget, Ui_Form0):
@@ -217,10 +389,6 @@ class MenuWindow(QWidget, Ui_Form0):
         self.female_label_dict = {}
         self.sportsmans_ages_dict = {}
         self.matchName_dict = {}
-        # self.tatamiName = ""
-
-        self.USKO_PC = css.USKO_PC
-        self.tatamiName = f'Татами №{self.USKO_PC}' if self.USKO_PC != '#' else ''
 
         self.sportsmans_in_teams_dict = {}
         self.teams_pairs = {}
@@ -270,8 +438,41 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataQual = KataQual_MainWindow_Ui()  # Окно с КАТА по флажкам
         # self.ui_kataQualSecondWindow = KataQual_SecondWindow()
         self.ui_kataFinal = KataMainWindow_Ui()  # Окно с КАТА финал (по балам)
+        # --- WebSocket: онлайн-обновление оценок в Ката финал ---
+        try:
+            for le in (
+                self.ui_kataFinal.lineEdit_referee1,
+                self.ui_kataFinal.lineEdit_referee2,
+                self.ui_kataFinal.lineEdit_referee3,
+                self.ui_kataFinal.lineEdit_referee4,
+                self.ui_kataFinal.lineEdit_referee5,
+                self.ui_kataFinal.lineEdit_referee6,
+                self.ui_kataFinal.lineEdit_referee7,
+            ):
+                le.textChanged.connect(self.on_kata_final_scores_changed)
+        except Exception as e:
+            print("WS: cannot connect kata_final score signals:", e)
+
         self.ui_kataFinalSecondWindow = KataSecondWindow()
         self.ui_kumite = KumiteMainWindow_Ui()  # Окно КУМИТЕ
+
+        self.USKO_PC = css.USKO_PC
+
+        # ---- Настройки сервера трансляции ----
+        self.server_ip = None
+        self.server_port = None
+        self.server_config_path = None
+        self.has_server_info = False  # Подгружена валидная инфа для коннекта к серверу оверлея
+        self.is_overlay_connected = False  # Есть соединение с сервером оверлея
+
+        # Кнопка "шестерёнка"
+        self.btn_settings.clicked.connect(self.open_settings_dialog)
+
+        # Попытка найти usko-server.txt рядом с exe
+        self.load_server_config_default()
+
+        self.tatamiName = f'Татами №{self.USKO_PC}' if self.USKO_PC != '#' else ''
+
         # self.ui_kumiteSecondWindow = KumiteSecondWindow()
         self.ui_KataQualToKataFinal = KataQualToKataFinal()  # ДИАЛ.окно из КАТА отбороч. при нажатии кнопки "КАТА ФИНАЛ"
         self.ui_KataFinalToKataQual = KataFinalToKataQual()  # ДИАЛ.окно из КАТА ФИНАЛ при нажатии кнопки "КАТА отбороч."
@@ -334,14 +535,17 @@ class MenuWindow(QWidget, Ui_Form0):
         ########   в окне КУМИТЕ кнопка ГЛАВНОЕ МЕНЮ
         self.ui_KumiteMenu.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
         self.ui_KumiteMenu.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
+        self.ui_KumiteMenu.btn_OK.clicked.connect(self.update_kumite_overlay)
         self.ui_KumiteMenu.btn_OK.clicked.connect(self.showMainMenu)
         ########   в окне КУМИТЕ кнопка КАТА отб.
         self.ui_KumiteToKataQual.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
         self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
+        self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.update_kumite_overlay)
         self.ui_KumiteToKataQual.btn_OK.clicked.connect(self.showKataQualWin)
         ########   в окне КУМИТЕ кнопка КАТА ФИНАЛ
         self.ui_KumiteToKataFinal.btn_OK.clicked.connect(lambda: self.ui_kumite.reset_all(self.flags_dict))
         self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.ui_kumite.NewCategory)
+        self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.update_kumite_overlay)
         self.ui_KumiteToKataFinal.btn_OK.clicked.connect(self.showKataFinalWin)
 
         # Все окна операторов (кроме главного меню) имею кастомную панель с кнопками свернуть, закрыть.
@@ -397,6 +601,19 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.comboBox_name_red_1.activated[str].connect(self.setLabelRedKumite)
         self.ui_kumite.comboBox_name_white_1.activated[str].connect(self.setLabelWhiteKumite)
 
+        # Ката по флажкам → после пересчёта участников обновляем оверлей
+        self.ui_kataQual.comboBox_age.activated[str].connect(
+            lambda *_: self.update_kata_qual_overlay()
+        )
+        # Ката финал → после выбора возраста обновляем оверлей (final=False, т.к. ещё не нажали "Рассчитать")
+        self.ui_kataFinal.comboBox_age.activated[str].connect(
+            lambda *_: self.update_kata_final_overlay(final=False)
+        )
+        # Кумите → после выбора возраста обновляем оверлей
+        self.ui_kumite.comboBox_age.activated[str].connect(
+            lambda *_: self.update_kumite_overlay()
+        )
+
         # В окне Ката по флажкам кнопка "Показать на экране"
         self.ui_kataFinal.btn_showData.clicked.connect(self.setSportsmanName)
         # Обновляем название категории на мониторе при изменении в окне на ПК
@@ -405,6 +622,16 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.btn_showData.clicked.connect(self.setSportsmanName)
         # Обновляем название категории на мониторе при изменении в окне на ПК
         self.ui_kumite.matchName12.editingFinished.connect(self.ui_kumite.setMatchName)
+
+        # обновляем оверлей КАТА по флажкам — когда пользователь руками поменял строку категории
+        self.ui_kataQual.matchName1.editingFinished.connect(self.update_kata_qual_overlay)
+        # обновляем оверлей КАТА финал — обновляем оверлей при ручном изменении
+        self.ui_kataFinal.matchName1.editingFinished.connect(
+            lambda: self.update_kata_final_overlay(final=False)
+        )
+        # обновляем оверлей КУМИТЕ — ручное изменение строки категории
+        self.ui_kumite.matchName12.editingFinished.connect(self.update_kumite_overlay)
+
         # Коннекторы для кнопок в окне Кумите
         self.ui_kumite.winnerRed.clicked.connect(self.set_winner)
         self.ui_kumite.winnerWhite.clicked.connect(self.set_winner)
@@ -450,6 +677,39 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kumite.j_white2.toggled.connect(self.ui_kumite.penaltyButton_jw2)
         self.ui_kumite.j_white3.toggled.connect(self.ui_kumite.penaltyButton_jw3)
         self.ui_kumite.j_white4.toggled.connect(self.ui_kumite.penaltyButton_jw4)
+
+        self.ui_kumite.btn_start.clicked.connect(self.update_kumite_dynamic_overlay)
+        self.ui_kumite.btn_pause.clicked.connect(self.update_kumite_dynamic_overlay)
+        self.ui_kumite.btn_reset.clicked.connect(self.update_kumite_dynamic_overlay)
+        self.ui_kumite.plus2sec.clicked.connect(self.update_kumite_dynamic_overlay)
+        self.ui_kumite.minus2sec.clicked.connect(self.update_kumite_dynamic_overlay)
+
+        # --- WS / Overlay: каждую секунду обновляем таймер в оверлее ---
+        try:
+            self.ui_kumite.timer.timeout.connect(self.tick_update_kumite_dynamic_overlay)
+        except Exception as e:
+            print("WS: cannot connect kumite timer to overlay:", e)
+
+        # --- WS / Overlay: обновление состояния при изменении очков и штрафов ---
+        for rb in (
+            self.ui_kumite.score_red_0,    self.ui_kumite.score_white_0,
+            self.ui_kumite.score_red_1,    self.ui_kumite.score_white_1,
+            self.ui_kumite.score_red_2,    self.ui_kumite.score_white_2,
+            self.ui_kumite.score_red_3,    self.ui_kumite.score_white_3,
+            self.ui_kumite.score_red_4,    self.ui_kumite.score_white_4,
+            self.ui_kumite.score_red_5,    self.ui_kumite.score_white_5,
+            self.ui_kumite.score_red_6,    self.ui_kumite.score_white_6,
+
+            self.ui_kumite.h_red1,         self.ui_kumite.h_white1,
+            self.ui_kumite.h_red2,         self.ui_kumite.h_white2,
+            self.ui_kumite.h_red3,         self.ui_kumite.h_white3,
+            self.ui_kumite.h_red4,         self.ui_kumite.h_white4,
+            self.ui_kumite.j_red1,         self.ui_kumite.j_white1,
+            self.ui_kumite.j_red2,         self.ui_kumite.j_white2,
+            self.ui_kumite.j_red3,         self.ui_kumite.j_white3,
+            self.ui_kumite.j_red4,         self.ui_kumite.j_white4,
+        ):
+            rb.toggled.connect(self.update_kumite_dynamic_overlay)
 
         self.ui_kumite.btn_show_screen.clicked.connect(self.setSportsmanName)
 
@@ -637,6 +897,13 @@ class MenuWindow(QWidget, Ui_Form0):
         self.font_b_13 = css.font_b_13
         self.font_l_16 = css.font_l_16
 
+        # В самом начале работы приложения — сбросить оверлей (ничего не идёт)
+        try:
+            self.send_overlay_idle()
+        except Exception as e:
+            print("overlay idle on start error:", e)
+
+
     # Выпадающее меню в окне Кумите с выбором видов соревнований
     def choiceCompetition_Kumite(self):
         try:
@@ -808,7 +1075,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.loaded_file_data_type = None
                 self.status_file.setStyleSheet("font-family: Gotham-Light; color: #red; font-size: 12px;")
                 self.status_file.setText(f'<b>Ошибка:</b> select_file - {e}')
-                print(f'select_file <b>Ошибка:</b> select_file - {e}')
+                # print(f'select_file <b>Ошибка:</b> select_file - {e}')
                 self.show_withOut_load_file_interface()
                 return
 
@@ -837,7 +1104,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kataFinal.lineEdit_name_red_1.setEnabled(True)
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(True)
-        print('show_withOut_load_file_interface')
+
+        self.sportsmans_load_status_frame(is_loaded=False)
 
     # Интерфейс с выбранным файлом (с выбором пар спортсменов)
     def show_with_load_file_interface(self):
@@ -866,9 +1134,8 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.lineEdit_region_red_1.setEnabled(True)
 
         self.ui_kumite.reset_all(self.flags_dict)
-        print('    show_with_load_file_interface')
-        print('self.df_Group_list_only_group')
-        print(self.df_Group_list_only_group)
+
+        self.sportsmans_load_status_frame()
 
     def frame_header_combo_enabled(self):
         # Отображаем все пункты в выпадающем списке Главное меню-Ката-Кумите
@@ -1028,6 +1295,8 @@ class MenuWindow(QWidget, Ui_Form0):
                             final_sportsman_cnt = 3
 
                 qual_sportsman_cnt = 32 - final_sportsman_cnt if setka_num < 64 else 64 - final_sportsman_cnt
+
+                print('1111111', aka_shiro)
 
                 # Название категории и для кумите КОМ список спортсменов в командах
                 self.category_label = ""
@@ -1304,8 +1573,19 @@ class MenuWindow(QWidget, Ui_Form0):
                 # Создаём датасет из данных на листе Aka+Shiro
                 self.sportsmen_list = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=[1, 2, 8, 9, 10],
                                                     header=9, names=['duet', 'siro', 'score_siro', 'score_aka', 'aka'])
+
+
+                print('_______pd.read_excel')
+                zzz = pd.read_excel(self.file, sheet_name=aka_shiro, usecols=list(range(10)), skiprows=10, nrows=5)
+                print(zzz)
+
+                print('__sportsmen_list', self.sportsmen_list.size, self.file, aka_shiro)
+                print(self.sportsmen_list)
+                print(self.sportsmen_list.iloc[72])
+
                 # добавляем столбец с номером строки, куда будем записывать очки победителей
                 self.sportsmen_list['row_num'] = self.sportsmen_list.index + 12
+
                 # Удаляем каждую втору строчку (это пустая строка с подочками 4, 0, 3, 1, 2
                 self.sportsmen_list = self.sportsmen_list.iloc[::2, :]
                 self.sportsmen_list = self.sportsmen_list.query(f'duet < {qual_sportsman_cnt}')
@@ -1320,6 +1600,7 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.sportsmen_list = \
                     self.sportsmen_list.query('score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
 
+                print('2222222', self.sportsmen_list.size)
                 # Регионы спортсменов
                 self.region_dict = pd.read_excel(self.file, sheet_name='Жеребьевка', usecols=[1, 4, 6], header=8,
                                                  names=['name', 'region', 'team_list'])
@@ -1327,7 +1608,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
                 # Если датасет пустой, значит остались только финальные сетки
                 if not len(self.sportsmen_list):
-
+                    print('not len')
                     if comp_type == 'ката':
                         # Если полуфинал и финал
                         if sheet_name_final.find('ПФ') >= 0:
@@ -1421,8 +1702,22 @@ class MenuWindow(QWidget, Ui_Form0):
                             self.sportsmen_list.query(
                                 'score_siro == score_aka or (score_siro.isna() and score_aka.isna())')
 
+                print('333333')
                 if len(self.sportsmen_list):
                     if is_semi_final == [False, False]:
+                        # Удаляем задвоение пробелов в ФИО
+                        print("self.sportsmen_list['siro']")
+                        # print(self.sportsmen_list['siro'])
+                        print("self.sportsmen_list['aka']")
+                        # print(self.sportsmen_list['aka'])
+                        self.sportsmen_list['siro'] = self.sportsmen_list['siro'].str.replace(r'\s+', ' ', regex=True)
+                        self.sportsmen_list['aka'] = self.sportsmen_list['aka'].str.replace(r'\s+', ' ', regex=True)
+
+                        print("self.sportsmen_list['siro']")
+                        # print(self.sportsmen_list['siro'])
+                        print("self.sportsmen_list['aka']")
+                        # print(self.sportsmen_list['aka'])
+
                         # Добавляем столбцы с ФИО, кратким ФИО и пара спортсменов
                         if self.sportsmans_in_teams_dict:
                             team_num_siro = list(self.sportsmen_list['siro'].str.split(' - ком ', expand=True))[-1]
@@ -1477,6 +1772,7 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.status_file.setStyleSheet("font-family: Gotham-Light; color: red; font-size: 12px;")
                     self.status_file.setText(f'Файл  <b>{self.filename}</b> отработан. Данные не загружены')
                     self.loaded_file_data_type = 'file_pyatnov'
+                    self.sportsmans_load_status_frame(is_loaded=False)
                     return 'file was completed'
 
                 if comp_type == 'ката':
@@ -1491,6 +1787,7 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.ui_kataFinal.matchName1.setText(self.tatamiName + ', ' + self.category_label)
 
                     if is_semi_final == [False, False]:
+                        # self.ui_kataQual.pyatnov_name.hidePopup()
                         self.ui_kataQual.pyatnov_name.clear()
                         self.ui_kataQual.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                         self.ui_kataQual.pyatnov_name.setEnabled(True)
@@ -1502,11 +1799,13 @@ class MenuWindow(QWidget, Ui_Form0):
 
                         self.ui_kataQual.frame_pyatnov.hide()
 
+                        # self.ui_kataFinal.pyatnov_name.hidePopup()
                         self.ui_kataFinal.pyatnov_name.clear()
                         self.ui_kataFinal.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                         self.ui_kataFinal.pyatnov_name.setEnabled(True)
 
                         # Список ката
+                        # self.ui_kataFinal.pyatnov_name.hidePopup()
                         self.ui_kataFinal.pyatnov_kata_name.clear()
                         self.ui_kataFinal.pyatnov_kata_name.addItems(self.kata_list)
                         self.ui_kataFinal.pyatnov_kata_name.setEnabled(True)
@@ -1523,6 +1822,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
                     if self.flag_pyatnov_kumite_single:
                         self.show_pyatnov_kumite_interface(team=False)
+                        # self.ui_kumite.pyatnov_name.hidePopup()
+
                         self.ui_kumite.pyatnov_name.clear()
                         self.ui_kumite.pyatnov_name.addItems(self.sportsmen_list['combo_box'].tolist())
                         self.ui_kumite.pyatnov_name.setEnabled(True)
@@ -1532,6 +1833,7 @@ class MenuWindow(QWidget, Ui_Form0):
                         if not is_kum_team_clear_name:
                             pyatnov_name_index = self.ui_kumite.pyatnov_name.currentIndex()
                         self.show_pyatnov_kumite_interface(team=True)
+                        # self.ui_kumite.pyatnov_name.hidePopup()
                         self.ui_kumite.pyatnov_name.clear()
                         self.ui_kumite.pyatnov_name.addItem('Выберите команды...')
                         self.ui_kumite.pyatnov_name.addItems(self.teams_pairs.keys())
@@ -1539,8 +1841,12 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.ui_kumite.matchName12.setText(self.category_label)
                         self.ui_kumite.pyatnov_name.setCurrentIndex(0 if is_kum_team_clear_name else pyatnov_name_index)
 
+                print('555555')
                 self.status_file.setStyleSheet("color: rgb(0, 178, 80);")
                 self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
+
+                self.sportsmans_load_status_frame(is_loaded=True)
+
                 self.loaded_file_data_type = 'file_pyatnov'
 
                 # Скрываем все пункты из выпадающего списка Главное меню - Ката - Кумите
@@ -1616,30 +1922,6 @@ class MenuWindow(QWidget, Ui_Form0):
                 self.show_withOut_load_file_interface()
 
     def file_dementieva(self):
-        # print('file_dementieva')
-        # print(self.list_kat_name)
-        # for k_n in self.list_kat_name:
-        #     # ЛИЧНЫЕ СОРЕВНОВАНИЯ
-        #     # Поиск строк со значением "*" в столбце "k_n"
-        #     #           (Поиск всех смортсменов, у которых в категории (столбце "k_n") поставлена ЗВЕЗДОЧКА "*")
-        #     df2 = self.sheet.loc[self.sheet[k_n] == '*', ['a10', 'a11', 'a12', 'a13']]
-        #
-        #     # Создание словаря из найденых спортсменов
-        #     df_Temp_Single_list = dict(zip(df2.a12 + ' ' + df2.a13 + ' - ' + df2.a11,
-        #                                    'a12' + df2.a12 + 'a13' + df2.a13 + 'a11' + df2.a11))
-        #
-        #     # КОМАНДНЫЕ СОРЕВНОВАНИЯ
-        #     # ------------
-        #
-        #     self.df_Single_names.append(k_n)
-        #     self.df_Group_names.append(k_n)
-        #     self.df_Single_list.append(df_Temp_Single_list)
-        ################################################################
-        # print(self.df_Single_list)
-        # for i in self.df_Single_list:
-        #     print(i)
-        #     print('      ', type(i))
-
         self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
         self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
 
@@ -1875,10 +2157,6 @@ class MenuWindow(QWidget, Ui_Form0):
             self.df_Group_names.append(k_n)
             self.df_Single_list.append(df_Temp_Single_list)
         ################################################################
-        # print('self.df_Group_list_only_group')
-        # print(self.df_Group_list_only_group)
-        # print('self.df_Group_list')
-        # print(self.df_Group_list)
 
         self.status_file.setStyleSheet("font-family: Gotham-Light; color: rgb(0, 178, 80); font-size: 12px;")
         self.status_file.setText(f'Файл  <b>{self.filename}</b> загружен')
@@ -2524,39 +2802,6 @@ class MenuWindow(QWidget, Ui_Form0):
             self.ui_kataQual.matchName1.setText(f'Татами №{self.USKO_PC}, Возраст')
             # self.ui_kataQual.matchName1.setText('Татами №#, Возраст')
 
-    # def kata_matchName(self):
-    #     sender = self.sender()
-    #     if sender in (self.ui_kataQual.matchName1, self.ui_kataQual.btn_showData):
-    #         ui_kata = self.ui_kataQual
-    #     elif sender in (self.ui_kataFinal.matchName1, self.ui_kataFinal.btn_showData):
-    #         ui_kata = self.ui_kataFinal
-    #     try:
-    #         if len(ui_kata.matchName1.text().split(', ')) > 1:
-    #             self.tatamiName = ui_kata.matchName1.text().split(', ')[0]
-    #
-    #             if len(self.matchName) and ui_kata.matchName1.text() == \
-    #                     self.tatamiName + ', ' + self.matchName[list(self.matchName.keys())[self.x]]:
-    #
-    #                 ui_kata.matchName1.setText(self.tatamiName +
-    #                                            ', ' + self.matchName[list(self.matchName.keys())[self.x]])
-    #         else:
-    #             if len(self.matchName):
-    #                 ui_kata.matchName1.setText(self.matchName[list(self.matchName.keys())[self.x]])
-    #     except Exception as e:
-    #         print('_______Exception kata_matchName:', e)
-
-    # def kumite_matchName(self):
-    #     sender = self.sender()
-    #     if sender in (self.ui_kumite.btn_showData, self.ui_kumite.matchName12):
-    #         ui_kumite = self.ui_kumite
-    #     try:
-    #         if sender == self.ui_kumite.matchName12:
-    #             self.tatamiName = ui_kumite.matchName11.text()
-    #         elif ui_kumite.matchName11.text() != "Татами №#" and ui_kumite.matchName11.text() != self.tatamiName:
-    #             self.tatamiName = ui_kumite.matchName11.text()
-    #     except Exception as e:
-    #         print('_______Exception kumite_matchName:', e)
-
     def showKataQualWin(self):
         try:
             self.closeAllWin()
@@ -2854,6 +3099,19 @@ class MenuWindow(QWidget, Ui_Form0):
     def showMainMenu(self):
         self.closeAllWin()
         self.show()
+        # Оверлей: по желанию можно скрыть табло
+        try:
+            self.send_overlay_idle()
+        except Exception as e:
+            print("overlay showMainMenu error:", e)
+
+    def closeEvent(self, event):
+        # При закрытии приложения — спрятать табло
+        try:
+            self.send_overlay_idle()
+        except Exception as e:
+            print("overlay idle on close error:", e)
+        super().closeEvent(event)
 
     def calc_monitor_coord(self):
         if self.list_monitor[7] == 'is_primary=True)':
@@ -2895,19 +3153,79 @@ class MenuWindow(QWidget, Ui_Form0):
                     self.tatamiName = self.ui_kumite.matchName11.text()
                 elif sender == self.ui_kumite.btn_show_screen:
                     self.ui_kumite.show_screen(force_hide=0)
+
+            # --- НОВОЕ: после любого обновления ФИО шлём данные в оверлей ---
+            try:
+                state = None
+                if sender in (self.ui_kumite.btn_showData, self.ui_kumite.btn_show_screen):
+                    state = self.build_kumite_state()
+                elif sender == self.ui_kataQual.btn_showData:
+                    state = self.build_kata_qual_state()
+                elif sender == self.ui_kataFinal.btn_showData:
+                    state = self.build_kata_final_state()
+
+                if state:
+                    self.send_overlay_message(state)
+            except Exception as e:
+                print("overlay error in setSportsmanName:", e)
+
         except Exception as e:
             print('_______Exception setSportsmanName:', e)
 
     def clearData(self):
         try:
             sender = self.sender()
+            # --- КАТА ОТБОРОЧНЫЕ ---
             if sender == self.ui_kataQual.btn_clearData:
                 self.ui_kataQual.clearKataData()
+
+                # Оверлей: очистка бойцов, оставляем только категорию/татами
+                try:
+                    state = self.build_kata_qual_state()
+                    if state:
+                        state["aka"]["name"] = ""
+                        state["aka"]["region"] = ""
+                        state["siro"]["name"] = ""
+                        state["siro"]["region"] = ""
+                        state.pop("winner_side", None)
+                        self.send_overlay_message(state)
+                except Exception as e:
+                    print("overlay kata_qual clear error:", e)
+
             elif sender == self.ui_kataQual.btn_NewCategory:
                 self.calcTabKata_Reset()
                 self.ui_kataQual.NewCategory()
+
+                # Оверлей: новая категория, спортсмены ещё не выбраны
+                try:
+                    state = self.build_kata_qual_state()
+                    if state:
+                        state["aka"]["name"] = ""
+                        state["aka"]["region"] = ""
+                        state["siro"]["name"] = ""
+                        state["siro"]["region"] = ""
+                        state.pop("winner_side", None)
+                        self.send_overlay_message(state)
+                except Exception as e:
+                    print("overlay kata_qual new_category error:", e)
+
+            # --- КАТА ФИНАЛ ---
             elif sender == self.ui_kataFinal.Clear_Button:
                 self.ui_kataFinal.clearKataData()
+
+                # Оверлей: очистка оценок и суммы
+                try:
+                    state = self.build_kata_final_state()
+                    if state:
+                        for k in state.get("scores", {}):
+                            state["scores"][k] = ""
+                        state["sum"] = ""
+                        state["final"] = False
+                        self.send_overlay_message(state)
+                except Exception as e:
+                    print("overlay kata_final clear error:", e)
+
+            # --- КУМИТЕ
             elif sender == self.ui_kumite.btn_reset:
                 if self.loaded_file_data_type == 'file_pyatnov':
                     self.paytnov_prepare_data_to_write_to_protocol()
@@ -2915,6 +3233,8 @@ class MenuWindow(QWidget, Ui_Form0):
                     if self.ui_kumite.btn_start.text() == '► START':
                         self.blockedKumiteFrame()
                 self.ui_kumite.clearKumiteData()
+                # >>> обновляем оверлей после сброса боя
+                self.update_kumite_overlay()
             elif sender == self.ui_kumite.btn_NewCategory:
                 if self.loaded_file_data_type == 'file_pyatnov':
                     self.paytnov_prepare_data_to_write_to_protocol()
@@ -2923,6 +3243,8 @@ class MenuWindow(QWidget, Ui_Form0):
                         self.blockedKumiteFrame()
                 self.ui_kumite.reset_all()
                 self.ui_kumite.NewCategory()
+                # >>> обновляем оверлей после сброса боя
+                self.update_kumite_overlay()
             if self.loaded_file_data_type == 'file_pyatnov':
                 self.check_to_wopf()
         except Exception as e:
@@ -2948,6 +3270,18 @@ class MenuWindow(QWidget, Ui_Form0):
                     col = col_white if sender == self.ui_kataQual.winnerWhite else col_red
                     cell_coord = f"{col}{row}"
                     self.pyatnov_winner = {'type': 'ui_kataQual', 'side': side, 'cell': cell_coord, 'pfs_name':row_num}
+
+                # --- Оверлей: победитель КАТА по флажкам ---
+                try:
+                    winner_side = "aka" if sender == self.ui_kataQual.winnerRed else "siro"
+
+                    state = self.build_kata_qual_state()
+                    state["winner_side"] = winner_side
+
+                    self.send_overlay_message(state)
+                except Exception as e:
+                    print("overlay kata_qual winner error:", e)
+
             elif sender == self.ui_kataFinal.Calc_Button:
                 self.ui_kataFinal.calcResult()
                 if self.loaded_file_data_type == 'file_pyatnov':
@@ -3016,12 +3350,22 @@ class MenuWindow(QWidget, Ui_Form0):
                     number_coord = f"A{row}"
                     self.pyatnov_winner = {'type': 'ui_kataFinal', 'score': score, 'cell': cell_coord, 'number': number,
                                            'number_coord': number_coord, 'pfs_name': aka_name}
+
+                    # --- Оверлей: после расчёта показываем сумму и считаем это финалом ---
+                    try:
+                        state = self.build_kata_final_state()
+                        if state:
+                            state["final"] = True  # флаг, что сумма финальная
+                            print(' 3 from set_winner')
+                            self.send_overlay_message(state)
+                    except Exception as e:
+                        print("overlay kata_final calc error:", e)
+
             elif sender in [self.ui_kumite.winnerRed, self.ui_kumite.winnerWhite]:
                 self.ui_kumite.isShowSportsmanName(resetSportsmanFrame=0)
                 self.ui_kumite.setWinner()
 
                 if self.loaded_file_data_type == 'file_pyatnov':
-
                     if self.flag_pyatnov_kumite_team:
                         name_white = self.ui_kumite.label_name_white_1.text()
                         region_white = self.ui_kumite.label_region_white_1.text()
@@ -3082,6 +3426,22 @@ class MenuWindow(QWidget, Ui_Form0):
                             # cell_coord = f"{col}{row}"
                             # self.pyatnov_winner = {'type': 'ui_kataQual', 'side': side, 'cell': cell_coord}
 
+                # --- Оверлей: победитель КУМИТЕ ---
+                try:
+                    winner_side = "aka" if sender == self.ui_kumite.winnerRed else "siro"
+                    # В окне Кумите итоговые ФИО лежат в label_name_*_1
+                    # winner_name = (
+                    #     self.ui_kumite.label_name_red_1.text()
+                    #     if winner_side == "aka"
+                    #     else self.ui_kumite.label_name_white_1.text()
+                    # )
+
+                    state = self.build_kumite_state()
+                    state["winner_side"] = winner_side
+                    self.send_overlay_message(state)
+                except Exception as e:
+                    print("overlay kumite winner error:", e)
+
         except Exception as e:
             print('_______Exception set_winner:', e)
 
@@ -3102,12 +3462,13 @@ class MenuWindow(QWidget, Ui_Form0):
 
             if threading.active_count() <= 1:
                 # Статус сохранения файла
-                if self.flag_pyatnov_kumite_team:
-                    self.paytnov_save_status(need_to_close=False)
-                    # Если кумите команда отображаем заглушку сохранения
-                    # self.ui_kumite.blocked_Form2.hide()
-                    # self.ui_kumite.saving_into_kumite_team_Form2.show()
-                    # self.ui_kumite.img_saving_into_kumite_team.start()
+                self.paytnov_save_status(need_to_close=False)
+                # if self.flag_pyatnov_kumite_team:
+                #     self.paytnov_save_status(need_to_close=False)
+                #     # Если кумите команда отображаем заглушку сохранения
+                #     # self.ui_kumite.blocked_Form2.hide()
+                #     # self.ui_kumite.saving_into_kumite_team_Form2.show()
+                #     # self.ui_kumite.img_saving_into_kumite_team.start()
 
                 thread1 = threading.Thread(target=self.write_on_pyatov_file, daemon=True)
                 thread1.start()
@@ -3135,18 +3496,71 @@ class MenuWindow(QWidget, Ui_Form0):
             if self.ui_kumite.pyatnov_perebivka_qbx.isChecked():
                 return
 
-            print('self.pyatnov_winner', self.pyatnov_winner)
             excel_file_path = str(self.file)
+
+            print('self.pyatnov_winner', self.pyatnov_winner)
+            print('  self.sheet_name_aka_shiro', self.sheet_name_aka_shiro)
+            print('    excel_file_path', excel_file_path)
 
             if self.pyatnov_winner['type'] == 'ui_kataQual':
                 try:
+                    # wb = load_workbook(excel_file_path)
+                    # ws = wb[self.sheet_name_aka_shiro]
+                    # ws[self.pyatnov_winner['cell']] = 1
+                    #
+                    # wb.save(excel_file_path)
+
                     excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
                     workbook = excel.Workbooks.Open(excel_file_path)
-                    worksheet = workbook.Worksheets("Aka+Shiro")
+                    worksheet = workbook.Worksheets(self.sheet_name_aka_shiro)
+
+                    # print('self.pyatnov_winner')
+                    # print(self.pyatnov_winner)
+                    #
                     worksheet.Range(self.pyatnov_winner['cell']).Value = 1
                     workbook.Save()
+                    #
+                    #
+                    #
+                    # # 🔁 Восстанавливаем настройки печати
+                    # # restore_page_setup(worksheet, saved_setup)
+                    # restore_all_page_setups(workbook, saved_setups)
+                    #
+                    #
                     workbook.Close()
                     excel.Quit()
+
+                    # ############################## ВТОРОЙ ВАРИАНТ НАЧАЛО #####################
+                    #     wb = load_workbook(excel_file_path, keep_vba=True)
+                    #     ws = wb["Aka+Shiro"]
+                    #     ws[self.pyatnov_winner['cell']] = 1
+                    #
+                    #     wb.save(excel_file_path)
+                    # ############################## ВТОРОЙ ВАРИАНТ ОКОНЧАНИЕ #####################
+
+                    # ############################## ТРЕТИЙ ВАРИАНТ НАЧАЛО #####################
+                    # excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
+                    # excel.Visible = False
+                    # excel.DisplayAlerts = False  # подавляет предупреждения Excel
+                    # workbook = excel.Workbooks.Open(excel_file_path)
+                    # # worksheet = workbook.Worksheets("Aka+Shiro")
+                    # sheet = workbook.Sheets("Aka+Shiro")
+                    # print('111 saved_setups')
+                    # saved_setups = backup_all_page_setups(workbook)
+                    # sheet.Range(self.pyatnov_winner['cell']).Value = 1
+                    #
+                    # print('222 restore_all_page_setups')
+                    # restore_all_page_setups(workbook, saved_setups)
+                    # excel.ActiveWindow.View = 2  # обычный режим (Normal View)
+                    # sheet.DisplayPageBreaks = False
+                    # excel.Calculation = -4135  # ручной расчёт
+                    # excel.DisplayAlerts = False
+                    # workbook.Save()
+                    # workbook.Close()
+                    # excel.Quit()
+                    # ############################## ТРЕТИЙ ВАРИАНТ ОКОНЧАНИЕ #####################
+
+
 
                     self.pyatnov_winner = None
                 except AttributeError:
@@ -3158,8 +3572,19 @@ class MenuWindow(QWidget, Ui_Form0):
                     excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
                     workbook = excel.Workbooks.Open(excel_file_path)
                     worksheet = workbook.Worksheets(self.sheet_name_final)
+
+                    # 🔒 Сохраняем параметры печати
+                    # saved_setup = backup_page_setup(worksheet)
+                    print('saved_setups 1')
+                    saved_setups = backup_all_page_setups(workbook)
+
                     worksheet.Range(self.pyatnov_winner['cell']).Value = self.pyatnov_winner['score']
                     worksheet.Range(self.pyatnov_winner['number_coord']).Value = self.pyatnov_winner['number']
+
+                    # 🔁 Восстанавливаем настройки печати
+                    # restore_page_setup(worksheet, saved_setup)
+                    restore_all_page_setups(workbook, saved_setups)
+
                     workbook.Save()
                     workbook.Close()
                     excel.Quit()
@@ -3203,7 +3628,18 @@ class MenuWindow(QWidget, Ui_Form0):
                         excel = win32com.client.Dispatch("Excel.Application", pythoncom.CoInitialize())
                         workbook = excel.Workbooks.Open(excel_file_path)
                         worksheet = workbook.Worksheets("Aka+Shiro")
+
+                        # 🔒 Сохраняем параметры печати
+                        # saved_setup = backup_page_setup(worksheet)
+                        print('saved_setups 3')
+                        saved_setups = backup_all_page_setups(workbook)
+
                         worksheet.Range(self.pyatnov_winner['cell']).Value = 1
+
+                    # 🔁 Восстанавливаем настройки печати
+                    # restore_page_setup(worksheet, saved_setup)
+                    restore_all_page_setups(workbook, saved_setups)
+
                     workbook.Save()
                     workbook.Close()
                     excel.Quit()
@@ -3211,7 +3647,7 @@ class MenuWindow(QWidget, Ui_Form0):
 
                     self.pyatnov_winner = None
 
-                    self.paytnov_save_status(flag_save=False, need_to_close=False)
+                    # self.paytnov_save_status(flag_save=False, need_to_close=False)
 
                 except AttributeError:
                     os.system("taskkill /f /im excel.exe")
@@ -3219,6 +3655,8 @@ class MenuWindow(QWidget, Ui_Form0):
 
             else:
                 return
+
+            self.paytnov_save_status(flag_save=False, need_to_close=False)
 
             result = self.pyatnov_processing(is_kum_team_clear_name=False)
 
@@ -3559,15 +3997,22 @@ class MenuWindow(QWidget, Ui_Form0):
         except Exception as e:
             print('_______Exception paytnov_reset_hm_j:', e)
 
-    def paytnov_save_status(self, sender: str='ui_kumite', flag_save: bool = True, need_to_close: bool = True):
+    def paytnov_save_status(self, flag_save: bool = True, need_to_close: bool = True):
         """Метод управляет надписями статуса сохранения файла Пятнова"""
         try:
             # Определяем в каком окне отображать статус
             karateWidgetWindows = self.ui_kumite
-            if sender == 'ui_kataFinal':
-                karateWidgetWindows = self.ui_kataFinal
-            elif sender == 'ui_kataQual':
+            if self.ui_kataQual is not None and self.ui_kataQual.isVisible():
                 karateWidgetWindows = self.ui_kataQual
+            elif self.ui_kataFinal is not None and self.ui_kataFinal.isVisible():
+                karateWidgetWindows = self.ui_kataFinal
+
+
+            # karateWidgetWindows = self.ui_kumite
+            # if sender == 'ui_kataFinal':
+            #     karateWidgetWindows = self.ui_kataFinal
+            # elif sender == 'ui_kataQual':
+            #     karateWidgetWindows = self.ui_kataQual
 
             # Текущее время
             now_time = datetime.datetime.now().strftime('%H:%M:%S')
@@ -3622,6 +4067,717 @@ class MenuWindow(QWidget, Ui_Form0):
         except Exception as e:
             print('_______Exception paytnov_perebivka:', e)
 
+    def open_settings_dialog(self):
+        """Открывает модальное окно выбора файла с настройками сервера."""
+        try:
+            dlg = ServerSettingsDialog(parent=self)
+
+            # Подставим уже использованный файл/значения, если есть
+            if self.server_config_path:
+                dlg.set_path(self.server_config_path)
+                dlg.set_values(self.server_ip, self.server_port)
+
+            if dlg.exec_() == QtWidgets.QDialog.Accepted:
+                path = dlg.get_path()
+                if path:
+                    self.read_server_config(path)
+        except Exception as e:
+            print("_______Exception open_settings_dialog:", e)
+
+    def load_server_config_default(self):
+        """Ищем usko-server.txt в директории exe (или скрипта, если не собран PyInstaller)."""
+        try:
+            if getattr(sys, "frozen", False):
+                base_dir = os.path.dirname(sys.executable)
+            else:
+                base_dir = os.path.dirname(os.path.abspath(__file__))
+
+            candidate = os.path.join(base_dir, "usko-server.txt")
+            if os.path.exists(candidate):
+                self.read_server_config(candidate)
+            else:
+                self.has_server_info = False
+                print("usko-server.txt не найден в", base_dir)
+
+                # Для удобства — подсказка в статусе
+                self.overlay_status_frame(
+                    txt=f"default: usko-server.txt не найден в {base_dir}",
+                    tool_tip="",
+                    is_online='no_data'
+                )
+
+        except Exception as e:
+            print("_______Exception load_server_config_default:", e)
+
+    def read_server_config(self, path: str):
+        """Читаем SERVER_IP и SERVER_PORT из текстового файла."""
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                text = f.read()
+
+            tatami_match = re.search(r'TATAMI_ID\s*=\s*(\d+)', text)
+            ip_match = re.search(r'SERVER_IP\s*=\s*["\']([^"\']+)["\']', text)
+            port_match = re.search(r'SERVER_PORT\s*=\s*(\d+)', text)
+
+            if not ip_match or not port_match:
+                raise ValueError("Файл не содержит корректные SERVER_IP и SERVER_PORT")
+
+            self.server_ip = ip_match.group(1)
+            self.server_port = int(port_match.group(1))
+            self.server_config_path = path
+
+            # --- TATAMI_ID ---
+            if tatami_match:
+                self.USKO_PC = int(tatami_match.group(1))
+                css.USKO_PC = self.USKO_PC
+
+            self.has_server_info = True
+
+            # Для удобства — подсказка в статусе
+            self.overlay_status_frame(
+                txt=f"Сервер трансляции: {self.server_ip}:{self.server_port} | Татами {self.USKO_PC}",
+                tool_tip=(
+                    f"Сервер трансляции: {self.server_ip}:{self.server_port}\n"
+                    f"Татами: {self.USKO_PC}\n"
+                    f"Файл: {self.server_config_path}"
+                ),
+                is_online = 'offline'
+            )
+
+            print(f"USKO server config loaded: {self.server_ip}:{self.server_port} from {path}")
+        except Exception as e:
+            print("_______Exception read_server_config:", e)
+            self.has_server_info = False
+            self.overlay_status_frame(
+                txt=f"Exception read_server_config: {e}",
+                tool_tip="",
+                is_online='no_data'
+            )
+
+    def overlay_health_ok(self, set_timeout=0.1) -> bool:
+        """
+        Проверяет, что сервер оверлея доступен и отвечает 200.
+        НИЧЕГО не собирает, никаких payload.
+        """
+        if not self.server_ip or not self.server_port:
+            return False
+
+        url = f"http://{self.server_ip}:{self.server_port}/health"
+
+        try:
+            r = requests.get(url, timeout=set_timeout)
+            self.is_overlay_connected = True
+            return r.status_code == 200
+        except Exception as e:
+            # print("WS: overlay health-check failed:", e)
+            self.is_overlay_connected = False
+            self.overlay_status_frame(
+                txt=f"WS: overlay health-check failed: {e}",
+                tool_tip=f"WS: overlay health-check failed: {e}",
+                is_online='offline'
+            )
+            return False
+
+    def send_overlay_idle(self):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        """Сбрасываем оверлей: нет активного боя (меню/закрытие)."""
+        try:
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+        except Exception:
+            tatami = f"Татами №{getattr(self, 'USKO_PC', '#')}"
+
+        payload = {
+            "mode": "idle",
+            "discipline": "",
+            "tatami": tatami,
+            "category": "",
+        }
+        self.send_overlay_message(payload)
+
+        # Хелперы для сбора инфы для оверлея ОБС
+
+    def update_kumite_overlay(self):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        try:
+            state = self.build_kumite_state()
+            if state:
+                self.send_overlay_message(state)
+        except Exception as e:
+            print("update_kumite_overlay error:", e)
+
+    def update_kata_qual_overlay(self):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        try:
+            state = self.build_kata_qual_state()
+            if state:
+                self.send_overlay_message(state)
+        except Exception as e:
+            print("update_kata_qual_overlay error:", e)
+
+    def update_kata_final_overlay(self, final: bool = False):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        try:
+            state = self.build_kata_final_state()
+            if state:
+                state["final"] = final
+                self.send_overlay_message(state)
+        except Exception as e:
+            print("update_kata_final_overlay error:", e)
+
+    def send_overlay_message(self, payload: dict):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        """
+        Отправляет JSON-состояние табло на сервер оверлея через HTTP POST.
+        Сервер сам раздаёт это на OBS через WebSocket.
+        """
+        if not self.server_ip or not self.server_port:
+            print("WS: сервер не настроен (server_ip / server_port пустые)")
+            return
+
+        url = f"http://{self.server_ip}:{self.server_port}/api/state"
+
+        # сервер ждёт поле tatami_id в payload
+        full_payload = {
+            "tatami_id": self.USKO_PC,
+            **payload,
+        }
+
+        try:
+            r = requests.post(url, json=full_payload, timeout=0.5)
+            r.raise_for_status()
+            self.overlay_status_frame(
+                txt=f"",
+                tool_tip="",
+                is_online='online'
+            )
+        except Exception as e:
+            self.is_overlay_connected = False
+            self.overlay_status_frame(
+                txt=f"WS: ошибка отправки (HTTP POST): {e}",
+                tool_tip="",
+                is_online='offline'
+            )
+            print("WS: ошибка отправки (HTTP POST):", e)
+
+        # Оверлей - кумите. функцию, которая вернёт только то, что реально меняется во время боя
+        # (таймер, счёт, штрафы, категория/татами
+
+    def build_kumite_dynamic_state(self) -> dict:
+        if not self.has_server_info: return {}
+        if not self.overlay_health_ok(): return {}
+        """
+        ЛЁГКОЕ состояние боя Кумите для частичных обновлений:
+        - таймер
+        - счёт
+        - штрафы
+        - категория/татами
+        (без ФИО, региона и картинок)
+        """
+        try:
+            # Название татами и категории
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+            category = f'{self.ui_kumite.matchName11.text()}, {self.ui_kumite.matchName12.text()}'
+
+            # --- Таймер ---
+            timer_obj = None
+            try:
+                tics = getattr(self.ui_kumite, "tics", None)
+                if tics is not None:
+                    mm = tics.minute
+                    ss = tics.second
+                    remaining_sec = mm * 60 + ss
+
+                    kum_timer = getattr(self.ui_kumite, "timer", None)
+                    is_running = bool(kum_timer and kum_timer.isActive())
+
+                    timer_obj = {
+                        "remaining_sec": remaining_sec,
+                        "status": "running" if is_running else "stopped",
+                    }
+            except Exception:
+                timer_obj = None
+
+            # --- Очки ---
+            sec = getattr(self.ui_kumite, "KumiteSecondWindow", None)
+            if sec is not None:
+                aka_score = sec.label_score21.text()
+                siro_score = sec.label_score22.text()
+            else:
+                aka_label = getattr(self.ui_kumite, "label_score11", None)
+                siro_label = getattr(self.ui_kumite, "label_score12", None)
+                aka_score = aka_label.text() if aka_label else ""
+                siro_score = siro_label.text() if siro_label else ""
+
+            # --- Штрафы ---
+            hmr = jr = hmw = jw = ""
+            if sec is not None:
+                hmr = sec.label_kum_hmr0.text() or ""
+                jr = sec.label_kum_jr0.text() or ""
+                hmw = sec.label_kum_hmw0.text() or ""
+                jw = sec.label_kum_jw0.text() or ""
+
+            state = {
+                "mode": "kumite",
+                "discipline": "КУМИТЕ",
+                "tatami": tatami,
+                "category": category,
+                "timer": timer_obj,
+                "aka": {
+                    "score": aka_score,
+                    "penalties": {
+                        "hm": hmr,
+                        "j": jr,
+                    },
+                },
+                "siro": {
+                    "score": siro_score,
+                    "penalties": {
+                        "hm": hmw,
+                        "j": jw,
+                    },
+                },
+            }
+            return state
+        except Exception as e:
+            print("build_kumite_dynamic_state error:", e)
+            return {}
+
+    def tick_update_kumite_dynamic_overlay(self):
+        if not self.has_server_info: return ''
+        if not self.is_overlay_connected: return ''
+        return self.update_kumite_dynamic_overlay()
+
+    def update_kumite_dynamic_overlay(self):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        print(' === update_kumite_dynamic_overlay')
+        """
+        Отправляет облегчённое (partial) состояние Кумите:
+        без ФИО/региона/флагов, только то, что обычно меняется в бою.
+        """
+        try:
+            state = self.build_kumite_dynamic_state()
+            if state:
+                state["partial"] = True
+                self.send_overlay_message(state)
+        except Exception as e:
+            print("update_kumite_dynamic_overlay error:", e)
+
+    def build_kumite_state(self) -> dict:
+        if not self.has_server_info: return {}
+        if not self.overlay_health_ok(): return {}
+        print(' === build_kumite_state')
+        """
+        Собираем текущее состояние боя Кумите для оверлея.
+        """
+        try:
+            # Название татами и категории
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+            category = f'{self.ui_kumite.matchName11.text()}, {self.ui_kumite.matchName12.text()}'
+
+            # --- Таймер ---
+            timer_obj = None
+            try:
+                tics = getattr(self.ui_kumite, "tics", None)
+                if tics is not None:
+                    # tics — это datetime, сохраняем оставшееся время в секундах
+                    mm = tics.minute
+                    ss = tics.second
+                    remaining_sec = mm * 60 + ss
+
+                    kum_timer = getattr(self.ui_kumite, "timer", None)
+                    is_running = bool(kum_timer and kum_timer.isActive())
+
+                    timer_obj = {
+                        "remaining_sec": remaining_sec,
+                        "status": "running" if is_running else "stopped",
+                    }
+            except Exception:
+                timer_obj = None
+
+            # --- Очки ---
+            # Счёт во второй форме (той, что на большом экране), там же, где его видят зрители
+            sec = getattr(self.ui_kumite, "KumiteSecondWindow", None)
+            if sec is not None:
+                aka_score = sec.label_score21.text()
+                siro_score = sec.label_score22.text()
+            else:
+                # запасной вариант — из судейского окна
+                aka_label = getattr(self.ui_kumite, "label_score11", None)
+                siro_label = getattr(self.ui_kumite, "label_score12", None)
+                aka_score = aka_label.text() if aka_label else ""
+                siro_score = siro_label.text() if siro_label else ""
+
+            # --- Имя / регион ---
+            aka_name = self.ui_kumite.lineEdit_name_red_1.text()
+            try:
+                aka_region = self.ui_kumite.lineEdit_region_red_1.currentText()
+            except Exception:
+                aka_region = self.ui_kumite.lineEdit_region_red_1.lineEdit().text()
+
+            siro_name = self.ui_kumite.lineEdit_name_white_1.text()
+            try:
+                siro_region = self.ui_kumite.lineEdit_region_white_1.currentText()
+            except Exception:
+                siro_region = self.ui_kumite.lineEdit_region_white_1.lineEdit().text()
+
+            # --- Штрафы ---
+            hmr = jr = hmw = jw = ""
+            if sec is not None:
+                hmr = sec.label_kum_hmr0.text() or ""
+                jr = sec.label_kum_jr0.text() or ""
+                hmw = sec.label_kum_hmw0.text() or ""
+                jw = sec.label_kum_jw0.text() or ""
+
+            print('____aka_region/siro_region', f'_*{aka_region}*_', f'_*{siro_region}*_')
+
+            state = {
+                "mode": "kumite",
+                "discipline": "КУМИТЕ",
+                "tatami": tatami,
+                "category": category,
+                "timer": timer_obj,
+                "aka": {
+                    "name": aka_name,
+                    "region": aka_region,
+                    "region_logo_url": self.svg_resource_to_data_url(aka_region),
+                    "score": aka_score,
+                    "penalties": {
+                        "hm": hmr,  # H/M КРАСНОГО
+                        "j": jr,  # J КРАСНОГО
+                    },
+                },
+                "siro": {
+                    "name": siro_name,
+                    "region": siro_region,
+                    "region_logo_url": self.svg_resource_to_data_url(siro_region),
+                    "score": siro_score,
+                    "penalties": {
+                        "hm": hmw,  # H/M БЕЛОГО
+                        "j": jw,  # J БЕЛОГО
+                    },
+                },
+            }
+            return state
+
+        except Exception as e:
+            print("build_kumite_state error:", e)
+            return {}
+
+    def build_kata_qual_state(self) -> dict:
+        if not self.has_server_info: return {}
+        if not self.overlay_health_ok(): return {}
+        print(' === build_kata_qual_state')
+        try:
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+            # В отборочных matchName1 содержит “Татами №Х, Возраст”
+            category = self.ui_kataQual.matchName1.text()
+
+            state = {
+                "mode": "kata_qual",
+                "discipline": "КАТА",
+                "tatami": tatami,
+                "category": category,
+                "aka": {
+                    "name": self.ui_kataQual.lineEdit_name_red_1.text(),
+                    "region": self.ui_kataQual.lineEdit_region_red_1.currentText(),
+                    "region_logo_url": self.svg_resource_to_data_url(
+                        self.ui_kataQual.lineEdit_region_red_1.currentText()
+                    ),
+                },
+                "siro": {
+                    "name": self.ui_kataQual.lineEdit_name_white_1.text(),
+                    "region": self.ui_kataQual.lineEdit_region_white_1.currentText(),
+                    "region_logo_url": self.svg_resource_to_data_url(
+                        self.ui_kataQual.lineEdit_region_white_1.currentText()
+                    ),
+                },
+            }
+            return state
+        except Exception as e:
+            print("build_kata_qual_state error:", e)
+            return {}
+
+    def build_kata_final_scores_state(self) -> dict:
+        if not self.has_server_info: return {}
+        if not self.overlay_health_ok(): return {}
+        print(' === build_kata_final_scores_state')
+        """
+        Облегчённое состояние Ката финал:
+        только вид, категория, оценки судей и сумма — без ФИО/флагов.
+        """
+        try:
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+            category = self.ui_kataFinal.matchName1.text()
+
+            ref1 = self.ui_kataFinal.lineEdit_referee1.text()
+            ref2 = self.ui_kataFinal.lineEdit_referee2.text()
+            ref3 = self.ui_kataFinal.lineEdit_referee3.text()
+            ref4 = self.ui_kataFinal.lineEdit_referee4.text()
+            ref5 = self.ui_kataFinal.lineEdit_referee5.text()
+            ref6 = self.ui_kataFinal.lineEdit_referee6.text()
+            ref7 = self.ui_kataFinal.lineEdit_referee7.text()
+
+            # убираем одиночную точку
+            ref1 = ref1 if ref1 != '.' else ''
+            ref2 = ref2 if ref2 != '.' else ''
+            ref3 = ref3 if ref3 != '.' else ''
+            ref4 = ref4 if ref4 != '.' else ''
+            ref5 = ref5 if ref5 != '.' else ''
+            ref6 = ref6 if ref6 != '.' else ''
+            ref7 = ref7 if ref7 != '.' else ''
+
+            scores = {
+                "ref1": ref1,
+                "ref2": ref2,
+                "ref3": ref3,
+                "ref4": ref4,
+                "ref5": ref5,
+                "ref6": ref6,
+                "ref7": ref7,
+            }
+
+            sum_text = self.ui_kataFinal.label_sum.text()
+            print('  ___  sum_text', f'***{sum_text}***')
+            try:
+                float(sum_text)
+            except ValueError:
+                sum_text = "0.0"
+
+            return {
+                "mode": "kata_final",
+                "discipline": "КАТА",
+                "tatami": tatami,
+                "category": category,
+                "scores": scores,
+                "sum": sum_text,
+            }
+        except Exception as e:
+            print("build_kata_final_scores_state error:", e)
+            return {}
+
+    def on_kata_final_scores_changed(self, *_):
+        if not self.has_server_info: return ''
+        if not self.overlay_health_ok(): return ''
+        print(' === on_kata_final_scores_changed')
+        """Каждый раз, когда судья меняет оценку в ката финал — обновляем оверлей."""
+        try:
+            state = self.build_kata_final_scores_state()
+            if state:
+                state["final"] = False  # ещё не финальная сумма
+                state["partial"] = True  # это патч, а не полный state
+                print(' 5 from on_kata_final_scores_changed')
+                self.send_overlay_message(state)
+        except Exception as e:
+            print("overlay error in on_kata_final_scores_changed:", e)
+
+    def build_kata_final_state(self) -> dict:
+        if not self.has_server_info: return {}
+        if not self.overlay_health_ok(): return {}
+        print(' === build_kata_final_state')
+        """
+        Состояние окна Ката финал для оверлея:
+        - вид соревнований
+        - категория / татами
+        - ФИО и регион
+        - оценки судей
+        - сумма (если уже посчитана)
+        """
+        try:
+            tatami = self.tatamiName or f"Татами №{self.USKO_PC}"
+            category = self.ui_kataFinal.matchName1.text()
+
+            # ФИО/регион спортсмена
+            aka_name = self.ui_kataFinal.label_name_red_1.text()
+            aka_region = self.ui_kataFinal.label_region_red_1.text()
+
+            # Оценки судей (как строки, чтобы не ловить формат)
+            ref1 = self.ui_kataFinal.lineEdit_referee1.text()
+            ref2 = self.ui_kataFinal.lineEdit_referee2.text()
+            ref3 = self.ui_kataFinal.lineEdit_referee3.text()
+            ref4 = self.ui_kataFinal.lineEdit_referee4.text()
+            ref5 = self.ui_kataFinal.lineEdit_referee5.text()
+            ref6 = self.ui_kataFinal.lineEdit_referee6.text()
+            ref7 = self.ui_kataFinal.lineEdit_referee7.text()
+            ref1 = ref1 if ref1 != '.' else ''
+            ref2 = ref2 if ref2 != '.' else ''
+            ref3 = ref3 if ref3 != '.' else ''
+            ref4 = ref4 if ref4 != '.' else ''
+            ref5 = ref5 if ref5 != '.' else ''
+            ref6 = ref6 if ref6 != '.' else ''
+            ref7 = ref7 if ref7 != '.' else ''
+            scores = {
+                "ref1": ref1,
+                "ref2": ref2,
+                "ref3": ref3,
+                "ref4": ref4,
+                "ref5": ref5,
+                "ref6": ref6,
+                "ref7": ref7,
+            }
+
+            # Сумма — то, что сейчас написано в label_sum
+            sum_text = self.ui_kataFinal.label_sum.text()
+
+            try:
+                float(sum_text)  # Попытка преобразовать в число с плавающей точкой
+            except ValueError:
+                sum_text = '0.0'
+
+            state = {
+                "mode": "kata_final",
+                "discipline": "КАТА",
+                "tatami": tatami,
+                "category": category,
+                "aka": {
+                    "name": aka_name,
+                    "region": aka_region,
+                    "region_logo_url": self.svg_resource_to_data_url(aka_region),
+                },
+                "scores": scores,
+                "sum": sum_text,
+            }
+            return state
+        except Exception as e:
+            print("build_kata_final_state error:", e)
+            return {}
+
+        # Для передачи флага в оверлей
+
+    def svg_resource_to_data_url(self, region_code: str, size: int = 128) -> str:
+        print('____ svg_resource_to_data_url')
+
+        region_code = region_code.split(' - ком')[0].replace(" ", "").lower()
+        code = self.flags_dict.get(region_code)
+        if not code:
+            return ""
+
+        resource_path = f":/Images/icon_regions/flags/{code}.svg"
+
+        f = QtCore.QFile(resource_path)
+        if not f.open(QtCore.QIODevice.ReadOnly):
+            print("Не удалось открыть ресурс:", resource_path)
+            return ""
+
+        svg_bytes = bytes(f.readAll())
+        f.close()
+
+        renderer = QSvgRenderer(svg_bytes)
+        if not renderer.isValid():
+            print("SVG невалиден:", resource_path)
+            return ""
+
+        image = QtGui.QImage(size, size, QtGui.QImage.Format_ARGB32)
+        image.fill(QtCore.Qt.transparent)
+
+        painter = QtGui.QPainter(image)
+        renderer.render(painter)
+        painter.end()
+
+        ba = QtCore.QByteArray()
+        buf = QtCore.QBuffer(ba)
+        buf.open(QtCore.QIODevice.WriteOnly)
+        image.save(buf, "PNG")
+        buf.close()
+
+        b64 = base64.b64encode(bytes(ba)).decode("ascii")
+        return f"data:image/png;base64,{b64}"
+
+    def sportsmans_load_status_frame(self, is_loaded : bool = True):
+        """Обновляем иконку статуса загрузки Excel списка спортсменов"""
+        try:
+            if is_loaded:
+                self.frame_sportsmans_load_status.setToolTip('Список спортсменов подгружен')
+                self.ui_kataQual.frame_sportsmans_load_status.setToolTip('Список спортсменов подгружен')
+                self.ui_kataFinal.frame_sportsmans_load_status.setToolTip('Список спортсменов подгружен')
+                self.ui_kumite.frame_sportsmans_load_status.setToolTip('Список спортсменов подгружен')
+
+                self.label_img_sportsmans_not_loaded.hide()
+                self.label_img_spotrsmans_uploaded.show()
+                self.ui_kataQual.label_img_sportsmans_not_loaded.hide()
+                self.ui_kataQual.label_img_spotrsmans_uploaded.show()
+                self.ui_kataFinal.label_img_sportsmans_not_loaded.hide()
+                self.ui_kataFinal.label_img_spotrsmans_uploaded.show()
+                self.ui_kumite.label_img_sportsmans_not_loaded.hide()
+                self.ui_kumite.label_img_spotrsmans_uploaded.show()
+            else:
+                self.frame_sportsmans_load_status.setToolTip('Список спортсменов НЕ подгружен')
+                self.ui_kataQual.frame_sportsmans_load_status.setToolTip('Список спортсменов НЕ подгружен')
+                self.ui_kataFinal.frame_sportsmans_load_status.setToolTip('Список спортсменов НЕ подгружен')
+                self.ui_kumite.frame_sportsmans_load_status.setToolTip('Список спортсменов НЕ подгружен')
+
+                self.label_img_sportsmans_not_loaded.show()
+                self.label_img_spotrsmans_uploaded.hide()
+                self.ui_kataQual.label_img_sportsmans_not_loaded.show()
+                self.ui_kataQual.label_img_spotrsmans_uploaded.hide()
+                self.ui_kataFinal.label_img_sportsmans_not_loaded.show()
+                self.ui_kataFinal.label_img_spotrsmans_uploaded.hide()
+                self.ui_kumite.label_img_sportsmans_not_loaded.show()
+                self.ui_kumite.label_img_spotrsmans_uploaded.hide()
+
+        except Exception as e:
+            print("_______overlay_status_frame:", e)
+            self.has_server_info = False
+
+    def overlay_status_frame(self, txt: str = '', tool_tip: str = '', is_online : str = 'online'):
+        """Обновляем статус соединение с оверлеем"""
+        try:
+
+            self.overlay_status_label.setText(txt)
+            self.frame_overlay_status.setToolTip(tool_tip)
+            self.ui_kataQual.frame_overlay_status.setToolTip(tool_tip)
+            self.ui_kataFinal.frame_overlay_status.setToolTip(tool_tip)
+            self.ui_kumite.frame_overlay_status.setToolTip(tool_tip)
+
+            if is_online == 'online':
+                self.label_img_overlay_offline.hide()
+                self.label_img_overlay_online.show()
+                self.label_img_overlay_no_data.hide()
+                self.ui_kataQual.label_img_overlay_offline.hide()
+                self.ui_kataQual.label_img_overlay_online.show()
+                self.ui_kataQual.label_img_overlay_no_data.hide()
+                self.ui_kataFinal.label_img_overlay_offline.hide()
+                self.ui_kataFinal.label_img_overlay_online.show()
+                self.ui_kataFinal.label_img_overlay_no_data.hide()
+                self.ui_kumite.label_img_overlay_offline.hide()
+                self.ui_kumite.label_img_overlay_online.show()
+                self.ui_kumite.label_img_overlay_no_data.hide()
+            elif is_online == 'offline':
+                self.label_img_overlay_offline.show()
+                self.label_img_overlay_online.hide()
+                self.label_img_overlay_no_data.hide()
+                self.ui_kataQual.label_img_overlay_offline.show()
+                self.ui_kataQual.label_img_overlay_online.hide()
+                self.ui_kataQual.label_img_overlay_no_data.hide()
+                self.ui_kataFinal.label_img_overlay_offline.show()
+                self.ui_kataFinal.label_img_overlay_online.hide()
+                self.ui_kataFinal.label_img_overlay_no_data.hide()
+                self.ui_kumite.label_img_overlay_offline.show()
+                self.ui_kumite.label_img_overlay_online.hide()
+                self.ui_kumite.label_img_overlay_no_data.hide()
+            elif is_online == 'no_data':
+                self.label_img_overlay_offline.hide()
+                self.label_img_overlay_online.hide()
+                self.label_img_overlay_no_data.show()
+                self.ui_kataQual.label_img_overlay_offline.hide()
+                self.ui_kataQual.label_img_overlay_online.hide()
+                self.ui_kataQual.label_img_overlay_no_data.show()
+                self.ui_kataFinal.label_img_overlay_offline.hide()
+                self.ui_kataFinal.label_img_overlay_online.hide()
+                self.ui_kataFinal.label_img_overlay_no_data.show()
+                self.ui_kumite.label_img_overlay_offline.hide()
+                self.ui_kumite.label_img_overlay_online.hide()
+                self.ui_kumite.label_img_overlay_no_data.show()
+
+        except Exception as e:
+            print("_______overlay_status_frame:", e)
+            self.has_server_info = False
+
 
 class dialogWindow_Ui(object):
     def __init__(self):
@@ -3669,6 +4825,104 @@ class dialogWindow_Ui(object):
         Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
         self.label.setText(_translate("Dialog", "TextLabel"))
         self.label2.setText(_translate("Dialog", "TextLabel"))
+
+
+class ServerSettingsDialog(QtWidgets.QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowFlags(self.windowFlags() & ~QtCore.Qt.WindowContextHelpButtonHint)
+
+        self.font_l_12 = css.font_l_12
+        self.font_l_15 = css.font_l_15
+        self.btn_style_1 = css.btn_style_1
+
+        self.setObjectName("ServerSettingsDialog")
+        self.setModal(True)
+        self.setFixedSize(500, 180)
+        self.setStyleSheet("background-color: white;")
+
+        # Заголовок
+        self.label = QtWidgets.QLabel("Файл настроек сервера (usko-server.txt):", self)
+        self.label.setGeometry(QtCore.QRect(20, 15, 460, 20))
+        self.label.setFont(self.font_l_15)
+
+        # Поле пути к файлу + кнопка обзора
+        self.edt_path = QtWidgets.QLineEdit(self)
+        self.edt_path.setGeometry(QtCore.QRect(20, 45, 380, 24))
+        self.edt_path.setFont(self.font_l_12)
+
+        self.btn_browse = QtWidgets.QPushButton("...", self)
+        self.btn_browse.setGeometry(QtCore.QRect(410, 45, 60, 24))
+        self.btn_browse.setStyleSheet(self.btn_style_1)
+        self.btn_browse.setFont(self.font_l_15)
+
+        # Отображение найденных значений IP/PORT
+        self.label_ip = QtWidgets.QLabel("SERVER_IP:", self)
+        self.label_ip.setGeometry(QtCore.QRect(20, 85, 90, 20))
+        self.label_ip.setFont(self.font_l_12)
+
+        self.edit_ip = QtWidgets.QLineEdit(self)
+        self.edit_ip.setGeometry(QtCore.QRect(110, 85, 140, 22))
+        self.edit_ip.setFont(self.font_l_12)
+        self.edit_ip.setReadOnly(True)
+
+        self.label_port = QtWidgets.QLabel("SERVER_PORT:", self)
+        self.label_port.setGeometry(QtCore.QRect(260, 85, 100, 20))
+        self.label_port.setFont(self.font_l_12)
+
+        self.edit_port = QtWidgets.QLineEdit(self)
+        self.edit_port.setGeometry(QtCore.QRect(360, 85, 80, 22))
+        self.edit_port.setFont(self.font_l_12)
+        self.edit_port.setReadOnly(True)
+
+        # Кнопки OK / Отмена
+        self.btn_ok = QtWidgets.QPushButton("OK", self)
+        self.btn_ok.setGeometry(QtCore.QRect(190, 125, 100, 32))
+        self.btn_ok.setStyleSheet(self.btn_style_1)
+        self.btn_ok.setFont(self.font_l_15)
+
+        self.btn_cancel = QtWidgets.QPushButton("Отмена", self)
+        self.btn_cancel.setGeometry(QtCore.QRect(300, 125, 100, 32))
+        self.btn_cancel.setStyleSheet(self.btn_style_1)
+        self.btn_cancel.setFont(self.font_l_15)
+
+        # Сигналы
+        self.btn_browse.clicked.connect(self.on_browse)
+        self.btn_ok.clicked.connect(self.accept)
+        self.btn_cancel.clicked.connect(self.reject)
+
+    def on_browse(self):
+        path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Выберите файл usko-server.txt",
+            "./",
+            "Text files (*.txt);;All files (*.*)"
+        )
+        if path:
+            self.edt_path.setText(path)
+            # Попробуем заранее достать IP/PORT для отображения
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    text = f.read()
+                ip_match = re.search(r'SERVER_IP\s*=\s*["\']([^"\']+)["\']', text)
+                port_match = re.search(r'SERVER_PORT\s*=\s*(\d+)', text)
+                self.edit_ip.setText(ip_match.group(1) if ip_match else "")
+                self.edit_port.setText(port_match.group(1) if port_match else "")
+            except Exception as e:
+                print("Exception preview server config:", e)
+
+    def get_path(self) -> str:
+        return self.edt_path.text().strip()
+
+    def set_path(self, path: str):
+        self.edt_path.setText(path)
+
+    def set_values(self, ip: str, port):
+        if ip:
+            self.edit_ip.setText(str(ip))
+        if port:
+            self.edit_port.setText(str(port))
 
 
 class KumiteWindowsClose(QWidget, dialogWindow_Ui):

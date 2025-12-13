@@ -773,6 +773,20 @@ class KumiteMainWindow_Ui(QWidget):
         self.pyatnov_perebivka_btn = QtWidgets.QPushButton("Перебивка", self.frame_pyatnov_perebivka_qbx)
         self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka_qbx)
 
+        self.frame_overlay_status = QtWidgets.QFrame(self.Form2)
+        self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")
+        self.img_overlay_online = QtGui.QPixmap(":/Images/overlay_online.svg")
+        self.img_overlay_no_data = QtGui.QPixmap(":/Images/overlay_no_data.svg")
+        self.label_img_overlay_offline = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_online = QtWidgets.QLabel(self.frame_overlay_status)
+        self.label_img_overlay_no_data = QtWidgets.QLabel(self.frame_overlay_status)
+
+        self.frame_sportsmans_load_status = QtWidgets.QFrame(self.Form2)
+        self.img_sportsmans_not_loaded = QtGui.QPixmap(":/Images/sportsmans_not_loaded.svg")
+        self.img_spotrsmans_uploaded = QtGui.QPixmap(":/Images/spotrsmans_uploaded.svg")
+        self.label_img_sportsmans_not_loaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
+        self.label_img_spotrsmans_uploaded = QtWidgets.QLabel(self.frame_sportsmans_load_status)
+
         self.lbl_style_1 = css.lbl_style_1
         self.pers_com_qbx_style_1 = css.pers_com_qbx_style_1
 
@@ -1627,6 +1641,36 @@ class KumiteMainWindow_Ui(QWidget):
         self.layout2.setContentsMargins(0, 0, 0, 0)
         self.layout2.setSpacing(0)
 
+        self.frame_overlay_status.setGeometry(QtCore.QRect(870, 5, 15, 10))
+        self.frame_overlay_status.setStyleSheet("background-color: none;")
+        self.frame_overlay_status.setObjectName("overlay_status_label")
+
+        self.label_img_overlay_offline.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_overlay_offline.setObjectName("label_img_overlay_offline")
+        self.label_img_overlay_offline.setPixmap(self.img_overlay_offline)
+
+        self.label_img_overlay_online.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_overlay_online.setObjectName("label_img_overlay_online")
+        self.label_img_overlay_online.setPixmap(self.img_overlay_online)
+
+        self.label_img_overlay_no_data.setGeometry(QtCore.QRect(0, 0, 15, 10))
+        self.label_img_overlay_no_data.setObjectName("label_img_overlay_no_data")
+        self.label_img_overlay_no_data.setPixmap(self.img_overlay_no_data)
+
+        self.frame_sportsmans_load_status.setGeometry(QtCore.QRect(885, 5, 15, 10))
+        self.frame_sportsmans_load_status.setStyleSheet("background-color: none;")
+        self.frame_sportsmans_load_status.setObjectName("frame_sportsmans_load_status")
+
+        self.label_img_sportsmans_not_loaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_sportsmans_not_loaded.setObjectName("label_img_sportsmans_not_loaded")
+        self.label_img_sportsmans_not_loaded.setPixmap(self.img_sportsmans_not_loaded)
+
+        self.label_img_spotrsmans_uploaded.setGeometry(QtCore.QRect(0, 0, 10, 10))
+        self.label_img_spotrsmans_uploaded.setObjectName("label_img_spotrsmans_uploaded")
+        self.label_img_spotrsmans_uploaded.setPixmap(self.img_spotrsmans_uploaded)
+
+        self.label_img_spotrsmans_uploaded.hide()
+
         self.setWindowFlags(Qt.FramelessWindowHint)
 
     def isShowSportsmanName(self, resetSportsmanFrame=1):
@@ -1758,8 +1802,12 @@ class KumiteMainWindow_Ui(QWidget):
             self.lcd1.display(str(self.tics).split()[1])
             self.KumiteSecondWindow.lcd2.display(str(self.tics).split()[1])
 
+            self.winnerRed.setDisabled(False)
+            self.winnerWhite.setDisabled(False)
+
     def start_timer(self):
         self.show_screen()
+        self.resetSportsmanFramePosition()
         if self.btn_start.text() == '► START':
             self.btn_start.setText('▇ STOP')
             self.timer.start(1000)
@@ -1772,6 +1820,9 @@ class KumiteMainWindow_Ui(QWidget):
             # Также блокируем нажатие кнопки "Перебивка" чтобы нельзя было её снять, пока идёт бой
             self.pyatnov_perebivka_qbx.setDisabled(True)
             self.pyatnov_perebivka_btn.setDisabled(True)
+
+            self.winnerRed.setDisabled(True)
+            self.winnerWhite.setDisabled(True)
         else:
             self.timer.stop()
             self.btn_start.setText('► START')
@@ -1781,11 +1832,14 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_reset.setFont(self.font_m_13)
             self.btn_pause.setStyleSheet(self.btn_style_1)
             self.btn_reset.setStyleSheet(self.btn_style_1)
+
+            self.winnerRed.setDisabled(False)
+            self.winnerWhite.setDisabled(False)
         self.isShowSportsmanName()
 
     def reset_timer(self):
         self.show_screen()
-        if self.btn_start.text() != '► START':
+        if self.btn_start.text() == '▇ STOP':
             self.btn_pause.setText('Останови бой')
             self.btn_pause.setStyleSheet("color: red")
             self.btn_pause.setToolTip('Сперва нужно остановить бой')
@@ -1803,7 +1857,7 @@ class KumiteMainWindow_Ui(QWidget):
 
     def clearKumiteData(self):
         self.show_screen()
-        if self.btn_start.text() != '► START':
+        if self.btn_start.text() == '▇ STOP':
             self.btn_reset.setText('Останови бой')
             self.btn_reset.setStyleSheet("color: red")
             self.btn_pause.setToolTip('Сперва нужно остановить бой')
@@ -1903,7 +1957,8 @@ class KumiteMainWindow_Ui(QWidget):
         self.label_region_white_1.setText("регион")
         self.lineEdit_name_red_1.clear()
         self.lineEdit_name_white_1.clear()
-        self.comboBox_name_red_1.clear()
+        # self.comboBox_name_red_1.clear()
+        # self.comboBox_name_white_1.clear()
         try:
             self.lineEdit_region_red_1.lineEdit().clear()
             self.lineEdit_region_white_1.lineEdit().clear()
@@ -1944,6 +1999,16 @@ class KumiteMainWindow_Ui(QWidget):
     def setWinner(self):
         self.show_screen()
         radio = self.sender()
+        if self.btn_start.text() == '▇ STOP':
+            self.btn_reset.setText('Останови бой')
+            self.btn_reset.setStyleSheet("color: red")
+            self.winnerRed.setAutoExclusive(False)
+            self.winnerWhite.setAutoExclusive(False)
+            self.winnerRed.setChecked(False)
+            self.winnerWhite.setChecked(False)
+            self.winnerRed.setAutoExclusive(True)
+            self.winnerWhite.setAutoExclusive(True)
+            return ''
         if radio.isChecked():
             if radio.text() == "Победил АКА":
                 self.KumiteSecondWindow.frame_red2.setGeometry(self.KumiteSWindow_Ui.coo_frame_win)

@@ -16,6 +16,11 @@
   <file>Images/radiobutton_checked_hover.png</file>
   <file>Images/radiobutton_checked_pressed.png</file>
   <file>Images/emblem_usko.png</file>
+  <file>Images/overlay_offline.svg</file>
+  <file>Images/overlay_online.svg</file>
+  <file>Images/overlay_no_data.svg</file>
+  <file>Images/sportsmans_not_loaded.svg</file>
+  <file>Images/spotrsmans_uploaded.svg</file>
   <file>Images/emblem_vbe_rus.png</file>
   <file>Images/emblem_vbe_msk.png</file>
   <file>Images/icon_regions/flags</file>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Tatami Overlay</title>
+  <style>
+  /* Подключаем наши Gotham-шрифты */
+  @font-face {
+    font-family: 'Gotham-Light';
+    src: url('Gotham-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Gotham-Medium';
+    src: url('Gotham-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'Gotham-Bold';
+    src: url('Gotham-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+
+  /* Базовый шрифт по умолчанию – Gotham-Light с fallback’ами */
+  body {
+    margin: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0);
+    overflow: hidden;
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #fff;
+  }
+
+  /* Вспомогательные классы под стилистику проекта */
+  .font-light {
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 300;
+  }
+  .font-medium {
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 500;
+  }
+  .font-bold {
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-weight: 700;
+  }
+
+  .container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;               /* растягиваем по ширине окна */
+    padding: 10px 32px;
+    box-sizing: border-box; /* чтобы паддинги не расширяли блок */
+    border-radius: 0 0 12px 12px;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-size: 20px;
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+
+  .top-left,
+  .top-center,
+  .top-right {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .top-left {
+    min-width: 180px;
+  }
+
+  .top-center {
+    flex: 1;
+    align-items: center;
+    text-align: center;
+  }
+
+  .top-right {
+    min-width: 160px;
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  #tatami {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .timer {
+    margin-top: 2px;
+    font-size: 20px;
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-align: center;
+  }
+
+  /* --- БОЙЦЫ --- */
+  .fighters {
+    margin-top: 8px;
+    display: flex;          /* один ряд */
+    width: 100%;
+    gap: 16px;              /* расстояние между АКА и СИРО */
+    align-items: stretch;
+  }
+
+  .fighter {
+    flex: 1 1 40%;          /* каждая сторона занимает половину ширины */
+    display: flex;
+    height: 56px;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.34);
+  }
+
+  .fighter .flag {
+    width: 52px;
+    min-width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+    display: none;
+    margin: 0 6px;
+  }
+
+  .fighter .flag img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;         /* аккуратно вписывает картинку */
+    display: block;
+  }
+
+  /* ЦЕНТРАЛЬНАЯ КОЛОНКА */
+  .fighter-center {
+    flex: 0 1 20%;
+    display: flex;
+    height: 56px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Таймер по центру */
+  .center-timer {
+    font-size: 28px;
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-shadow:
+        -2px -2px 3px rgba(0,0,0,0.95),
+         2px -2px 3px rgba(0,0,0,0.95),
+        -2px  2px 3px rgba(0,0,0,0.95),
+         2px  2px 3px rgba(0,0,0,0.95);
+  }
+
+  /* AKA: сначала счёт, потом имя, всё слева */          /* ← изменено */
+  .fighter.aka {
+    justify-content: flex-start;
+  }
+  .fighter.aka .score {                                   /* ← изменено */
+    margin-right: 8px;
+    text-align: left;
+  }
+  .fighter.aka .name {                                    /* ← изменено */
+    text-align: left;
+  }
+
+  /* SIRO: имя + счёт прижаты к правому краю */           /* ← изменено */
+  .fighter.siro {
+    justify-content: flex-end;
+  }
+  .fighter.siro .name {                                   /* ← изменено */
+    text-align: right;
+  }
+  /* .score для Siro остаётся right из общего правила */
+
+
+  .fighter-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+
+  /* регион чуть меньше, с лёгкой прозрачностью */
+  .region {
+    margin-top: 2px;
+    font-size: 16px;
+    opacity: 0.9;
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-shadow:
+      -1px -1px 2px rgba(0,0,0,0.85),
+       1px -1px 2px rgba(0,0,0,0.85),
+      -1px  1px 2px rgba(0,0,0,0.85),
+       1px  1px 2px rgba(0,0,0,0.85);
+  }
+
+  /* для SIRO текст должен быть справа */
+  .fighter.siro .fighter-info {
+    text-align: right;
+    align-items: flex-end;
+  }
+
+  .aka { color: #ff6b6b; }
+  .siro { color: #f1f2f6; }
+
+  .name {
+    font-size: 30px;
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-shadow:
+      -1px -1px 2px rgba(0,0,0,0.85),
+       1px -1px 2px rgba(0,0,0,0.85),
+      -1px  1px 2px rgba(0,0,0,0.85),
+       1px  1px 2px rgba(0,0,0,0.85);
+  }
+  /* ПРАВАЯ КОЛОНКА — крупная сумма баллов */
+  .fighter-total {
+    flex: 0 1 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.08);
+    /*padding: 8px 12px;*/
+  }
+
+  .total-label {
+    font-size: 18px;
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    opacity: 0.8;
+  }
+
+  .total-value {
+    font-size: 42px;
+    line-height: 1;
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    text-shadow:
+        -2px -2px 3px rgba(0,0,0,0.95),
+         2px -2px 3px rgba(0,0,0,0.95),
+        -2px  2px 3px rgba(0,0,0,0.95),
+         2px  2px 3px rgba(0,0,0,0.95);
+  }
+
+  .score {
+    font-size: 26px;
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-width: 40px;
+    text-align: right;
+    text-shadow:
+      -2px -2px 3px rgba(0,0,0,0.95),
+       2px -2px 3px rgba(0,0,0,0.95),
+      -2px  2px 3px rgba(0,0,0,0.95),
+       2px  2px 3px rgba(0,0,0,0.95);
+  }
+
+  .winner {
+    margin-top: 4px;
+    font-size: 16px;
+    text-align: left;
+    color: #ffeaa7;
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .fighter.winner {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+  }
+
+  #discipline {
+    font-weight: 500;
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .scores {
+    margin-top: 4px;
+    font-size: 16px;
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .sum {
+    margin-top: 2px;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Gotham-Bold', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  .penalties-row {
+    display: none;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 13px;
+    width: 100%;
+    text-shadow:
+      -1px -1px 3px rgba(0,0,0,0.95),
+       2px -1px 3px rgba(0,0,0,0.95),
+      -1px  2px 3px rgba(0,0,0,0.95),
+       2px  2px 3px rgba(0,0,0,0.95);
+  }
+
+  .penalties {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-family: 'Gotham-Light', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    opacity: 0.9;
+  }
+
+  .penalties-aka {
+    color: #ffb3b3;
+    justify-content: flex-start;
+  }
+
+  .penalties-siro {
+    color: #dfe6ff;
+    justify-content: flex-end;
+  }
+
+  .pen-label {
+    text-transform: uppercase;
+    font-size: 15px;
+  }
+
+  .pen-value {
+    font-family: 'Gotham-Medium', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    width: 80px;
+    text-align: center;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+
+  .pen-sep {
+    width: 38px;
+  }
+
+  .pen-dots {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: 8px;     /* “после названия/значения” */
+    align-items: center;
+  }
+
+  .pen-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    /*border: 2px solid rgba(255,255,255,0.95);*/
+    background: transparent;
+    box-sizing: border-box;
+  }
+  .penalties-aka .pen-dot {
+    border: 2px solid rgba(255, 179, 179, 0.95);
+  }
+  .penalties-siro .pen-dot {
+    border: 2px solid rgba(255,255,255,0.95);
+  }
+
+  .penalties-aka .pen-dot.filled {
+    background: rgba(255, 179, 179, 0.95);
+  }
+  .penalties-siro .pen-dot.filled {
+    background: rgba(255,255,255,0.95);
+  }
+
+
+  .winner-fullscreen {
+    position: fixed;
+    inset: 0;
+    display: none;              /* по умолчанию скрыт */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.15), rgba(0,0,0,0.85));
+    z-index: 999;               /* выше всего */
+  }
+
+  .winner-full-inner {
+    max-width: 80%;
+  }
+
+  .winner-label {
+    font-size: 42px;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .winner-name {
+    font-size: 56px;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .winner-region {
+    font-size: 28px;
+    opacity: 0.9;
+  }
+
+  /* Основной контейнер строки победителя */
+  .winner-row {
+    display: flex;
+    flex-direction: column;   /* ← ВАЖНО */
+    align-items: center;
+    gap: 18px;
+    margin-top: 20px;
+  }
+  .winner-top {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    justify-content: center;
+    max-width: 100%;
+  }
+  .winner-bottom{
+    display:none;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    width: 100%;
+    flex-wrap: wrap;             /* если вдруг совсем узко — перенос */
+  }
+  /* Большой счёт/сумма слева */
+.winner-score-big{
+  width: 220px;
+  height: 220px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.95);
+  color: #000;
+  display: none;                 /* показываем из JS */
+  align-items: center;
+  justify-content: center;
+  font-family: 'Gotham-Bold', system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 180px;
+  line-height: 1;
+}
+
+
+/* Правая панель (штрафы/сумма) */
+.winner-sidepanel{
+  display:none;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.95);
+  color: #000;
+  min-width: 360px;
+}
+
+/* Ката-панель */
+.winner-kata-panel .winner-panel-label{
+  font-size: 28px;
+  opacity: .65;
+  margin-bottom: 6px;
+}
+.winner-kata-panel .winner-panel-value{
+  font-size: 74px;
+  font-family: 'Gotham-Bold', system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1;
+}
+
+/* Штрафы */
+.winner-penalties{
+  display:none;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.winner-pen-line{
+  display:flex;
+  align-items:center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* ВОТ ТУТ: жирные именно H/M и J */
+.winner-pen-left{
+  font-family: 'Gotham-Bold', system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 64px;
+  line-height: 1;
+  color: rgba(0,0,0,0.45);
+  width: 150px;
+}
+
+
+  /* Круглый флажок победителя */
+  .winner-logo {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #ffffff;
+    display: none; /* Показывается в JS, если есть картинка */
+    flex-shrink: 0; /* Чтобы не сжимался */
+    box-shadow: 0 0 18px rgba(0,0,0,0.4);
+  }
+
+  .winner-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Блок с текстом победителя */
+  .winner-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; /* чтобы выравнивался по левому краю */
+  }
+
+  .winner-pen-right{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .winner-pen-text{
+    display: inline-block;
+    width: 110px;          /* фиксируем по ширине — не будет “скачков” */
+    font-size: 34px;
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+
+
+
+
+  /* Цветовая тема по стороне */
+  .winner-fullscreen.aka-side {
+    background: radial-gradient(circle at center, rgba(255, 80, 80, 0.25), rgba(0,0,0,0.9));
+  }
+  .winner-fullscreen.siro-side {
+    background: radial-gradient(circle at center, rgba(160, 190, 255, 0.25), rgba(0,0,0,0.9));
+  }
+</style>
+</head>
+<body>
+<!-- Обычное табло -->
+<div class="container" id="overlay-main">
+  <!-- Верхняя панель: категория слева, татами + таймер по центру, дисциплина справа -->
+  <div class="top-bar">
+    <div class="top-left">
+      <div class="title" id="category">Категория</div>
+      <div class="subtitle" id="round">Раунд</div>
+    </div>
+    <div class="top-center">
+      <div class="subtitle" id="tatami">Татами</div>
+    </div>
+    <div class="top-right">
+      <div class="subtitle" id="discipline">Вид:</div>
+    </div>
+  </div>
+
+  <!-- Бойцы: по всей ширине, слева AKA, справа SIRO -->
+  <div class="fighters">
+    <div class="fighter aka" id="aka_row">
+      <div class="score" id="aka_score"></div>
+      <div class="flag" id="aka_flag"></div>
+
+      <div class="fighter-info">
+        <div class="name" id="aka_name"></div>
+        <div class="region" id="aka_region"></div>
+      </div>
+    </div>
+
+    <div class="fighter-center">
+      <div class="center-timer" id="timer">00:00</div>
+    </div>
+
+    <div class="fighter siro" id="siro_row">
+      <div class="fighter-info">
+        <div class="name" id="siro_name"></div>
+        <div class="region" id="siro_region"></div>
+      </div>
+
+      <div class="flag" id="siro_flag"></div>
+      <div class="score" id="siro_score"></div>
+    </div>
+
+    <div class="fighter-total" id="final_total_row" style="display:none;">
+      <div class="total-label">Сумма</div>
+      <div class="total-value" id="final_total_value">00.0</div>
+    </div>
+  </div>
+
+  <!-- Строка штрафов: по всей ширине, слева Ака, справа Сиро -->
+  <div class="penalties-row">
+    <div class="penalties penalties-aka">
+      <span class="pen-label">H/M</span>
+      <span class="pen-value" id="aka_pen_hm"></span>
+      <span class="pen-dots" id="aka_pen_hm_dots"></span>
+
+      <span class="pen-sep"></span>
+
+      <span class="pen-label">J</span>
+      <span class="pen-value" id="aka_pen_j"></span>
+      <span class="pen-dots" id="aka_pen_j_dots"></span>
+    </div>
+
+    <div class="penalties penalties-siro">
+
+      <span class="pen-dots" id="siro_pen_j_dots"></span>
+      <span class="pen-value" id="siro_pen_j"></span>
+      <span class="pen-label">J</span>
+
+      <span class="pen-sep"></span>
+
+      <span class="pen-dots" id="siro_pen_hm_dots"></span>
+      <span class="pen-value" id="siro_pen_hm"></span>
+      <span class="pen-label">H/M</span>
+    </div>
+  </div>
+
+  <!-- Для ката финал: оценки и сумма -->
+  <div class="scores" id="scores"></div>
+  <div class="sum" id="sum"></div>
+</div>
+
+<!-- FULLSCREEN экран победителя -->
+<div class="winner-fullscreen" id="overlay-winner">
+  <div class="winner-full-inner">
+
+    <div class="winner-label font-medium">ПОБЕДИТЕЛЬ</div>
+
+    <div class="winner-row">
+
+      <!-- верх: лого + ФИО + регион -->
+      <div class="winner-top">
+        <div class="winner-logo" id="winner_full_logo"></div>
+
+        <div class="winner-text">
+          <div class="winner-name font-bold" id="winner_full_name"></div>
+          <div class="winner-region font-light" id="winner_full_region"></div>
+        </div>
+      </div>
+
+      <!-- низ: очки/сумма + штрафы -->
+      <div class="winner-bottom" id="winner_bottom" style="display:none;">
+        <div class="winner-score-big" id="winner_score_big" style="display:none;">0</div>
+
+        <div class="winner-sidepanel" id="winner_sidepanel" style="display:none;">
+          <div class="winner-kata-panel" id="winner_kata_panel" style="display:none;">
+            <div class="winner-panel-label">Сумма</div>
+            <div class="winner-panel-value" id="winner_kata_sum">00.0</div>
+          </div>
+
+          <div class="winner-penalties" id="winner_penalties" style="display:none;">
+            <div class="winner-pen-line">
+              <div class="winner-pen-left">H/M</div>
+              <div class="winner-pen-right">
+                <span class="winner-pen-text" id="winner_pen_hm_text"></span>
+                <span class="pen-dots" id="winner_pen_hm_dots"></span>
+              </div>
+            </div>
+
+            <div class="winner-pen-line">
+              <div class="winner-pen-left">J</div>
+              <div class="winner-pen-right">
+                <span class="winner-pen-text" id="winner_pen_j_text"></span>
+                <span class="pen-dots" id="winner_pen_j_dots"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>
+
+
+<script src="/usko-overlay-server-script.js"></script>
+</body>
+
+</html>
