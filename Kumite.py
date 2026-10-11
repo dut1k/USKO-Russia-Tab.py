@@ -2,18 +2,50 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, QPoint
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QHBoxLayout
 from PyQt5.QtMultimedia import QSound
+from PyQt5.QtSvg import QSvgRenderer
 from datetime import datetime, timedelta
 import styleCSS as css
+from adaptive_display import AdaptiveDisplay
 
 
 class RoundedLabel(QtWidgets.QLabel):
     """Класс для создания круглых иконок флагов регионов"""
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, rounded=True):
         super(RoundedLabel, self).__init__(parent)
+        self._svg_renderer = None
+        self._rounded = rounded
         self.setScaledContents(True)
 
+    def setSvg(self, resource_path):
+        # SVG остаётся вектором до paintEvent: сцене может потребоваться 4K
+        # или повышенная плотность пикселей. Исходные файлы флагов не меняем.
+        if self._svg_renderer is None:
+            self._svg_renderer = QSvgRenderer(self)
+        if not self._svg_renderer.load(resource_path):
+            self.setPixmap(QtGui.QPixmap(resource_path))
+            return
+        self.update()
+
+    def paintEvent(self, event):
+        if self._svg_renderer is None:
+            super().paintEvent(event)
+            return
+        painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing, True)
+        if self._rounded:
+            # Та же круговая маска 80×80, но в логических координатах виджета:
+            # Qt масштабирует её вместе с флагом без промежуточного растра.
+            clip_path = QtGui.QPainterPath()
+            clip_path.addRoundedRect(QtCore.QRectF(self.rect()), 40, 40)
+            painter.setClipPath(clip_path)
+        self._svg_renderer.render(painter, QtCore.QRectF(self.rect()))
+        painter.end()
+
     def setPixmap(self, pixmap):
-        # Create a rounded mask
+        if self._svg_renderer is not None:
+            self._svg_renderer.deleteLater()
+            self._svg_renderer = None
+        # Растровый путь сохраняется для пустого флага и старых вызовов setPixmap.
         mask = QtGui.QPixmap(pixmap.size())
         mask.fill(QtCore.Qt.transparent)
         painter = QtGui.QPainter(mask)
@@ -192,13 +224,12 @@ class KumiteSWindow_Ui(object):
         self.icon_white = RoundedLabel(self.flag_white)
         self.icon_red = RoundedLabel(self.flag_red)
         ########################
-        self.icon_white_frame = QtWidgets.QLabel(self.flag_white)
-        self.icon_red_frame = QtWidgets.QLabel(self.flag_red)
+        self.icon_white_frame = RoundedLabel(self.flag_white, rounded=False)
+        self.icon_red_frame = RoundedLabel(self.flag_red, rounded=False)
 
 
         self.img_empty = QtGui.QPixmap(":/Images/Empty.png")
         self.img_white = QtGui.QPixmap()
-        self.img_curcle = QtGui.QPixmap(":/Images/icon_regions/flags/00_Curcle.svg")
         self.img_red = QtGui.QPixmap()
 
         self.flag_white.setGeometry(QtCore.QRect(1760, 0, 80, 80))
@@ -212,7 +243,7 @@ class KumiteSWindow_Ui(object):
 
         self.icon_white_frame.setGeometry(QtCore.QRect(0, 0, 80, 80))
         self.icon_white_frame.setObjectName("icon_white_frame")
-        self.icon_white_frame.setPixmap(self.img_curcle)
+        self.icon_white_frame.setSvg(":/Images/icon_regions/flags/00_Curcle.svg")
 
         self.icon_red.setGeometry(QtCore.QRect(0, 0, 80, 80))
         self.icon_red.setObjectName("icon_red")
@@ -220,7 +251,7 @@ class KumiteSWindow_Ui(object):
 
         self.icon_red_frame.setGeometry(QtCore.QRect(0, 0, 80, 80))
         self.icon_red_frame.setObjectName("icon_red_frame")
-        self.icon_red_frame.setPixmap(self.img_curcle)
+        self.icon_red_frame.setSvg(":/Images/icon_regions/flags/00_Curcle.svg")
 
         self.frame_hm_red.setGeometry(QtCore.QRect(0, 5, 880, 170))
         self.frame_hm_red.setStyleSheet("background-color: None;")
@@ -512,10 +543,11 @@ class KumiteSWindow_Ui(object):
         self.label_name_red_2.setText(_translate("Form", ""))
 
 
-class KumiteSecondWindow(QWidget, KumiteSWindow_Ui):
+class KumiteSecondWindow(AdaptiveDisplay, KumiteSWindow_Ui):
     def __init__(self):
         super().__init__()
-        self.setupUi2(self)
+        self.setupUi2(self.canvas)
+        self.mount_canvas()
 
 
 class Frame_Header(QWidget):
@@ -772,6 +804,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_pyatnov_perebivka_qbx = QtWidgets.QFrame(self.frame_pyatnov_perebivka)
         self.pyatnov_perebivka_btn = QtWidgets.QPushButton("Перебивка", self.frame_pyatnov_perebivka_qbx)
         self.pyatnov_perebivka_qbx = QtWidgets.QCheckBox(self.frame_pyatnov_perebivka_qbx)
+
+        self.btn_refresh_display_position = QtWidgets.QPushButton(self.Form2)
+        self.btn_refresh_display_position.setGeometry(QtCore.QRect(855, 5, 10, 10))
+        self.btn_refresh_display_position.setCursor(QtCore.Qt.PointingHandCursor)
+        self.btn_refresh_display_position.setToolTip("Обновить позицию окон")
+        self.btn_refresh_display_position.setStyleSheet(css.btn_refresh_display_position)
 
         self.frame_overlay_status = QtWidgets.QFrame(self.Form2)
         self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")
@@ -1629,8 +1667,12 @@ class KumiteMainWindow_Ui(QWidget):
         self.timeRound()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_time)
-        self.sound_gong1 = QSound(":/Audio/gong1.wav")
-        self.sound_gong2 = QSound(":/Audio/gong2.wav")
+        # self.sound_gong1 = QSound(":/Audio/gong1.wav")
+        # self.sound_gong2 = QSound(":/Audio/gong2.wav")
+        # self.sound_gong1 = QSound(":/Audio/gong1-new.wav")
+        # self.sound_gong2 = QSound(":/Audio/gong2-new.wav")
+        self.sound_gong1 = QSound(":/Audio/gong_x2.wav")
+        self.sound_gong2 = QSound(":/Audio/gong_x1.wav")
         self.slider.valueChanged.connect(self.timeRound)
 
         self.Frame_Header = Frame_Header(self)
@@ -2245,10 +2287,10 @@ class KumiteMainWindow_Ui(QWidget):
                 self.KumiteSecondWindow.flag_white.show()
                 self.KumiteSecondWindow.flag_red.show()
 
-                img_white = QtGui.QPixmap(f":/Images/icon_regions/flags/{self.flags_dict[region_white]}.svg")
-                img_red = QtGui.QPixmap(f":/Images/icon_regions/flags/{self.flags_dict[region_red]}.svg")
-                self.KumiteSecondWindow.icon_white.setPixmap(img_white)
-                self.KumiteSecondWindow.icon_red.setPixmap(img_red)
+                self.KumiteSecondWindow.icon_white.setSvg(
+                    f':/Images/icon_regions/flags/{self.flags_dict[region_white]}.svg')
+                self.KumiteSecondWindow.icon_red.setSvg(
+                    f':/Images/icon_regions/flags/{self.flags_dict[region_red]}.svg')
             else:
                 self.KumiteSecondWindow.label_name_white_2.setGeometry(self.KumiteSecondWindow.coo_label_name_white)
                 self.KumiteSecondWindow.label_name_red_2.setGeometry(self.KumiteSecondWindow.coo_label_name_red)

@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
 import styleCSS as css
+from adaptive_display import AdaptiveDisplay
 
 
 class KataQual_SecondWindow_Ui(object):
@@ -138,10 +139,11 @@ class KataQual_SecondWindow_Ui(object):
         self.label_winner.setText(_translate("Form22", "ПОБЕДИТЕЛЬ"))
 
 
-class KataQual_SecondWindow(QWidget, KataQual_SecondWindow_Ui):
+class KataQual_SecondWindow(AdaptiveDisplay, KataQual_SecondWindow_Ui):
     def __init__(self):
         super().__init__()
-        self.setupUi2(self)
+        self.setupUi2(self.canvas)
+        self.mount_canvas()
 
 
 class Frame_Header(QWidget):
@@ -296,6 +298,12 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.pyatnov_label = QtWidgets.QLabel("Выберите пару", self.frame_pyatnov)
         self.pyatnov_name = QtWidgets.QComboBox(self.frame_pyatnov)
+
+        self.btn_refresh_display_position = QtWidgets.QPushButton(self.Form21)
+        self.btn_refresh_display_position.setGeometry(QtCore.QRect(855, 5, 10, 10))
+        self.btn_refresh_display_position.setCursor(QtCore.Qt.PointingHandCursor)
+        self.btn_refresh_display_position.setToolTip("Обновить позицию окон")
+        self.btn_refresh_display_position.setStyleSheet(css.btn_refresh_display_position)
 
         self.frame_overlay_status = QtWidgets.QFrame(self.Form21)
         self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")

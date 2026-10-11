@@ -422,6 +422,18 @@ lbl_style_1 = """
         color: black;
     """
 
+# Кнопка обновления позиции экрана
+btn_refresh_display_position = """
+QPushButton {
+    border: none;
+    background-image: url(:/Images/refresh_display.svg);
+}
+QPushButton:hover {
+    background-image: url(:/Images/refresh_display_hover.svg);
+}
+"""
+
+
 #################################################################
 # Стиль текста
 #################################################################

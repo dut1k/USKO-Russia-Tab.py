@@ -5,6 +5,8 @@
   <file>Fonts/Gotham-Bold.ttf</file>
   <file>Audio/gong1.wav</file>
   <file>Audio/gong2.wav</file>
+  <file>Audio/gong_x1.wav</file>
+  <file>Audio/gong_x2.wav</file>
   <file>Images</file>
   <file>Images/Empty.png</file>
   <file>Images/icon.ico</file>

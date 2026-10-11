@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
 import styleCSS as css
+from adaptive_display import AdaptiveDisplay
 
 
 class KataSecondWindow_Ui(object):
@@ -162,10 +163,11 @@ class KataSecondWindow_Ui(object):
         self.label_name_red_2.setText(_translate("Form12", "ФАМИЛИЯ"))
 
 
-class KataSecondWindow(QWidget, KataSecondWindow_Ui):
+class KataSecondWindow(AdaptiveDisplay, KataSecondWindow_Ui):
     def __init__(self):
         super().__init__()
-        self.setupUi_Kata2(self)
+        self.setupUi_Kata2(self.canvas)
+        self.mount_canvas()
 
     def Extream_Value(self):
         q1 = self.input_referee1.text()
@@ -422,6 +424,12 @@ class KataMainWindow_Ui(QWidget):
         self.pfss_pixmap_label.setPixmap(self.pfss_pixmap2)
         self.pfss_pair_name = QtWidgets.QLabel("Иванов - Петров", self.frame_paytnov_file_save_status)
         self.pfss_status = QtWidgets.QLabel("Сохранение в файл...", self.frame_paytnov_file_save_status)
+
+        self.btn_refresh_display_position = QtWidgets.QPushButton(self.Form11)
+        self.btn_refresh_display_position.setGeometry(QtCore.QRect(855, 5, 10, 10))
+        self.btn_refresh_display_position.setCursor(QtCore.Qt.PointingHandCursor)
+        self.btn_refresh_display_position.setToolTip("Обновить позицию окон")
+        self.btn_refresh_display_position.setStyleSheet(css.btn_refresh_display_position)
 
         self.frame_overlay_status = QtWidgets.QFrame(self.Form11)
         self.img_overlay_offline = QtGui.QPixmap(":/Images/overlay_offline.svg")
