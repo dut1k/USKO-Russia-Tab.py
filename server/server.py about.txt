@@ -1,6 +1,0 @@
-сделать из server.py -> exe файл
-
-
-#pip install fastapi "uvicorn[standard]" pyinstaller
-
-pyinstaller --onefile --name usko-overlay-server server.py
