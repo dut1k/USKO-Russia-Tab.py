@@ -3254,6 +3254,11 @@ class MenuWindow(QWidget, Ui_Form0):
         try:
             sender = self.sender()
             if sender in (self.ui_kataQual.winnerRed, self.ui_kataQual.winnerWhite):
+                # toggled приходит и при снятии отметки, в том числе до обновления
+                # ФИО новой пары. Такое событие не должно объявлять старого победителя
+                # или заново подготавливать его результат для протокола Пятнова.
+                if not sender.isChecked():
+                    return
                 if sender == self.ui_kataQual.winnerRed:
                     self.ui_kataQual.setWinnerRed()
                 elif sender == self.ui_kataQual.winnerWhite:
