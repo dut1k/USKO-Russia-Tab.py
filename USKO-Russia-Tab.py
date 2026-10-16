@@ -1161,6 +1161,9 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.ui_kumite.reset_all(self.flags_dict)
 
+        # Финал использует готовые SVG из того же справочника регионов.
+        self.ui_kataFinal.flags_dict = self.flags_dict
+
         self.sportsmans_load_status_frame()
 
     # Обновление позиции мониторов по нажатию кнопки

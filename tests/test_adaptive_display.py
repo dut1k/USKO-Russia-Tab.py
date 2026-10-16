@@ -247,6 +247,63 @@ class AdaptiveDisplayTests(unittest.TestCase):
                 actual = window.viewport().grab().toImage()
                 self.assertEqual(actual, expected)
 
+    def test_final_region_changes_and_clear_remove_previous_flag(self):
+        control = KataMainWindow_Ui()
+        self.addCleanup(control.close)
+        self.addCleanup(control.KataSecondWindow.close)
+        self.addCleanup(control.deleteLater)
+        control.flags_dict = {'московскаяобласть': '50', 'республикасевернаяосетия': '15'}
+        control.matchName1.setText('Татами №7, Юноши 14–15 лет')
+        window = control.KataSecondWindow
+        for region in ('Московская область', 'Республика Северная Осетия', 'Неизвестный регион'):
+            control.lineEdit_name_red_1.setText('Петров Александр')
+            control.lineEdit_region_red_1.addItem(region)
+            control.lineEdit_region_red_1.setCurrentText(region)
+            control.setSportsmanName()
+            self.assertEqual(window.label_region_red_2.text(), region)
+            self.assertEqual(window.flag_red.isHidden(), region == 'Неизвестный регион')
+            self.assertEqual(window.matchName2.text().count('Татами №7'), 1)
+        control.clearKataData()
+        self.assertTrue(window.flag_red.isHidden())
+        self.assertEqual(window.label_sum2.text(), '')
+        self.assertEqual(window.label_name_red_2.text(), 'ФАМИЛИЯ')
+
+    def test_final_excluded_marks_clear_on_edit_and_reset(self):
+        control = KataMainWindow_Ui()
+        self.addCleanup(control.close)
+        self.addCleanup(control.KataSecondWindow.close)
+        self.addCleanup(control.deleteLater)
+        window = control.KataSecondWindow
+        for index, value in enumerate(('7.8', '8.1', '8.2', '8.0', '8.4', '0.0', '0.0'), 1):
+            getattr(control, f'lineEdit_referee{index}').setText(value)
+        control.calcResult()
+        self.assertEqual(window.label_sum2.text(), '24.3')
+        self.assertTrue(window.input_referee1.font().strikeOut())
+        self.assertTrue(window.input_referee5.font().strikeOut())
+        self.assertEqual(window.score_notes[0].text(), 'мин. исключён')
+        self.assertTrue(window.score_panels[6].isHidden())
+        control.lineEdit_referee1.setText('8.3')
+        self.assertFalse(window.input_referee1.font().strikeOut())
+        self.assertTrue(all(not note.text() for note in window.score_notes))
+        control.clearKataData()
+        self.assertTrue(all(not getattr(window, f'input_referee{i}').text() for i in range(1, 8)))
+        self.assertFalse(window.score_panels[6].isHidden())
+
+    def test_final_long_text_fits_with_vector_flag_at_all_sizes(self):
+        window = self.make_window(KataSecondWindow)
+        name = 'Александров-Константинопольский Александр Александрович'
+        region = 'Республика Северная Осетия — Алания'
+        window.set_athlete(name, region, '15')
+        for width, height in ((1920, 1080), (1366, 768), (1280, 1024), (3840, 2160)):
+            self.assert_fits(window, width, height)
+            for label in (window.label_name_red_2, window.label_region_red_2):
+                bounds = label.fontMetrics().boundingRect(label.contentsRect(), QtCore.Qt.TextWordWrap, label.text())
+                self.assertLessEqual(bounds.width(), label.width())
+                self.assertLessEqual(bounds.height(), label.height())
+            self.assertLess(window.flag_red.geometry().right(), window.label_name_red_2.x())
+            self.assertLess(window.label_name_red_2.geometry().bottom(), window.region_line.y())
+            self.assertLess(window.label_region_red_2.geometry().bottom(), window.score_panels[0].y())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -3,164 +3,132 @@ from PyQt5.QtCore import QPoint, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QVBoxLayout
 import styleCSS as css
 from adaptive_display import AdaptiveDisplay
+from PyQt5.QtSvg import QSvgRenderer
+
+
+class RegionFlag(QtWidgets.QWidget):
+    """Готовый SVG региона и рамка остаются векторными до отрисовки."""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.renderer = QSvgRenderer(self)
+        self.frame_renderer = QSvgRenderer(':/Images/icon_regions/flags/00_Curcle.svg', self)
+        self.hide()
+
+    def set_region(self, code):
+        loaded = bool(code) and self.renderer.load(f':/Images/icon_regions/flags/{code}.svg')
+        self.setVisible(loaded)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        # Круг масштабируется вместе со сценой; исходные SVG не меняются.
+        clip = QtGui.QPainterPath()
+        clip.addEllipse(QtCore.QRectF(self.rect()))
+        painter.setClipPath(clip)
+        self.renderer.render(painter, QtCore.QRectF(self.rect()))
+        self.frame_renderer.render(painter, QtCore.QRectF(self.rect()))
 
 
 class KataSecondWindow_Ui(object):
+    SCORE_STYLE = 'background: transparent; border: none; font-family: Gotham-Medium; font-size: 120px; color: black;'
+
     def __init__(self):
         self.font_m_35 = css.font_m_35
 
     def setupUi_Kata2(self, Form12):
-        Form12.setObjectName("Form")
-        Form12.setEnabled(True)
+        Form12.setObjectName('Form')
         Form12.setFixedSize(1920, 1080)
-        Form12.setWindowOpacity(1.0)
-        Form12.setStyleSheet("background-color: white;")
+        Form12.setStyleSheet('background-color: white;')
+        Form12.setWindowTitle(' ')
         Form12.setWindowIcon(QtGui.QIcon(':/Images/Empty.png'))
 
+        def label(text, rect, family, size, color='black', alignment=Qt.AlignCenter):
+            widget = QtWidgets.QLabel(text, Form12)
+            widget.setGeometry(QtCore.QRect(*rect))
+            widget.setAlignment(alignment)
+            widget.setTextFormat(Qt.PlainText)
+            widget.setStyleSheet(f'background: transparent; border: none; font-family: {family}; font-size: {size}px; color: {color};')
+            return widget
 
-        self.label_sum2 = QtWidgets.QLabel(Form12)
-        self.input_referee1 = QtWidgets.QLabel(Form12)
-        self.input_referee2 = QtWidgets.QLabel(Form12)
-        self.input_referee3 = QtWidgets.QLabel(Form12)
-        self.input_referee4 = QtWidgets.QLabel(Form12)
-        self.input_referee5 = QtWidgets.QLabel(Form12)
-        self.input_referee6 = QtWidgets.QLabel(Form12)
-        self.input_referee7 = QtWidgets.QLabel(Form12)
-        self.label_1 = QtWidgets.QLabel(Form12)
-        self.label_2 = QtWidgets.QLabel(Form12)
-        self.label_3 = QtWidgets.QLabel(Form12)
-        self.label_4 = QtWidgets.QLabel(Form12)
-        self.label_5 = QtWidgets.QLabel(Form12)
-        self.label_6 = QtWidgets.QLabel(Form12)
-        self.label_7 = QtWidgets.QLabel(Form12)
-        self.matchName2 = QtWidgets.QLabel(Form12)
-        self.label_name_red_2 = QtWidgets.QLabel(Form12)
-        self.label_region_red_2 = QtWidgets.QLabel(Form12)
+        def panel(rect):
+            widget = QtWidgets.QFrame(Form12)
+            widget.setGeometry(QtCore.QRect(*rect))
+            widget.setStyleSheet('background: white; border: 2px solid grey; border-radius: 15px;')
+            return widget
 
-        self.label_sum2.setGeometry(QtCore.QRect(1050, 150, 800, 490))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(1)
-        sizePolicy.setHeightForWidth(self.label_sum2.sizePolicy().hasHeightForWidth())
-        self.label_sum2.setStyleSheet("background-color: white; font-family: Gotham-Bold; font-size: 350px; ")
-        self.label_sum2.setFrameShape(QtWidgets.QFrame.Box)
-        self.label_sum2.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.label_sum2.setLineWidth(1)
-        self.label_sum2.setMidLineWidth(0)
-        self.label_sum2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_sum2.setObjectName("label_sum2")
-
-        self.label_1.setEnabled(True)
-        self.label_1.setGeometry(QtCore.QRect(70, 680, 250, 50))
-        self.label_1.setFont(self.font_m_35)
-        self.label_1.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.label_1.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_1.setObjectName("label_1")
-
-        self.label_2.setGeometry(QtCore.QRect(325, 680, 250, 50))
-        self.label_2.setFont(self.font_m_35)
-        self.label_2.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_2.setObjectName("label_2")
-
-        self.label_3.setGeometry(QtCore.QRect(580, 680, 250, 50))
-        self.label_3.setFont(self.font_m_35)
-        self.label_3.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_3.setObjectName("label_3")
-
-        self.label_4.setGeometry(QtCore.QRect(835, 680, 250, 50))
-        self.label_4.setFont(self.font_m_35)
-        self.label_4.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_4.setObjectName("label_4")
-
-        self.label_5.setGeometry(QtCore.QRect(1090, 680, 250, 50))
-        self.label_5.setFont(self.font_m_35)
-        self.label_5.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_5.setObjectName("label_5")
-
-        self.label_6.setGeometry(QtCore.QRect(1345, 680, 250, 50))
-        self.label_6.setFont(self.font_m_35)
-        self.label_6.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_6.setObjectName("label_6")
-
-        self.label_7.setGeometry(QtCore.QRect(1600, 680, 250, 50))
-        self.label_7.setFont(self.font_m_35)
-        self.label_7.setAlignment(QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter)
-        self.label_7.setObjectName("label_7")
-
-        self.input_referee1.setGeometry(QtCore.QRect(70, 740, 250, 250))
-        self.input_referee1.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee1.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee1.setObjectName("input_referee1")
-
-        self.input_referee2.setGeometry(QtCore.QRect(325, 740, 250, 250))
-        self.input_referee2.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee2.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee2.setObjectName("input_referee2")
-
-        self.input_referee3.setGeometry(QtCore.QRect(580, 740, 250, 250))
-        self.input_referee3.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee3.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee3.setObjectName("input_referee3")
-
-        self.input_referee4.setGeometry(QtCore.QRect(835, 740, 250, 250))
-        self.input_referee4.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee4.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee4.setObjectName("input_referee4")
-
-        self.input_referee5.setGeometry(QtCore.QRect(1090, 740, 250, 250))
-        self.input_referee5.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee5.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee5.setObjectName("input_referee5")
-
-        self.input_referee6.setGeometry(QtCore.QRect(1345, 740, 250, 250))
-        self.input_referee6.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee6.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee6.setObjectName("input_referee6")
-
-        self.input_referee7.setGeometry(QtCore.QRect(1600, 740, 250, 250))
-        self.input_referee7.setFrameShape(QtWidgets.QFrame.Box)
-        self.input_referee7.setAlignment(QtCore.Qt.AlignCenter)
-        self.input_referee7.setObjectName("input_referee7")
-
-        self.matchName2.setGeometry(QtCore.QRect(20, 10, 1880, 100))
-        self.matchName2.setStyleSheet("font-family: Gotham-Medium; font-size: 100px; color: grey;")
-        self.matchName2.setAlignment(QtCore.Qt.AlignCenter)
-        self.matchName2.setObjectName("matchName2")
-
-        self.label_name_red_2.setGeometry(QtCore.QRect(40, 160, 1000, 260))
-        self.label_name_red_2.setStyleSheet("background-color: None; font-family: Gotham-Medium; font-size: 133px;")
-        self.label_name_red_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_name_red_2.setObjectName("label_name_red_2")
-
-        self.label_region_red_2.setGeometry(QtCore.QRect(40, 440, 1000, 130))
-        self.label_region_red_2.setStyleSheet("background-color: None; font-family: Gotham-Medium; font-size: 53px;")
-        self.label_region_red_2.setAlignment(QtCore.Qt.AlignCenter)
-        self.label_region_red_2.setObjectName("label_region_red_2")
-
-
-        self.retranslateUi(Form12)
+        self.matchName2 = label('', (40, 20, 1840, 150), 'Gotham-Medium', 66, 'grey')
+        self.matchName2.setWordWrap(True)
+        self.person_panel = panel((40, 220, 1000, 440))
+        self.sum_panel = panel((1080, 220, 800, 440))
+        self.flag_red = RegionFlag(Form12)
+        self.flag_red.setGeometry(80, 295, 150, 150)
+        self.label_name_red_2 = label('ФАМИЛИЯ', (260, 250, 740, 250), 'Gotham-Bold', 110, alignment=Qt.AlignLeft | Qt.AlignVCenter)
+        self.label_name_red_2.setWordWrap(True)
+        self.region_line = QtWidgets.QFrame(Form12)
+        self.region_line.setGeometry(80, 520, 920, 2)
+        self.region_line.setStyleSheet('background: grey; border: none;')
+        self.label_region_red_2 = label('регион', (80, 540, 920, 100), 'Gotham-Light', 56, alignment=Qt.AlignLeft | Qt.AlignVCenter)
+        self.label_region_red_2.setWordWrap(True)
+        self.sum_heading = label('ИТОГОВЫЙ БАЛЛ', (1100, 245, 760, 65), 'Gotham-Medium', 45, 'grey')
+        self.label_sum2 = label('', (1100, 315, 760, 315), 'Gotham-Medium', 310)
+        self.score_panels = []
+        self.score_notes = []
+        for index in range(1, 8):
+            self.score_panels.append(panel((0, 740, 250, 260)))
+            setattr(self, f'label_{index}', label(f'Судья {index}', (0, 765, 250, 50), 'Gotham-Medium', 32, 'grey'))
+            score = label('', (0, 815, 250, 140), 'Gotham-Medium', 120)
+            setattr(self, f'input_referee{index}', score)
+            self.score_notes.append(label('', (0, 950, 250, 40), 'Gotham-Light', 24, 'grey'))
+        self.set_judge_count(7)
         QtCore.QMetaObject.connectSlotsByName(Form12)
 
-    def retranslateUi(self, Form12):
-        _translate = QtCore.QCoreApplication.translate
-        Form12.setWindowTitle(_translate("Form12", " "))
-        self.label_sum2.setText(_translate("Form12", ""))
-        self.label_1.setText(_translate("Form12", "1"))
-        self.label_3.setText(_translate("Form12", "3"))
-        self.label_4.setText(_translate("Form12", "4"))
-        self.label_2.setText(_translate("Form12", "2"))
-        self.label_5.setText(_translate("Form12", "5"))
-        self.label_7.setText(_translate("Form12", "7"))
-        self.label_6.setText(_translate("Form12", "6"))
-        self.input_referee6.setText(_translate("Form12", ""))
-        self.input_referee4.setText(_translate("Form12", ""))
-        self.input_referee2.setText(_translate("Form12", ""))
-        self.input_referee7.setText(_translate("Form12", ""))
-        self.input_referee1.setText(_translate("Form12", ""))
-        self.input_referee3.setText(_translate("Form12", ""))
-        self.input_referee5.setText(_translate("Form12", ""))
-        self.label_region_red_2.setText(_translate("Form12", "регион"))
-        self.label_name_red_2.setText(_translate("Form12", "ФАМИЛИЯ"))
+    @staticmethod
+    def fit_label(widget, text, family, maximum, color='black'):
+        # Подбираем шрифт по фактическому зрительскому прямоугольнику, а не
+        # по метрикам судейского поля. Масштаб экрана применяет только сцена.
+        widget.setText(text)
+        rect = widget.contentsRect().adjusted(2, 2, -2, -2)
+        size = maximum
+        while size > 20:
+            font = QtGui.QFont(family)
+            font.setPixelSize(size)
+            bounds = QtGui.QFontMetrics(font).boundingRect(rect, Qt.TextWordWrap, text)
+            if bounds.width() <= rect.width() and bounds.height() <= rect.height():
+                break
+            size -= 1
+        widget.setStyleSheet(f'background: transparent; border: none; font-family: {family}; font-size: {size}px; color: {color};')
+
+    def set_athlete(self, name, region, code):
+        self.flag_red.set_region(code)
+        # Неизвестный регион не оставляет флаг предыдущего участника.
+        self.label_name_red_2.setGeometry(260 if code and not self.flag_red.isHidden() else 80, 250,
+                                          740 if code and not self.flag_red.isHidden() else 920, 250)
+        self.fit_label(self.label_name_red_2, name, 'Gotham-Bold', 110)
+        self.fit_label(self.label_region_red_2, region, 'Gotham-Light', 56)
+
+    def set_judge_count(self, count):
+        # Все части карточки перемещаются вместе при переходе 5 ↔ 7 судей.
+        width = 352 if count == 5 else 250
+        left = 70
+        gap = 5
+        for index in range(1, 8):
+            x = left + (index - 1) * (width + gap)
+            items = (self.score_panels[index - 1], getattr(self, f'label_{index}'),
+                     getattr(self, f'input_referee{index}'), self.score_notes[index - 1])
+            for widget, y, height in zip(items, (740, 765, 815, 950), (260, 50, 140, 40)):
+                widget.setGeometry(x, y, width, height)
+                widget.setVisible(index <= count)
+            getattr(self, f'label_{index}').setText(f'Судья {index}')
+
+    def reset_score_marks(self):
+        for index in range(1, 8):
+            score = getattr(self, f'input_referee{index}')
+            score.setStyleSheet(self.SCORE_STYLE)
+            font = score.font()
+            font.setStrikeOut(False)
+            score.setFont(font)
+            self.score_notes[index - 1].clear()
 
 
 class KataSecondWindow(AdaptiveDisplay, KataSecondWindow_Ui):
@@ -170,62 +138,32 @@ class KataSecondWindow(AdaptiveDisplay, KataSecondWindow_Ui):
         self.mount_canvas()
 
     def Extream_Value(self):
-        q1 = self.input_referee1.text()
-        q2 = self.input_referee2.text()
-        q3 = self.input_referee3.text()
-        q4 = self.input_referee4.text()
-        q5 = self.input_referee5.text()
-        q6 = self.input_referee6.text()
-        q7 = self.input_referee7.text()
-
-        l = [q1, q2, q3, q4, q5, q6, q7]
-        m = [num for num in l if num != '']
-        try:
-            if min(m) == self.input_referee1.text():
-                self.extreamLabelStyle(self.input_referee1)
-            elif min(m) == self.input_referee2.text():
-                self.extreamLabelStyle(self.input_referee2)
-            elif min(m) == self.input_referee3.text():
-                self.extreamLabelStyle(self.input_referee3)
-            elif min(m) == self.input_referee4.text():
-                self.extreamLabelStyle(self.input_referee4)
-            elif min(m) == self.input_referee5.text():
-                self.extreamLabelStyle(self.input_referee5)
-            elif min(m) == self.input_referee6.text():
-                self.extreamLabelStyle(self.input_referee6)
-            elif min(m) == self.input_referee7.text():
-                self.extreamLabelStyle(self.input_referee7)
-            else:
-                pass
-            if max(m) == self.input_referee2.text():
-                self.extreamLabelStyle(self.input_referee2)
-            elif max(m) == self.input_referee1.text():
-                self.extreamLabelStyle(self.input_referee1)
-            elif max(m) == self.input_referee3.text():
-                self.extreamLabelStyle(self.input_referee3)
-            elif max(m) == self.input_referee4.text():
-                self.extreamLabelStyle(self.input_referee4)
-            elif max(m) == self.input_referee5.text():
-                self.extreamLabelStyle(self.input_referee5)
-            elif max(m) == self.input_referee6.text():
-                self.extreamLabelStyle(self.input_referee6)
-            elif max(m) == self.input_referee7.text():
-                self.extreamLabelStyle(self.input_referee7)
-            else:
-                pass
-
-        except ValueError:
-            self.label_1.setText('1')
-            self.label_2.setText('2')
-            self.label_3.setText('3')
-            self.label_4.setText('4')
-            self.label_5.setText('5')
-            self.label_6.setText('6')
-            self.label_7.setText('7')
+        self.reset_score_marks()
+        values = []
+        for index in range(1, 8):
+            try:
+                value = float(getattr(self, f'input_referee{index}').text())
+            except ValueError:
+                continue
+            if value != 0:
+                values.append((index, value))
+        if len(values) < 3:
+            return
+        # Сохраняем прежний порядок выбора одинаковых крайних оценок:
+        # минимум — первый судья, максимум — сначала второй, затем первый.
+        minimum = min(values, key=lambda item: item[1])[0]
+        maximum_value = max(value for _, value in values)
+        maximum = next(index for index in (2, 1, 3, 4, 5, 6, 7)
+                       if (index, maximum_value) in values)
+        for index, note in ((minimum, 'мин. исключён'), (maximum, 'макс. исключён')):
+            self.extreamLabelStyle(getattr(self, f'input_referee{index}'))
+            self.score_notes[index - 1].setText(note)
 
     def extreamLabelStyle(self, input_referee):
-        input_referee.setStyleSheet("background-color: white; font-family: Gotham-Medium;"
-                                    "color: Grey; font-size: 120px; text-align : left")
+        input_referee.setStyleSheet(self.SCORE_STYLE.replace('color: black', 'color: Grey'))
+        font = input_referee.font()
+        font.setStrikeOut(True)
+        input_referee.setFont(font)
 
 
 class Frame_Header(QWidget):
@@ -807,6 +745,8 @@ class KataMainWindow_Ui(QWidget):
         self.lineEdit_referee7.textChanged.connect(self.onChanged)
 
     def onChanged(self, text):
+        # Новые оценки больше не должны выглядеть исключёнными из прошлой суммы.
+        self.KataSecondWindow.reset_score_marks()
         sender = self.sender()
         if text == "0.":
             text = "0.0"
@@ -832,25 +772,25 @@ class KataMainWindow_Ui(QWidget):
             text = None
         else:
             if sender == self.lineEdit_referee1:
-                self.KataSecondWindow.input_referee1.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee1.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee1.setText(text)
             elif sender == self.lineEdit_referee2:
-                self.KataSecondWindow.input_referee2.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee2.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee2.setText(text)
             elif sender == self.lineEdit_referee3:
-                self.KataSecondWindow.input_referee3.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee3.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee3.setText(text)
             elif sender == self.lineEdit_referee4:
-                self.KataSecondWindow.input_referee4.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee4.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee4.setText(text)
             elif sender == self.lineEdit_referee5:
-                self.KataSecondWindow.input_referee5.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee5.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee5.setText(text)
             elif sender == self.lineEdit_referee6:
-                self.KataSecondWindow.input_referee6.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee6.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee6.setText(text)
             elif sender == self.lineEdit_referee7:
-                self.KataSecondWindow.input_referee7.setStyleSheet(self.label_style_1)
+                self.KataSecondWindow.input_referee7.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
                 self.KataSecondWindow.input_referee7.setText(text)
         self.isShowSportsmanName()
 
@@ -977,42 +917,13 @@ class KataMainWindow_Ui(QWidget):
         self.fiveReferee(n_tuple[5])
 
     def labelStyle(self, input_referee):
-        input_referee.setStyleSheet(
-            "background-color: white; font-family: Gotham-Medium; color: black; font-size: 150px; text-align: left")
+        input_referee.setStyleSheet(self.KataSecondWindow.SCORE_STYLE)
+        font = input_referee.font()
+        font.setStrikeOut(False)
+        input_referee.setFont(font)
 
     def fiveReferee(self, tuple_five_referee_score):
-        if tuple_five_referee_score == '':
-            self.KataSecondWindow.input_referee1.setGeometry(QtCore.QRect(70, 740, 352, 250))
-            self.KataSecondWindow.input_referee2.setGeometry(QtCore.QRect(427, 740, 352, 250))
-            self.KataSecondWindow.input_referee3.setGeometry(QtCore.QRect(784, 740, 352, 250))
-            self.KataSecondWindow.input_referee4.setGeometry(QtCore.QRect(1141, 740, 352, 250))
-            self.KataSecondWindow.input_referee5.setGeometry(QtCore.QRect(1498, 740, 352, 250))
-            self.KataSecondWindow.input_referee6.hide()
-            self.KataSecondWindow.input_referee7.hide()
-            self.KataSecondWindow.label_1.setGeometry(QtCore.QRect(70, 680, 352, 50))
-            self.KataSecondWindow.label_2.setGeometry(QtCore.QRect(427, 680, 352, 50))
-            self.KataSecondWindow.label_3.setGeometry(QtCore.QRect(784, 680, 352, 50))
-            self.KataSecondWindow.label_4.setGeometry(QtCore.QRect(1141, 680, 352, 50))
-            self.KataSecondWindow.label_5.setGeometry(QtCore.QRect(1498, 680, 352, 50))
-            self.KataSecondWindow.label_6.hide()
-            self.KataSecondWindow.label_7.hide()
-        else:
-            self.KataSecondWindow.input_referee1.setGeometry(QtCore.QRect(70, 740, 250, 250))
-            self.KataSecondWindow.input_referee2.setGeometry(QtCore.QRect(325, 740, 250, 250))
-            self.KataSecondWindow.input_referee3.setGeometry(QtCore.QRect(580, 740, 250, 250))
-            self.KataSecondWindow.input_referee4.setGeometry(QtCore.QRect(835, 740, 250, 250))
-            self.KataSecondWindow.input_referee5.setGeometry(QtCore.QRect(1090, 740, 250, 250))
-            self.KataSecondWindow.input_referee6.show()
-            self.KataSecondWindow.input_referee7.show()
-            self.KataSecondWindow.label_1.setGeometry(QtCore.QRect(70, 680, 250, 50))
-            self.KataSecondWindow.label_2.setGeometry(QtCore.QRect(325, 680, 250, 50))
-            self.KataSecondWindow.label_3.setGeometry(QtCore.QRect(580, 680, 250, 50))
-            self.KataSecondWindow.label_4.setGeometry(QtCore.QRect(835, 680, 250, 50))
-            self.KataSecondWindow.label_5.setGeometry(QtCore.QRect(1090, 680, 250, 50))
-            self.KataSecondWindow.label_6.setGeometry(QtCore.QRect(1345, 680, 250, 50))
-            self.KataSecondWindow.label_7.setGeometry(QtCore.QRect(1600, 680, 250, 50))
-            self.KataSecondWindow.label_6.show()
-            self.KataSecondWindow.label_7.show()
+        self.KataSecondWindow.set_judge_count(5 if tuple_five_referee_score == '' else 7)
 
     def clearKataData(self):
         self.label_sum.setText("Нажми кнопку\n«Рассчитать»")
@@ -1049,44 +960,26 @@ class KataMainWindow_Ui(QWidget):
         self.KataSecondWindow.label_6.setText('6')
         self.KataSecondWindow.label_7.setText('7')
 
-        self.KataSecondWindow.label_name_red_2.setText("ФАМИЛИЯ")
-        self.KataSecondWindow.label_region_red_2.setText("регион")
+        self.KataSecondWindow.set_athlete('ФАМИЛИЯ', 'регион', '')
+        self.KataSecondWindow.reset_score_marks()
+        self.KataSecondWindow.set_judge_count(7)
 
     def setMatchName(self):
-        matchName1_width = self.matchName1.fontMetrics().boundingRect(self.matchName1.text()).width()
-
-        if matchName1_width > 356:
-            n = "font-family: Gotham-Medium; font-size: "\
-                + str(int(17.8 * (1880 / matchName1_width))) + "px; color: grey;"
-            self.KataSecondWindow.matchName2.setStyleSheet(n)
-        else:
-            self.KataSecondWindow.matchName2.setStyleSheet(
-                "font-family: Gotham-Medium; font-size: 100px; color: grey;")
-        self.KataSecondWindow.matchName2.setText(self.matchName1.text())
+        text = self.matchName1.text().strip()
+        # Обычно татами уже входит в matchName1 (Excel и ручной ввод).
+        # Начальный экран тоже должен показывать номер, без дублирования.
+        if 'татами' not in text.lower():
+            text = f'Татами №{self.USKO_PC}, ' + text
+        self.KataSecondWindow.fit_label(self.KataSecondWindow.matchName2, text,
+                                       'Gotham-Medium', 66, 'grey')
 
     def setSportsmanName(self):
         self.setMatchName()
-        self.label_name_red_1.setText(self.lineEdit_name_red_1.text())
-        self.label_region_red_1.setText(self.lineEdit_region_red_1.currentText())
-        first_window_name_red = self.lineEdit_name_red_1.fontMetrics().\
-            boundingRect(self.lineEdit_name_red_1.text()).width()
-        first_window_region_red = self.lineEdit_region_red_1.fontMetrics().\
-            boundingRect(self.lineEdit_region_red_1.currentText()).width()
-
-        if first_window_name_red > 145:
-            n = "background-color: none; font-family: Gotham-Medium; font-size: " \
-                + str(int(19.3 * (1000 / first_window_name_red))) + "px;"
-            self.KataSecondWindow.label_name_red_2.setStyleSheet(n)
-        else:
-            self.KataSecondWindow.label_name_red_2.setStyleSheet("background-color: None; font-family: Gotham-Medium;"
-                                                                 "font-size: 133px;")
-
-        if first_window_region_red > 235:
-            n = "background-color: none; font-family: Gotham-Medium; font-size: "\
-                + str(int(12.5 * (1000 / first_window_region_red))) + "px;"
-            self.KataSecondWindow.label_region_red_2.setStyleSheet(n)
-        else:
-            self.KataSecondWindow.label_region_red_2.setStyleSheet(
-                "background-color: None; font-family: Gotham-Medium; font-size: 53px;")
-        self.KataSecondWindow.label_name_red_2.setText(self.lineEdit_name_red_1.text())
-        self.KataSecondWindow.label_region_red_2.setText(self.lineEdit_region_red_1.currentText())
+        name = self.lineEdit_name_red_1.text()
+        region = self.lineEdit_region_red_1.currentText()
+        self.label_name_red_1.setText(name)
+        self.label_region_red_1.setText(region)
+        # Используем тот же справочник и нормализацию, что у трансляции.
+        key = region.split(' - ком')[0].replace(' ', '').lower()
+        code = getattr(self, 'flags_dict', {}).get(key, '')
+        self.KataSecondWindow.set_athlete(name, region, code)
