@@ -1,3 +1,11 @@
+import sys
+
+# Дочерний сервер не загружает Qt, Excel, ресурсы табло и окна судейства.
+# Та же точка входа используется в собранном exe без отдельной консоли Windows.
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "--usko-server-worker":
+    from server_worker import run_worker
+    sys.exit(run_worker(sys.argv[2:]))
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from PyQt5.QtSvg import QSvgRenderer
@@ -25,6 +33,7 @@ import json
 import websocket  # websocket-client
 import requests
 import base64
+from program_download import DOWNLOAD_URL, DOWNLOAD_QR_PNG
 from contextlib import contextmanager
 
 
@@ -51,8 +60,8 @@ class Worker(QThread):
 
 class Ui_Form0(object):
     def __init__(self):
-        self.year = '2026-05-17'
-        self.program_release_number = 'rev-005'
+        self.year = '2026-10-11'
+        self.program_release_number = 'rev-006'
 
     def setupUi0(self, Form0):
         Form0.setObjectName("Form0")
@@ -74,10 +83,10 @@ class Ui_Form0(object):
         self.frame_logo = QtWidgets.QFrame(Form0)
         self.logo_USKOrus = QtGui.QPixmap(":/Images/emblem_usko.png")
         self.logo_VBErus = QtGui.QPixmap(":/Images/emblem_vbe_rus.png")
-        self.logo_VBEmos = QtGui.QPixmap(":/Images/emblem_vbe_msk.png")
+        self.logo_JKA = QtGui.QPixmap(":/Images/icon.ico")
         self.label_logo_USKOrus = QtWidgets.QLabel(self.frame_logo)
         self.label_logo_VBErus = QtWidgets.QLabel(self.frame_logo)
-        self.label_logo_VBEmos = QtWidgets.QLabel(self.frame_logo)
+        self.label_logo_JKA = QtWidgets.QLabel(self.frame_logo)
         self.sponsored_by = QtWidgets.QLabel(self.frame_logo)
         self.legend = QtWidgets.QLabel(Form0)
         self.frame_overlay_status = QtWidgets.QFrame(Form0)
@@ -146,6 +155,38 @@ class Ui_Form0(object):
         self.btn_Kumite.setFont(self.font_m_35)
         self.btn_Kumite.setObjectName("btn_Kumite")
 
+        # Готовый QR показывается без HTTP и генерации при запуске: недоступность
+        # Google не должна задерживать открытие меню или работу секретаря.
+        self.download_qr = QtWidgets.QLabel(Form0)
+        self.download_qr.setGeometry(QtCore.QRect(106, 130, 147, 147))
+        self.download_qr.setObjectName('download_qr')
+        self.download_qr.setAccessibleName('QR-код для скачивания актуальной версии программы')
+        self.download_qr.setToolTip('Наведите камеру телефона: таблица со ссылкой на скачивание программы')
+        qr_pixmap = QtGui.QPixmap()
+        qr_pixmap.loadFromData(base64.b64decode(DOWNLOAD_QR_PNG), 'PNG')
+        # 49 модулей с белыми полями × 3 пикселя: границы остаются чёткими.
+        self.download_qr.setPixmap(qr_pixmap.scaled(147, 147, QtCore.Qt.KeepAspectRatio,
+                                                  QtCore.Qt.FastTransformation))
+        self.download_link = QtWidgets.QLabel(Form0)
+        self.download_link.setGeometry(QtCore.QRect(60, 277, 240, 32))
+        self.download_link.setObjectName('download_link')
+        self.download_link.setAlignment(QtCore.Qt.AlignCenter)
+        self.download_link.setStyleSheet('font-family: Gotham-Light; font-size: 13px; color: grey;')
+        self.download_link.setText(f'<a href="{DOWNLOAD_URL}">Скачать программу</a><br>Актуальная версия')
+        self.download_link.setOpenExternalLinks(True)
+        self.download_link.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        self.main_instruction_link = QtWidgets.QLabel(Form0)
+        self.main_instruction_link.setGeometry(QtCore.QRect(60, 313, 240, 24))
+        self.main_instruction_link.setObjectName('main_instruction_link')
+        self.main_instruction_link.setAlignment(QtCore.Qt.AlignCenter)
+        self.main_instruction_link.setStyleSheet('font-family: Gotham-Light; font-size: 13px;')
+        self.main_instruction_link.setText(
+            '<a href="https://docs.google.com/document/d/'
+            '15DOfeDC1w3KRnIniRTZ2F0rWOWWCaNN3n5OrbMsGwP4/edit?tab=t.0">Инструкция по программе</a>')
+        self.main_instruction_link.setOpenExternalLinks(True)
+        self.main_instruction_link.setTextInteractionFlags(QtCore.Qt.TextBrowserInteraction)
+        self.main_instruction_link.setToolTip('Открыть инструкцию по работе с табло в браузере')
+
         self.status_file.setGeometry(QtCore.QRect(60, 20, 780, 30))
         self.status_file.setStyleSheet("color: grey;")
         self.status_file.setFont(self.font_l_12)
@@ -154,7 +195,7 @@ class Ui_Form0(object):
         # Кнопка «настройки» (шестерёнка)
         self.btn_settings.setGeometry(QtCore.QRect(840, 20, 30, 30))
         self.btn_settings.setText("⚙")
-        self.btn_settings.setToolTip("Настройки подключения к серверу трансляции")
+        self.btn_settings.setToolTip("Режим работы и подключение к трансляции")
         self.btn_settings.setObjectName("btn_settings")
 
         # Круглая шестерёнка с реакцией на hover/press
@@ -186,11 +227,19 @@ class Ui_Form0(object):
         self.label_logo_VBErus.setObjectName("label_logo_VBErus")
         self.label_logo_VBErus.setPixmap(self.logo_VBErus)
 
-        self.label_logo_VBEmos.setGeometry(QtCore.QRect(360, 0, 150, 150))
-        self.label_logo_VBEmos.setObjectName("label_logo_VBEmos")
-        self.label_logo_VBEmos.setPixmap(self.logo_VBEmos)
+        self.label_logo_JKA.setGeometry(QtCore.QRect(360, 0, 150, 150))
+        self.label_logo_JKA.setObjectName("label_logo_JKA")
+        # Вписываем логотип в область 150×150, сохраняя пропорции.
+        self.label_logo_JKA.setPixmap(
+            self.logo_JKA.scaled(
+                self.label_logo_JKA.size(),
+                QtCore.Qt.KeepAspectRatio,
+                QtCore.Qt.SmoothTransformation,
+            )
+        )
+        self.label_logo_JKA.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.sponsored_by.setGeometry(QtCore.QRect(0, 150, 510, 55))  # justify
+        self.sponsored_by.setGeometry(QtCore.QRect(0, 150, 510, 85))  # justify
         self.sponsored_by.setStyleSheet("font-family: Gotham-Light; text-align: right; color: black; font-size: 15px;")
         self.sponsored_by.setAlignment(QtCore.Qt.AlignCenter)
         self.sponsored_by.setObjectName("sponsored_by")
@@ -247,9 +296,12 @@ class Ui_Form0(object):
         self.btn_Kata_qual.setText(_translate("Form0", "Ката по флажкам"))
         self.btn_Kata_final.setText(_translate("Form0", "Ката финал"))
         self.btn_Kumite.setText(_translate("Form0", "Кумите"))
-        self.sponsored_by.setText(_translate("self.frame_logo", "При поддержке Президента РФСОО «Федерация восточного\n"
-                                                                "боевого единоборства Сётокан города Москвы» "
-                                                                "Латкина А.И."))
+        self.sponsored_by.setText(
+            _translate(
+                "self.frame_logo",
+                "При поддержке президента Общероссийской\nфизкультурно-спортивной общественной организации\n«Объединённая организация сётокан каратэ-до России»\nЛаткина А. И."
+            )
+        )
         # year = datetime.date.today().year
         self.legend.setText(_translate("Form0",
                                        f"Программа «Электронное табло USKO RUSSIA». {self.year} год. "
@@ -4230,9 +4282,12 @@ class MenuWindow(QWidget, Ui_Form0):
             print('_______Exception paytnov_perebivka:', e)
 
     def open_settings_dialog(self):
-        """Открывает модальное окно выбора файла с настройками сервера."""
+        """Режим выбирается явно; сервер никогда не запускается при старте табло."""
         try:
-            dlg = ServerSettingsDialog(parent=self)
+            server_window = getattr(self, 'server_window', None)
+            server_mode = server_window is not None and server_window.isVisible()
+            dlg = ServerSettingsDialog(parent=server_window if server_mode else self)
+            dlg.mode_combo.setCurrentIndex(1 if server_mode else 0)
 
             # Подставим уже использованный файл/значения, если есть
             if self.server_config_path:
@@ -4240,6 +4295,21 @@ class MenuWindow(QWidget, Ui_Form0):
                 dlg.set_values(self.server_ip, self.server_port)
 
             if dlg.exec_() == QtWidgets.QDialog.Accepted:
+                if dlg.mode_combo.currentIndex() == 1:
+                    if not server_mode:
+                        from server_console import ServerWindow
+                        if server_window is None:
+                            self.server_window = ServerWindow(app_version=self.program_release_number)
+                            self.server_window.setWindowIcon(self.windowIcon())
+                            self.server_window.mode_requested.connect(self.open_settings_dialog)
+                        # Показываем новое окно до скрытия меню: Qt не должен
+                        # завершить приложение при исчезновении последнего окна.
+                        self.server_window.show()
+                        self.hide()
+                    return
+                if server_mode:
+                    server_window.request_table_mode(self.show)
+                    return
                 path = dlg.get_path()
                 if path:
                     self.read_server_config(path)
@@ -5062,8 +5132,10 @@ class ServerSettingsDialog(QtWidgets.QDialog):
         self.btn_style_1 = css.btn_style_1
 
         self.setObjectName("ServerSettingsDialog")
+        self.setFont(css.font_l_15)
         self.setModal(True)
-        self.setFixedSize(500, 180)
+        self.setWindowTitle("Настройки USKO Tab")
+        self.setFixedSize(500, 260)
         self.setStyleSheet("background-color: white;")
 
         # Заголовок
@@ -5075,6 +5147,7 @@ class ServerSettingsDialog(QtWidgets.QDialog):
         self.edt_path = QtWidgets.QLineEdit(self)
         self.edt_path.setGeometry(QtCore.QRect(20, 45, 380, 24))
         self.edt_path.setFont(self.font_l_12)
+        self.edt_path.setStyleSheet(css.combo_style_2)
 
         self.btn_browse = QtWidgets.QPushButton("...", self)
         self.btn_browse.setGeometry(QtCore.QRect(410, 45, 60, 24))
@@ -5089,6 +5162,7 @@ class ServerSettingsDialog(QtWidgets.QDialog):
         self.edit_ip = QtWidgets.QLineEdit(self)
         self.edit_ip.setGeometry(QtCore.QRect(110, 85, 140, 22))
         self.edit_ip.setFont(self.font_l_12)
+        self.edit_ip.setStyleSheet(css.combo_style_2)
         self.edit_ip.setReadOnly(True)
 
         self.label_port = QtWidgets.QLabel("SERVER_PORT:", self)
@@ -5098,6 +5172,7 @@ class ServerSettingsDialog(QtWidgets.QDialog):
         self.edit_port = QtWidgets.QLineEdit(self)
         self.edit_port.setGeometry(QtCore.QRect(360, 85, 80, 22))
         self.edit_port.setFont(self.font_l_12)
+        self.edit_port.setStyleSheet(css.combo_style_2)
         self.edit_port.setReadOnly(True)
 
         # Кнопки OK / Отмена
@@ -5115,6 +5190,27 @@ class ServerSettingsDialog(QtWidgets.QDialog):
         self.btn_browse.clicked.connect(self.on_browse)
         self.btn_ok.clicked.connect(self.accept)
         self.btn_cancel.clicked.connect(self.reject)
+
+        # Существующие настройки относятся только к клиенту-табло.
+        # Переключатель режима отделён от файла адреса удалённого сервера.
+        connection_widgets = [self.label, self.edt_path, self.btn_browse,
+                              self.label_ip, self.edit_ip, self.label_port, self.edit_port]
+        for widget in connection_widgets + [self.btn_ok, self.btn_cancel]:
+            widget.move(widget.x(), widget.y() + 80)
+        mode_label = QtWidgets.QLabel("Режим работы:", self)
+        mode_label.setGeometry(20, 15, 150, 24)
+        mode_label.setFont(css.font_l_15)
+        self.mode_combo = QtWidgets.QComboBox(self)
+        self.mode_combo.setGeometry(180, 15, 290, 26)
+        self.mode_combo.setFont(css.font_l_15)
+        self.mode_combo.setStyleSheet(css.combo_style_2)
+        self.mode_combo.addItems(["Табло", "Сервер трансляции"])
+        hint = QtWidgets.QLabel("Для одновременной работы откройте вторую копию программы.", self)
+        hint.setGeometry(20, 50, 460, 25)
+        hint.setWordWrap(True)
+        hint.setFont(css.font_l_12)
+        self.mode_combo.currentIndexChanged.connect(
+            lambda index: [widget.setEnabled(index == 0) for widget in connection_widgets])
 
     def on_browse(self):
         path, _ = QFileDialog.getOpenFileName(
