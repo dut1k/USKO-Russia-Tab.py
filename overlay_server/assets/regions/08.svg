@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 80 80"
+   height="80"
+   width="80"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="08_Kalmykia.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs4">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect5"
+         width="320"
+         height="320"
+         x="160"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect6"
+         width="320"
+         height="320"
+         x="160"
+         y="0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath6">
+      <rect
+         style="opacity:0.2;fill:#296912;stroke-width:2"
+         id="rect7"
+         width="320"
+         height="320"
+         x="160"
+         y="0" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="1.1286087"
+     inkscape:cx="327.39425"
+     inkscape:cy="134.23607"
+     inkscape:window-width="2560"
+     inkscape:window-height="1377"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     fill="#ffc72c"
+     d="M 0,0 H 640 V 320 H 0 Z"
+     id="path1"
+     clip-path="url(#clipPath6)"
+     transform="matrix(0.25,0,0,0.25,-40,0)" />
+  <circle
+     fill="#009cdd"
+     r="92.800003"
+     cy="160"
+     cx="320"
+     id="circle1"
+     clip-path="url(#clipPath5)"
+     transform="matrix(0.25,0,0,0.25,-40,0)" />
+  <g
+     fill="#ffffff"
+     stroke="#009cdd"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-width="1.92"
+     id="g4"
+     clip-path="url(#clipPath4)"
+     transform="matrix(0.25,0,0,0.25,-40,0)">
+    <path
+       d="m 291.3,154.7 c -5,-17.3 -11.9,-25.6 -27.3,-33 -11.8,29.9 10,48.2 29.7,49.1 -23.6,-1.1 -25.7,-19.2 -58.4,-3.2 28.3,29.8 41,15.9 66,7.9 -17.6,5.6 -29,13.8 -32.5,29.4 20.7,2.2 39.9,1.6 51.2,-26 11.3,27.7 30.5,28.2 51.2,26 -3.4,-15.5 -14.9,-23.8 -32.5,-29.4 25,8 37.8,21.9 66,-7.9 -32.7,-16 -34.8,2 -58.4,3.2 19.6,-0.9 41.5,-19.2 29.7,-49.1 -15.4,7.4 -22.3,15.7 -27.3,33"
+       id="path2" />
+    <path
+       d="m 300.8,169 c -17.5,-14.7 -23.8,-37 -10,-55.8 11.2,8 16.6,18.1 21.2,37.3 m 27.4,18.5 c 17.5,-14.7 23.8,-37 10,-55.8 -11.2,8 -16.6,18.1 -21.2,37.3"
+       id="path3" />
+    <path
+       d="m 328.4,169.4 c 9.1,-19.2 8.6,-45.3 -8.3,-58.8 -16.9,13.6 -17.5,39.6 -8.3,58.8"
+       id="path4" />
+  </g>
+</svg>

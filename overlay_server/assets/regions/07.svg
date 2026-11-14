@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xml:space="preserve"
+   width="80"
+   height="80"
+   viewBox="0 0 30 30"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="07_Kabardino-Balkaria.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs4" /><sodipodi:namedview
+   id="namedview4"
+   pagecolor="#505050"
+   bordercolor="#ffffff"
+   borderopacity="1"
+   inkscape:showpageshadow="0"
+   inkscape:pageopacity="0"
+   inkscape:pagecheckerboard="1"
+   inkscape:deskcolor="#505050"
+   inkscape:zoom="0.70710678"
+   inkscape:cx="556.49304"
+   inkscape:cy="550.83618"
+   inkscape:window-width="2560"
+   inkscape:window-height="1377"
+   inkscape:window-x="1912"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg4" />
+<clipPath
+   id="mid"><circle
+     cx="225"
+     cy="150"
+     r="50"
+     id="circle1" /></clipPath>
+<rect
+   fill="#3399ff"
+   width="30"
+   height="10"
+   id="rect1"
+   x="0"
+   y="0"
+   style="stroke-width:0.0816497" />
+<rect
+   fill="#ffffff"
+   width="29.99999"
+   height="10"
+   y="10"
+   id="rect2"
+   x="0"
+   style="stroke-width:0.0816498" />
+<rect
+   fill="#00923f"
+   width="30"
+   height="10"
+   y="20"
+   id="rect3"
+   x="0"
+   style="stroke-width:0.0816497" />
+<circle
+   cx="15"
+   cy="15"
+   r="5"
+   fill="#3399ff"
+   id="circle3"
+   style="stroke-width:0.1" />
+<path
+   clip-path="url(#mid)"
+   fill="#ffffff"
+   stroke="#3399ff"
+   stroke-width="1"
+   stroke-linejoin="round"
+   d="m 276,151 c 0,0 -25,-29 -36,-29 -9,0 -14,10 -14,10 l 3,3 c -5,-4 -10,-11 -18,-11 -12,0 -37,27 -37,27 z"
+   id="path3"
+   transform="matrix(0.1,0,0,0.1,-7.5,0)" />
+<rect
+   clip-path="url(#mid)"
+   fill="#00923f"
+   x="175"
+   y="150"
+   width="100"
+   height="50"
+   id="rect4"
+   transform="matrix(0.1,0,0,0.1,-7.5,0)" />
+</svg>

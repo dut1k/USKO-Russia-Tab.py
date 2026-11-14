@@ -6,12 +6,14 @@
 
 import ast
 import contextlib
+import datetime
 import io
 import os
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
 from unittest.mock import Mock
+from uuid import uuid4
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -37,7 +39,7 @@ def load_methods(filename, class_name, names):
     ]
     if {node.name for node in methods} != set(names):
         raise AssertionError(f"Не найдены методы {class_name}: {names}")
-    namespace = {"QtCore": QtCore}
+    namespace = {"QtCore": QtCore, "datetime": datetime, "uuid4": uuid4}
     exec(compile(ast.Module(body=methods, type_ignores=[]), filename, "exec"), namespace)
     return {name: namespace[name] for name in names}
 
@@ -75,7 +77,7 @@ class QualHarness(QWidget):
 class MenuHarness(QObject):
     locals().update(load_methods(
         "USKO-Russia-Tab.py", "MenuWindow",
-        ("set_winner", "build_kata_qual_state", "setSportsmanName"),
+        ("set_winner", "build_kata_qual_state", "setSportsmanName", "attach_result_event"),
     ))
 
     def __init__(self, file_type="other"):
@@ -83,10 +85,11 @@ class MenuHarness(QObject):
         self.ui_kataQual = QualHarness()
         self.ui_kataFinal = SimpleNamespace(
             btn_showData=QPushButton(), Calc_Button=QPushButton(), calcResult=Mock(),
+            KataSecondWindow=SimpleNamespace(label_sum2=QLabel("24.9")),
         )
         self.ui_kumite = SimpleNamespace(
             btn_showData=QPushButton(), btn_show_screen=QPushButton(),
-            winnerRed=QPushButton(), winnerWhite=QPushButton(),
+            winnerRed=QRadioButton(), winnerWhite=QRadioButton(),
             isShowSportsmanName=Mock(), setWinner=Mock(),
         )
         self.loaded_file_data_type = file_type
@@ -98,6 +101,7 @@ class MenuHarness(QObject):
         self.svg_resource_to_data_url = Mock(return_value="")
         self.check_to_wopf = Mock()
         self.pyatnov_winner = None
+        self.result_performances = {}
         self.sportsmen_dict = {
             "combo_box": {1: "A white - A red", 2: "B white - B red"},
             "row_num": {1: 10, 2: 20},
@@ -207,6 +211,33 @@ class WinnerTests(unittest.TestCase):
         menu.ui_kumite.winnerRed.click()
         menu.ui_kumite.setWinner.assert_called_once()
         self.assertEqual(menu.messages(), [{"mode": "kumite", "winner_side": "aka"}])
+        self.assertEqual(menu.send_overlay_message.call_args.kwargs, {"result_kind": "result"})
+
+    def test_rejected_kumite_winner_does_not_enter_archive(self):
+        menu = MenuHarness()
+        winner = menu.ui_kumite.winnerRed
+        winner.setAutoExclusive(False)
+        menu.ui_kumite.setWinner.side_effect = lambda: winner.setChecked(False)
+        winner.click()
+        menu.send_overlay_message.assert_not_called()
+
+    def test_kumite_event_uses_current_clock_and_keeps_id_for_same_pair(self):
+        menu = MenuHarness()
+        menu.ui_kumite.tics = datetime.time(0, 0, 47)
+        state = dict(mode="kumite", category="Юниоры", timer={"remaining_sec": 51},
+                     aka=dict(name="№ 17", region="", score="2", penalties={"hm": "", "j": ""}),
+                     siro=dict(name="", region="", score="0", penalties={"hm": "", "j": ""}))
+        menu.attach_result_event(state, "change")
+        first = state["result_event"]
+        self.assertEqual(first["remaining_sec"], 47)
+        self.assertEqual(first["aka"]["name"], "№ 17")
+        self.assertEqual(first["siro"]["name"], "")
+        state["category"] = "Юниоры 16–17"
+        menu.attach_result_event(state, "change")
+        self.assertEqual(state["result_event"]["id"], first["id"])
+        state["aka"]["name"] = "№ 24"
+        menu.attach_result_event(state, "change")
+        self.assertNotEqual(state["result_event"]["id"], first["id"])
 
 
 if __name__ == "__main__":

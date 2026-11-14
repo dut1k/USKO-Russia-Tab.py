@@ -799,12 +799,10 @@ class KataMainWindow_Ui(QWidget):
                 self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
             self.setSportsmanName()
 
-    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
-                               display_coord_x1_secW, display_coord_y1_secW):
+    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height):
         try:
-            self.KataSecondWindow = KataSecondWindow()
-            self.KataSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
-            self.KataSecondWindow.show()
+            # Кнопка меняет геометрию текущего окна, сохраняя выставленные оценки.
+            self.KataSecondWindow.show_on_spectator_screen()
             self.show()
             coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
             coord_y1 = display_coord_y1 + (display_height - self.size().height())//2

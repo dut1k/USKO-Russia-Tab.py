@@ -607,10 +607,8 @@ class KataQual_MainWindow_Ui(QWidget):
 
         self.setWindowFlags(Qt.FramelessWindowHint)
 
-    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
-                               display_coord_x1_secW, display_coord_y1_secW):
-        self.KataQual_SecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
-        self.KataQual_SecondWindow.show()
+    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height):
+        self.KataQual_SecondWindow.show_on_spectator_screen()
         self.show()
         self.calc_display_move(display_coord_x1, display_coord_y1, display_width, display_height)
         # coord_x1 = display_coord_x1 + (display_width - self.size().width())//2

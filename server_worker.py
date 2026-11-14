@@ -1,6 +1,8 @@
 """Изолированный запуск сервера: этот модуль до run_worker использует только stdlib."""
 import argparse
 import asyncio
+from contextlib import contextmanager
+import errno
 import importlib.util
 import json
 import logging
@@ -9,6 +11,30 @@ import os
 from pathlib import Path
 import sys
 from datetime import datetime
+
+
+SERVER_ALREADY_RUNNING = 73
+
+
+@contextmanager
+def server_instance_lock(path):
+    # Блокировку держит процесс сервера, поэтому ОС снимет её даже после
+    # аварийного завершения. Сам файл оставляем, чтобы не было гонки при замене.
+    with Path(path).open("a+b") as stream:
+        stream.seek(0)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as exc:
+            if exc.errno not in (errno.EACCES, errno.EAGAIN):
+                raise
+            yield False
+        else:
+            yield True
 
 
 class JsonLogFormatter(logging.Formatter):
@@ -39,11 +65,9 @@ def configure_log(path):
 
 
 def backend_path():
-    # В сборку попадает исходник из соседнего репозитория вместе с его assets:
-    # отдельная копия серверной логики в проекте табло не поддерживается.
-    if getattr(sys, "frozen", False):
-        return Path(sys._MEIPASS) / "overlay_server" / "server.py"
-    return Path(__file__).resolve().parent.parent / "server_USKO-Russia-Tab" / "server.py"
+    # Сервер и ресурсы лежат рядом и в исходниках табло, и внутри сборки.
+    root = Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+    return root / "overlay_server" / "server.py"
 
 
 def load_backend():
@@ -109,10 +133,13 @@ class ParentWatch:
 async def serve(args):
     import uvicorn
     backend = load_backend()
+    backend.results_file = Path(args.log_file).with_name("results.sqlite3")
+    if args.delay_file:
+        backend.configure_delays(args.delay_file, args.delay_token)
     # Явные реализации также позволяют PyInstaller собрать сервер без auto-import.
     config = uvicorn.Config(backend.app, host=args.host, port=args.port, loop="asyncio",
                             http="h11", ws="websockets", log_config=None,
-                            access_log=True, timeout_graceful_shutdown=3)
+                            access_log=True, timeout_graceful_shutdown=3, proxy_headers=False)
     server = uvicorn.Server(config)
     watch = ParentWatch(args.parent_pid)
     # В свежем однофайловом exe PyInstaller создаёт промежуточный процесс.
@@ -156,11 +183,19 @@ def run_worker(argv):
     parser.add_argument("--ready-file", required=True)
     parser.add_argument("--parent-pid", type=int, required=True)
     parser.add_argument("--version", default="development")
+    parser.add_argument("--delay-file")
+    parser.add_argument("--delay-token", default="")
+    parser.add_argument("--instance-lock")
     args = parser.parse_args(argv)
     configure_log(args.log_file)
     logging.info("USKO Tab %s; Python %s; PID %s; порт %s", args.version, sys.version.split()[0], os.getpid(), args.port)
     try:
-        asyncio.run(serve(args))
+        lock_path = args.instance_lock or Path(args.log_file).with_name("server.lock")
+        with server_instance_lock(lock_path) as acquired:
+            if not acquired:
+                logging.info("Сервер уже запущен в другой копии программы")
+                return SERVER_ALREADY_RUNNING
+            asyncio.run(serve(args))
     except BaseException:
         logging.exception("Сервер завершился с ошибкой")
         return 1

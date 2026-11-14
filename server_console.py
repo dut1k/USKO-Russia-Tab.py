@@ -1,11 +1,13 @@
 """Окно серверного режима. Сеть и FastAPI работают в дочернем процессе."""
 from collections import deque
 from datetime import datetime
+from html import escape
 import json
 import logging
 from logging.handlers import RotatingFileHandler
 import os
 from pathlib import Path
+import sqlite3
 import sys
 import tempfile
 import time
@@ -13,7 +15,8 @@ import uuid
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtNetwork
 import styleCSS as css
-from server_worker import JsonLogFormatter, ParentWatch
+from competition_results import MODES, SIDES, load_results
+from server_worker import SERVER_ALREADY_RUNNING, JsonLogFormatter, ParentWatch, server_instance_lock
 
 
 def console_icon(kind, color):
@@ -79,6 +82,377 @@ class LogTail:
         return records
 
 
+class ServerDialog(QtWidgets.QDialog):
+    def __init__(self, title, parent):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        # Системный заголовок Windows не принимает шрифт Qt. Заголовок внутри
+        # окна позволяет использовать Gotham и убрать системную кнопку справки.
+        self.setWindowFlag(QtCore.Qt.FramelessWindowHint)
+        self.setObjectName("serverDialog")
+        self.setStyleSheet("QDialog#serverDialog { background: white; border: 1px solid #dce2eb; }")
+        self.setFont(css.font_l_13)
+
+        self.content = QtWidgets.QVBoxLayout(self)
+        title_row = QtWidgets.QHBoxLayout()
+        self.title = QtWidgets.QLabel(self.windowTitle())
+        self.title.setFont(css.font_m_20)
+        self.title.installEventFilter(self)
+        title_row.addWidget(self.title, 1)
+        dismiss = QtWidgets.QToolButton()
+        dismiss.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_TitleBarCloseButton))
+        dismiss.setAccessibleName("Закрыть")
+        dismiss.clicked.connect(self.reject)
+        title_row.addWidget(dismiss)
+        self.content.addLayout(title_row)
+
+    def eventFilter(self, watched, event):
+        if (watched is self.title and event.type() == QtCore.QEvent.MouseButtonPress
+                and event.button() == QtCore.Qt.LeftButton):
+            return self.windowHandle().startSystemMove()
+        return super().eventFilter(watched, event)
+
+    @staticmethod
+    def style_buttons(*buttons):
+        for button in buttons:
+            button.setFont(css.font_l_15)
+            button.setStyleSheet(css.btn_style_1)
+            button.setMinimumHeight(32)
+            button.setMinimumWidth(button.fontMetrics().horizontalAdvance(button.text()) + 20)
+
+
+class DelaySettingsDialog(ServerDialog):
+    def __init__(self, port, token, parent):
+        super().__init__("Настройка задержки трансляции", parent)
+        self.resize(470, 420)
+        self.setSizeGripEnabled(True)
+        self.rows = []
+        self.reply = None
+        self.network = QtNetwork.QNetworkAccessManager(self)
+        self.request = QtNetwork.QNetworkRequest(QtCore.QUrl(
+            "http://127.0.0.1:{}/api/delays".format(port)))
+        self.request.setRawHeader(b"X-USKO-Delay-Token", token.encode("ascii"))
+        self.request.setHeader(QtNetwork.QNetworkRequest.ContentTypeHeader, "application/json")
+        self.request.setTransferTimeout(2000)
+
+        layout = self.content
+        hint = QtWidgets.QLabel("Серым показаны столы, которые отключились или давно не подавали сигнал.")
+        hint.setFont(css.font_l_13)
+        hint.setWordWrap(True)
+        layout.addWidget(hint)
+        self.list = QtWidgets.QListWidget()
+        self.list.setStyleSheet("QListWidget { selection-background-color: #e5ecff; }")
+        self.list.currentRowChanged.connect(self._select_row)
+        layout.addWidget(self.list, 1)
+
+        controls = QtWidgets.QHBoxLayout()
+        caption = QtWidgets.QLabel("Задержка")
+        caption.setFont(css.font_l_13)
+        self.delay = QtWidgets.QDoubleSpinBox()
+        self.delay.setFont(css.font_l_15)
+        self.delay.setRange(0, 3600)
+        self.delay.setSuffix(" с")
+        self.delay.setSingleStep(0.1)
+        caption.setBuddy(self.delay)
+        controls.addWidget(caption)
+        controls.addWidget(self.delay)
+        self.save = QtWidgets.QPushButton("Сохранить")
+        self.save.clicked.connect(lambda: self._change(delay_sec=self.delay.value()))
+        controls.addWidget(self.save)
+        self.remove = QtWidgets.QPushButton("Удалить")
+        self.remove.clicked.connect(lambda: self._change(delete=True))
+        controls.addWidget(self.remove)
+        layout.addLayout(controls)
+        self.status = QtWidgets.QLabel()
+        self.status.setFont(css.font_l_13)
+        self.status.setWordWrap(True)
+        layout.addWidget(self.status)
+        close = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        close_button = close.button(QtWidgets.QDialogButtonBox.Close)
+        close_button.setText("Закрыть")
+        self.style_buttons(self.save, self.remove, close_button)
+        close.rejected.connect(self.reject)
+        layout.addWidget(close)
+        self._select_row(-1)
+
+        # Список обновляется без блокировки Qt и без сброса введённой задержки.
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self._refresh)
+        self.timer.start(1500)
+        self._refresh()
+
+    def _refresh(self):
+        if self.reply is None:
+            self.reply = self.network.get(self.request)
+            self.reply.finished.connect(self._received)
+
+    def _select_row(self, index):
+        enabled = 0 <= index < len(self.rows)
+        for widget in (self.delay, self.save, self.remove):
+            widget.setEnabled(enabled)
+        if enabled:
+            self.delay.setValue(self.rows[index]["delay_sec"])
+
+    def _change(self, **values):
+        if self.reply is not None and self.reply.operation() == QtNetwork.QNetworkAccessManager.GetOperation:
+            self.reply.finished.disconnect(self._received)
+            self.reply.abort()
+            self.reply.deleteLater()
+            self.reply = None
+        if self.reply is None and self.list.currentRow() >= 0:
+            row = self.rows[self.list.currentRow()]
+            body = json.dumps(dict(values, ip=row["ip"])).encode("utf-8")
+            self.reply = self.network.post(self.request, body)
+            self.reply.finished.connect(self._received)
+
+    def _received(self):
+        reply = self.reply
+        self.reply = None
+        try:
+            data = json.loads(bytes(reply.readAll()))
+        except (ValueError, UnicodeError):
+            data = None
+        if reply.error() != QtNetwork.QNetworkReply.NoError or not isinstance(data, list):
+            detail = data.get("detail") if isinstance(data, dict) else None
+            self.status.setText(detail if isinstance(detail, str) else "Не удалось получить настройки сервера.")
+        else:
+            self.status.setText("" if data else "Список пока пуст. Столы появятся после передачи данных.")
+            self._update_rows(data)
+        reply.deleteLater()
+
+    def _update_rows(self, rows):
+        if rows == self.rows:
+            return
+        index = self.list.currentRow()
+        previous = self.rows[index] if index >= 0 else None
+        edited = self.delay.value()
+        self.rows = rows
+        with QtCore.QSignalBlocker(self.list):
+            self.list.clear()
+            selected = -1
+            for index, row in enumerate(rows):
+                seconds = QtCore.QLocale().toString(float(row["delay_sec"]), "g", 10)
+                title = f"Татами {row['tatami_id']} · {seconds} с"
+                # Строку рисует виджет с двумя подписями. Текст DisplayRole
+                # Qt нарисовал бы под ним повторно, особенно заметно при выборе.
+                item = QtWidgets.QListWidgetItem()
+                item.setData(QtCore.Qt.AccessibleTextRole, title + " · " + row["ip"])
+                item.setData(QtCore.Qt.AccessibleDescriptionRole,
+                             "Активен" if row["active"] else "Нет недавних обновлений")
+                self.list.addItem(item)
+                widget = QtWidgets.QWidget()
+                labels = QtWidgets.QVBoxLayout(widget)
+                labels.setContentsMargins(8, 4, 8, 4)
+                labels.setSpacing(2)
+                tatami = QtWidgets.QLabel(title)
+                tatami.setFont(css.font_m_15)
+                tatami.setTextFormat(QtCore.Qt.PlainText)
+                if not row["active"]:
+                    tatami.setStyleSheet("color: #666;")
+                ip = QtWidgets.QLabel(row["ip"])
+                ip.setFont(css.font_l_12)
+                ip.setStyleSheet("color: #666;")
+                labels.addWidget(tatami)
+                labels.addWidget(ip)
+                item.setSizeHint(widget.sizeHint())
+                self.list.setItemWidget(item, widget)
+                if previous and row["ip"] == previous["ip"]:
+                    selected = index
+            self.list.setCurrentRow(selected if selected >= 0 else (0 if rows else -1))
+        self._select_row(self.list.currentRow())
+        if selected >= 0 and edited != round(previous["delay_sec"], self.delay.decimals()):
+            self.delay.setValue(edited)
+
+
+class ResultsPanel(QtWidgets.QWidget):
+    def __init__(self, path):
+        super().__init__()
+        self.path = path
+        self.records = []
+        self.filters = []
+        layout = QtWidgets.QVBoxLayout(self)
+        filters_row = QtWidgets.QGridLayout()
+        for column, (label, placeholder) in enumerate((
+            ("Дата", "Все даты"), ("Татами", "Все татами"),
+            ("Вид соревнований", "Все виды"), ("Категория", "Все категории"),
+        )):
+            combo = QtWidgets.QComboBox()
+            combo.setStyleSheet(css.combo_style_1)
+            combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
+            combo.setMinimumContentsLength(9)
+            combo.setAccessibleName(label)
+            combo.currentIndexChanged.connect(self._filter)
+            self.filters.append((combo, placeholder))
+            filters_row.addWidget(QtWidgets.QLabel(label), 0, column)
+            filters_row.addWidget(combo, 1, column)
+        header = QtWidgets.QWidget()
+        header.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        header.setLayout(filters_row)
+        filters_row.setContentsMargins(0, 0, 0, 0)
+        self.search_fields = {}
+        for column, (field, caption) in enumerate((("name", "ФИО или номер"), ("region", "Регион"))):
+            search = QtWidgets.QLineEdit()
+            search.setStyleSheet(css.LEdit_style_1)
+            search.setPlaceholderText(caption)
+            search.setAccessibleName(caption)
+            search.setClearButtonEnabled(True)
+            search.textChanged.connect(self._filter)
+            self.search_fields[field] = search
+            filters_row.addWidget(search, 2, column * 2, 1, 2)
+        layout.addWidget(header)
+
+        splitter = QtWidgets.QSplitter()
+        self.entries = QtWidgets.QListWidget()
+        self.entries.setAccessibleName("Список результатов")
+        self.entries.currentItemChanged.connect(self._show_result)
+        self.detail = QtWidgets.QTextBrowser()
+        self.detail.setAccessibleName("Подробности результата")
+        self.detail.setOpenLinks(False)
+        splitter.addWidget(self.entries)
+        splitter.addWidget(self.detail)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([340, 530])
+        layout.addWidget(splitter, 1)
+        self.timer = QtCore.QTimer(self, interval=1500)
+        self.timer.timeout.connect(self.refresh)
+        self._signature = None
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.refresh()
+        self.timer.start()
+
+    def hideEvent(self, event):
+        self.timer.stop()
+        super().hideEvent(event)
+
+    @staticmethod
+    def _values(record):
+        date = datetime.fromisoformat(record["time"]).strftime("%d.%m.%Y")
+        return date, record["tatami_id"], MODES[record["mode"]], record["category"]
+
+    def refresh(self):
+        try:
+            stat = self.path.stat() if self.path.exists() else None
+            signature = (stat.st_mtime_ns, stat.st_size) if stat else ()
+            if signature == self._signature:
+                return
+            records = load_results(self.path)
+        except (OSError, sqlite3.Error, ValueError) as exc:
+            self._signature = None
+            self.detail.setPlainText(f"Не удалось прочитать архив результатов. {exc}")
+            return
+        self._signature = signature
+        # Если оператор смотрел самую свежую запись, новая запись сразу
+        # откроется. При просмотре старой карточки сохраняем выбор.
+        follow_latest = self.entries.currentRow() == 0
+        self.records = records
+        values = [self._values(record) for record in records]
+        for index, (combo, placeholder) in enumerate(self.filters):
+            old = combo.currentData()
+            # При появлении нового результата сохраняем выбранные фильтры.
+            with QtCore.QSignalBlocker(combo):
+                combo.clear()
+                combo.addItem(placeholder, None)
+                options = dict.fromkeys(row[index] for row in values if row[index])
+                for value in options:
+                    combo.addItem(value, value)
+                combo.setCurrentIndex(max(0, combo.findData(old)))
+        self._filter(follow_latest=follow_latest)
+
+    def _filter(self, *_, follow_latest=False):
+        selected = self.entries.currentItem()
+        old_key = selected.data(QtCore.Qt.UserRole)["key"] if selected and not follow_latest else None
+        criteria = [combo.currentData() for combo, _ in self.filters]
+        queries = {field: search.text().casefold().replace("ё", "е").split()
+                   for field, search in self.search_fields.items() if search.text().strip()}
+        target = 0
+        with QtCore.QSignalBlocker(self.entries):
+            self.entries.clear()
+            for record in self.records:
+                if any(wanted is not None and wanted != actual
+                       for wanted, actual in zip(criteria, self._values(record))):
+                    continue
+                # Оба поля проверяем для одной стороны, чтобы фамилия АКА
+                # и регион СИРО не давали ложного совпадения.
+                if queries and not any(
+                    all(word in record[side][field].casefold().replace("ё", "е")
+                        for field, words in queries.items() for word in words)
+                    for side in SIDES if side in record
+                ):
+                    continue
+                stamp = datetime.fromisoformat(record["time"]).strftime("%d.%m.%Y · %H:%M:%S")
+                names = [record[side]["name"] for side in SIDES if side in record]
+                summary = MODES[record["mode"]]
+                if record["mode"] == "kumite":
+                    summary += " · " + ":".join(str(record[side]["score"] or "0") for side in SIDES)
+                    if record["kind"] != "result":
+                        summary += " · Без итогового решения"
+                elif record["mode"] == "kata_final":
+                    summary += " · " + record["total"]
+                if record["key"] == old_key:
+                    target = self.entries.count()
+                item = QtWidgets.QListWidgetItem(
+                    f"{stamp} · Татами {record['tatami_id']}\n{summary}\n{' / '.join(names)}"
+                )
+                item.setData(QtCore.Qt.UserRole, record)
+                self.entries.addItem(item)
+            if self.entries.count():
+                self.entries.setCurrentRow(target)
+        self._show_result(self.entries.currentItem())
+
+    def _show_result(self, item, previous=None):
+        if item is None:
+            self.detail.setPlainText("По выбранным фильтрам результатов нет." if self.records else
+                                     "В архиве пока нет результатов.")
+            return
+        result = item.data(QtCore.Qt.UserRole)
+        mode = result["mode"]
+        stamp = datetime.fromisoformat(result["time"]).strftime("%d.%m.%Y · %H:%M:%S")
+        category = escape(result["category"])
+        parts = [f"<p>{stamp} · Татами {escape(result['tatami_id'])} · {category}</p>",
+                 f"<h2>{MODES[mode]}</h2>"]
+        for side in SIDES:
+            if side not in result:
+                continue
+            athlete = result[side]
+            label = "АКА" if side == "aka" else "СИРО"
+            if mode == "kata_qual" and result["winner"] == side:
+                label = f'<span style="color:#15803d;">{label}</span>'
+            name, region = escape(athlete["name"]), escape(athlete["region"])
+            parts.append(f"<p><b>{label}</b> &nbsp; {name} &nbsp; <small>{region}</small></p>")
+        if mode == "kata_final":
+            cells = []
+            for index in range(1, 8):
+                score = escape(result["scores"][f"ref{index}"])
+                if score:
+                    mark = f"<s>{score}</s>" if index in result["excluded"] else score
+                    cells.append(f'<td align="center"><small>Судья {index}</small><br>{mark}</td>')
+            parts.append('<table cellspacing="5" cellpadding="4"><tr>' + "".join(cells) + "</tr></table>")
+            parts.append(f"<h3>Итоговая сумма &nbsp; {escape(result['total'])}</h3>")
+        else:
+            if mode == "kumite":
+                aka, siro = (escape(str(result[side]["score"] or "0")) for side in SIDES)
+                parts.append(f"<h2>{aka} : {siro}</h2>")
+            if result.get("winner"):
+                winner = "АКА" if result["winner"] == "aka" else "СИРО"
+                parts.append(f"<p><b>Победитель · {winner}</b></p>")
+            else:
+                parts.append("<p><b>Без итогового решения</b></p>")
+            if result.get("timeline"):
+                parts.append("<h3>Ход поединка</h3>")
+                parts.append("<small>Время у события — остаток на табло</small>")
+                for side, action, seconds in result["timeline"]:
+                    remaining = "" if seconds is None else f"{seconds // 60:02d}:{seconds % 60:02d}"
+                    label = "АКА" if side == "aka" else "СИРО"
+                    # Цвет задаём только буквам: QTextBrowser может растянуть
+                    # фон текстового фрагмента при переносе строки.
+                    color = "#bf293c" if side == "aka" else "#53677e"
+                    label = f'<b><span style="color:{color};">{label}</span></b>'
+                    parts.append(f"<p>{label} {escape(action)} <small>{remaining}</small></p>")
+        self.detail.setHtml("".join(parts))
+
+
 class ServerWindow(QtWidgets.QMainWindow):
     mode_requested = QtCore.pyqtSignal()
 
@@ -108,6 +482,14 @@ class ServerWindow(QtWidgets.QMainWindow):
         self.queue = deque(maxlen=2000)
         # Частые HTTP-запросы не должны вытеснять события и ошибки сервера.
         self.request_queue = deque(maxlen=2000)
+        self.tables_network = QtNetwork.QNetworkAccessManager(self)
+        self.tables_reply = None
+        self.table_rows = []
+        self.known_tables = {}
+        self.delay_token = None
+        self.tables_timer = QtCore.QTimer(self)
+        self.tables_timer.setInterval(1500)
+        self.tables_timer.timeout.connect(self._refresh_tables)
         self.log_dir = Path(log_dir) if log_dir else Path(
             QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.GenericDataLocation)
         ) / "USKO-Tab" / "logs"
@@ -160,6 +542,11 @@ class ServerWindow(QtWidgets.QMainWindow):
         heading.addWidget(self.status)
         header.addLayout(heading)
         header.addStretch()
+        self.delay_button = QtWidgets.QPushButton("Настройка задержки")
+        self.delay_button.setFixedHeight(38)
+        self.delay_button.setEnabled(False)
+        self.delay_button.clicked.connect(self._show_delay_settings)
+        header.addWidget(self.delay_button)
         self.start_button = QtWidgets.QPushButton("Запустить сервер")
         self.start_button.clicked.connect(self._primary_clicked)
         header.addWidget(self.start_button)
@@ -253,7 +640,34 @@ class ServerWindow(QtWidgets.QMainWindow):
         journal_layout.setSpacing(12)
         journal_tools = QtWidgets.QHBoxLayout()
         journal_tools.addWidget(QtWidgets.QLabel("Журнал сервера"))
-        journal_tools.addStretch()
+        self.tables_scroll = QtWidgets.QScrollArea()
+        self.tables_scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.tables_scroll.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Fixed)
+        self.tables_scroll.setFixedHeight(22)
+        self.tables_scroll.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.tables_scroll.setStyleSheet("""
+            QScrollArea#sessionTables, QWidget#sessionTablesViewport, QWidget#sessionTableStrip {
+                background: transparent;
+            }
+            QScrollBar:horizontal { height: 4px; background: transparent; margin: 0; }
+            QScrollBar::handle:horizontal { background: #a8b8cc; min-width: 16px; border-radius: 2px; }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0; }
+            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal { background: transparent; }
+        """)
+        self.tables_scroll.setObjectName("sessionTables")
+        self.tables_scroll.viewport().setObjectName("sessionTablesViewport")
+        self.tables_scroll.viewport().installEventFilter(self)
+        self.table_strip = QtWidgets.QWidget()
+        self.table_strip.setObjectName("sessionTableStrip")
+        self.table_strip.setFixedSize(0, 18)
+        self.table_layout = QtWidgets.QHBoxLayout(self.table_strip)
+        self.table_layout.setContentsMargins(0, 0, 0, 0)
+        self.table_layout.setSpacing(4)
+        self.tables_scroll.setWidget(self.table_strip)
+        # QScrollArea сам включает заливку фона у вложенного виджета.
+        self.table_strip.setAutoFillBackground(False)
+        self.tables_scroll.viewport().setAutoFillBackground(False)
+        journal_tools.addWidget(self.tables_scroll, 1)
         self.attach_log_button = QtWidgets.QPushButton("Примагнитить")
         self.attach_log_button.setObjectName("journalPin")
         self.attach_log_button.setIcon(console_icon("pin", "#738096"))
@@ -270,7 +684,11 @@ class ServerWindow(QtWidgets.QMainWindow):
             button.clicked.connect(action)
             journal_tools.addWidget(button)
         journal_layout.addLayout(journal_tools)
-        journal_layout.addWidget(self.log_splitter)
+        self.journal_tabs = QtWidgets.QTabWidget()
+        self.journal_tabs.addTab(self.log_splitter, "Журнал")
+        self.results = ResultsPanel(self.log_dir / "results.sqlite3")
+        self.journal_tabs.addTab(self.results, "Результаты")
+        journal_layout.addWidget(self.journal_tabs)
         # Кнопка находится внутри содержимого, поэтому остаётся в отделённом
         # журнале, а стандартный заголовок и системная рамка Qt сохраняются.
         self.dock.setWidget(journal)
@@ -278,6 +696,8 @@ class ServerWindow(QtWidgets.QMainWindow):
         self.resizeDocks([self.dock], [390], QtCore.Qt.Vertical)
         view_menu = self.menuBar().addMenu("Вид")
         view_menu.addAction(self.dock.toggleViewAction())
+        results_action = view_menu.addAction("Результаты")
+        results_action.triggered.connect(self._show_results)
         self.attach_log_action = view_menu.addAction("Примагнитить к основному окну")
         self.attach_log_action.triggered.connect(self.attach_log)
         self.attach_log_action.setEnabled(False)
@@ -361,6 +781,11 @@ class ServerWindow(QtWidgets.QMainWindow):
         self.start_button.setFixedHeight(38)
         self.start_button.setMinimumWidth(190)
         self._set_state("off")
+
+    def _show_results(self):
+        self.dock.show()
+        self.dock.raise_()
+        self.journal_tabs.setCurrentWidget(self.results)
 
     def _journal_floating_changed(self, floating):
         self.dock.setTitleBarWidget(None if floating else self._hidden_dock_title)
@@ -475,8 +900,103 @@ class ServerWindow(QtWidgets.QMainWindow):
         self.queue.append(dict(time=datetime.now().isoformat(timespec="seconds"),
                                level=level, source="USKO", message=message))
 
+    def _show_delay_settings(self):
+        dialog = DelaySettingsDialog(self.port.value(), self.delay_token, self)
+        dialog.exec_()
+        dialog.deleteLater()
+
+    def eventFilter(self, watched, event):
+        if watched is self.tables_scroll.viewport() and event.type() == QtCore.QEvent.Wheel:
+            bar = self.tables_scroll.horizontalScrollBar()
+            delta = event.angleDelta().y()
+            if bar.maximum() and delta:
+                bar.setValue(bar.value() - delta // 6)
+                return True
+        return super().eventFilter(watched, event)
+
+    def _refresh_tables(self):
+        if self.tables_reply is None:
+            request = QtNetwork.QNetworkRequest(QtCore.QUrl(
+                "http://127.0.0.1:{}/api/session-tables".format(self.port.value())))
+            request.setRawHeader(b"X-USKO-Delay-Token", self.delay_token.encode("ascii"))
+            request.setTransferTimeout(2000)
+            self.tables_reply = self.tables_network.get(request)
+            self.tables_reply.finished.connect(self._read_tables)
+
+    def _read_tables(self):
+        reply = self.tables_reply
+        self.tables_reply = None
+        if self.state == "running" and reply.error() == QtNetwork.QNetworkReply.NoError:
+            try:
+                rows = json.loads(bytes(reply.readAll()))
+            except ValueError:
+                rows = None
+            if isinstance(rows, list):
+                # При перезапуске процесса сохраняем обнаруженные столы
+                # до выхода из окна сервера. Новые сообщения обновляют их.
+                self.known_tables.update((row["ip"], row) for row in rows)
+                self._set_table_rows(list(self.known_tables.values()))
+        reply.deleteLater()
+
+    def _set_table_rows(self, rows):
+        rows = sorted(rows, key=lambda row: (not row["active"], row["tatami_id"].zfill(4), row["ip"]))
+        if rows == self.table_rows:
+            return
+        self.table_rows = rows
+        # Меняем содержимое только при смене состава или статуса. Полоса
+        # занимает свободную ширину заголовка, даже если татами много.
+        bar = self.tables_scroll.horizontalScrollBar()
+        position = bar.value()
+        while self.table_layout.count():
+            badge = self.table_layout.takeAt(0).widget()
+            badge.hide()
+            badge.deleteLater()
+        size = self.table_strip.height()
+        for row in rows:
+            badge = QtWidgets.QLabel()
+            badge.setTextFormat(QtCore.Qt.PlainText)
+            badge.setText(row["tatami_id"])
+            tatami = f"татами №{row['tatami_id']}"
+            status = (f"Есть связь с компьютером {tatami}" if row["active"]
+                      else f"Связь с компьютером {tatami} потеряна")
+            tooltip = f"{status}\nIP: {row['ip']}"
+            if row.get("disconnected_at"):
+                stamp = datetime.fromisoformat(row["disconnected_at"]).astimezone()
+                tooltip += f"\nОтключение: {stamp:%d.%m.%Y %H:%M:%S}"
+            badge.setToolTip(tooltip)
+            badge.setFont(css.font_m_13)
+            badge.setAlignment(QtCore.Qt.AlignCenter)
+            badge.setFixedSize(size, size)
+            # Зелёная рамка и серая заливка взяты из значков загрузки Excel.
+            color, background = ("#20744A", "#ffffff") if row["active"] else ("#4b5563", "#C9C9C9")
+            # Подсказка Qt наследует таблицу стилей квадратика, поэтому
+            # задаём ей отдельные цвета и шрифт, как у подписей журнала.
+            badge.setStyleSheet("""
+                QLabel { background: %s; color: %s; border: 1px solid %s; border-radius: 3px; }
+                QToolTip { background: #ffffff; color: #263346; border: 1px solid #ccd6eb;
+                           padding: 3px 5px; font: %dpx "%s"; }
+            """ % (background, color, color, css.font_l_13.pixelSize(), css.font_l_13.family()))
+            if badge.fontMetrics().horizontalAdvance(badge.text()) > badge.width() - 2:
+                badge.setFont(css.font_l_10)
+            self.table_layout.addWidget(badge)
+        gaps = max(0, len(rows) - 1) * self.table_layout.spacing()
+        self.table_strip.setFixedWidth(len(rows) * size + gaps)
+        bar.setValue(position)
+
     def _set_state(self, state):
         self.state = state
+        if state == "running" and self.delay_token:
+            self.tables_timer.start()
+            self._refresh_tables()
+        else:
+            self.tables_timer.stop()
+            if self.tables_reply is not None:
+                self.tables_reply.abort()
+            stopped_at = datetime.now().astimezone().isoformat(timespec="seconds")
+            for ip, row in self.known_tables.items():
+                if row["active"]:
+                    self.known_tables[ip] = dict(row, active=False, disconnected_at=stopped_at)
+            self._set_table_rows(list(self.known_tables.values()))
         titles = {"off": "Сервер остановлен", "starting": "Запускается…",
                   "running": "Сервер работает", "stopping": "Останавливается…", "error": "Ошибка сервера"}
         colors = {"off": "#b91c1c", "starting": "#a16207", "running": "#15803d",
@@ -489,6 +1009,7 @@ class ServerWindow(QtWidgets.QMainWindow):
         self.start_button.setIcon(console_icon("power", "#ffffff" if idle else "#b91c1c"))
         self.start_button.setIconSize(QtCore.QSize(18, 18))
         self.start_button.setEnabled((idle and self.log_available) or state in ("starting", "running"))
+        self.delay_button.setEnabled(state == "running")
         self.start_button.setStyleSheet("""
             QPushButton { border-radius: 7px; padding: 0 14px; border: 1px solid %s;
                 background: %s; color: %s; }
@@ -502,11 +1023,20 @@ class ServerWindow(QtWidgets.QMainWindow):
         if self.process.state() != QtCore.QProcess.NotRunning or self.pending_finish or not self.log_available:
             return
         try:
+            lock_path = self.log_dir / "server.lock"
+            # Обычно конфликт можно показать до создания дочернего процесса.
+            # Сам сервер проверяет блокировку ещё раз при одновременном запуске.
+            with server_instance_lock(lock_path) as acquired:
+                pass
+            if not acquired:
+                self._show_server_already_running()
+                return
             if self.session:
                 self.session.cleanup()
             self.session = tempfile.TemporaryDirectory(prefix="usko-server-")
             self.stop_file = Path(self.session.name) / "stop"
             self.ready_file = Path(self.session.name) / "ready"
+            self.delay_token = uuid.uuid4().hex
             name = "server-" + datetime.now().strftime("%Y%m%d-%H%M%S-") + uuid.uuid4().hex[:8] + ".jsonl"
             log_file = self.log_dir / name
             self.tail = LogTail(log_file)
@@ -515,7 +1045,9 @@ class ServerWindow(QtWidgets.QMainWindow):
             log_file.touch(exist_ok=False)
             args = ["--port", str(self.port.value()), "--log-file", str(log_file),
                     "--stop-file", str(self.stop_file), "--ready-file", str(self.ready_file),
-                    "--parent-pid", str(os.getpid()), "--version", self.app_version]
+                    "--parent-pid", str(os.getpid()), "--version", self.app_version,
+                    "--delay-file", str(self.log_dir / "delays.json"), "--delay-token", self.delay_token,
+                    "--instance-lock", str(lock_path)]
             if self.worker_command:
                 program, prefix = self.worker_command
             elif getattr(sys, "frozen", False):
@@ -547,11 +1079,45 @@ class ServerWindow(QtWidgets.QMainWindow):
             self._note("ERROR", "Сервер не подтвердил запуск за 20 секунд")
             self.stop_server()
 
+    def _confirm(self, title, message):
+        dialog = ServerDialog(title, self)
+        label = QtWidgets.QLabel(message)
+        label.setFont(css.font_l_13)
+        label.setWordWrap(True)
+        dialog.content.addWidget(label)
+        buttons = QtWidgets.QDialogButtonBox()
+        yes = buttons.addButton("Да", QtWidgets.QDialogButtonBox.YesRole)
+        no = buttons.addButton("Нет", QtWidgets.QDialogButtonBox.NoRole)
+        dialog.style_buttons(yes, no)
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        dialog.content.addWidget(buttons)
+        dialog.setMinimumWidth(420)
+        yes.setAutoDefault(False)
+        no.setDefault(True)
+        no.setFocus()
+        confirmed = dialog.exec_() == QtWidgets.QDialog.Accepted
+        dialog.deleteLater()
+        return confirmed
+
+    def _show_server_already_running(self):
+        dialog = ServerDialog("Сервер уже запущен", self)
+        message = QtWidgets.QLabel("Сервер трансляции работает в другой копии программы. "
+                                   "Чтобы запустить его здесь, сначала остановите тот сервер.")
+        message.setFont(css.font_l_13)
+        message.setWordWrap(True)
+        dialog.content.addWidget(message)
+        buttons = QtWidgets.QDialogButtonBox()
+        close = buttons.addButton("Понятно", QtWidgets.QDialogButtonBox.AcceptRole)
+        dialog.style_buttons(close)
+        buttons.accepted.connect(dialog.accept)
+        dialog.content.addWidget(buttons)
+        dialog.setMinimumWidth(420)
+        dialog.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        dialog.open()
+
     def confirm_stop(self):
-        if QtWidgets.QMessageBox.question(self, "Остановить сервер?",
-                "Трансляция всех подключённых татами будет прервана.",
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.Yes:
+        if self._confirm("Остановить сервер?", "Трансляция всех подключённых татами будет прервана."):
             self.stop_server()
 
     def stop_server(self):
@@ -602,6 +1168,11 @@ class ServerWindow(QtWidgets.QMainWindow):
             self.worker_watch.close()
             self.worker_watch = None
         self.pending_finish = None
+        if code == SERVER_ALREADY_RUNNING and exit_status == QtCore.QProcess.NormalExit and not was_stopping:
+            self._set_state("off")
+            self._poll()
+            self._show_server_already_running()
+            return
         self._set_state("off" if expected else "error")
         self._poll()
         self._note("INFO" if expected else "ERROR",
@@ -633,6 +1204,12 @@ class ServerWindow(QtWidgets.QMainWindow):
         if self.tail:
             try:
                 for record in self.tail.read():
+                    # Служебные обновления индикаторов остаются в файле
+                    # журнала и не вытесняют запросы судейских столов на экране.
+                    if (record.get("source") == "uvicorn.access"
+                            and record.get("path") in ("/api/session-tables", "/api/presence/heartbeat")
+                            and record.get("status") == 200):
+                        continue
                     target = self.request_queue if record.get("source") == "uvicorn.access" else self.queue
                     target.append(record)
             except OSError as exc:
@@ -695,10 +1272,8 @@ class ServerWindow(QtWidgets.QMainWindow):
 
     def request_table_mode(self, callback):
         if self.process.state() != QtCore.QProcess.NotRunning or self.pending_finish:
-            if QtWidgets.QMessageBox.question(self, "Перейти в режим табло?",
-                    "Сервер будет остановлен. Трансляция всех татами прервётся.",
-                    QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                    QtWidgets.QMessageBox.No) != QtWidgets.QMessageBox.Yes:
+            if not self._confirm("Перейти в режим табло?",
+                                 "Сервер будет остановлен. Трансляция всех татами прервётся."):
                 return
             self.return_to_table = callback
             self.back_pending = True
@@ -710,10 +1285,8 @@ class ServerWindow(QtWidgets.QMainWindow):
     def closeEvent(self, event):
         if self.process.state() != QtCore.QProcess.NotRunning or self.pending_finish:
             if not self.close_pending:
-                if QtWidgets.QMessageBox.question(self, "Выйти из программы?",
-                        "Сервер работает. Выход остановит трансляцию всех татами.",
-                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-                        QtWidgets.QMessageBox.No) != QtWidgets.QMessageBox.Yes:
+                if not self._confirm("Выйти из программы?",
+                                     "Сервер работает. Выход остановит трансляцию всех татами."):
                     event.ignore()
                     return
                 self.close_pending = True
@@ -722,6 +1295,8 @@ class ServerWindow(QtWidgets.QMainWindow):
             return
         event.accept()
         self.timer.stop()
+        self.known_tables.clear()
+        self._set_table_rows([])
         if self.session:
             self.session.cleanup()
             self.session = None

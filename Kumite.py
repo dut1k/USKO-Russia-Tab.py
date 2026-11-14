@@ -1,7 +1,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QTimer, QPoint
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSlider, QHBoxLayout
-from PyQt5.QtMultimedia import QSound
+import winsound
 from PyQt5.QtSvg import QSvgRenderer
 from datetime import datetime, timedelta
 import styleCSS as css
@@ -1667,12 +1667,17 @@ class KumiteMainWindow_Ui(QWidget):
         self.timeRound()
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_time)
-        # self.sound_gong1 = QSound(":/Audio/gong1.wav")
-        # self.sound_gong2 = QSound(":/Audio/gong2.wav")
-        # self.sound_gong1 = QSound(":/Audio/gong1-new.wav")
-        # self.sound_gong2 = QSound(":/Audio/gong2-new.wav")
-        self.sound_gong1 = QSound(":/Audio/gong_x2.wav")
-        self.sound_gong2 = QSound(":/Audio/gong_x1.wav")
+        # winsound нужен путь к обычному WAV-файлу. Копируем ресурсы один раз
+        # при открытии кумите и держим временный каталог до закрытия окна.
+        self.gong_directory = QtCore.QTemporaryDir()
+        self.gong_paths = {}
+        for filename in ("gong_x2.wav", "gong_x1.wav"):
+            if self.gong_directory.isValid():
+                path = self.gong_directory.filePath(filename)
+                if QtCore.QFile.copy(f":/Audio/{filename}", path):
+                    self.gong_paths[filename] = path
+                    continue
+            print(f"Кумите: не удалось подготовить гонг {filename}")
         self.slider.valueChanged.connect(self.timeRound)
 
         self.Frame_Header = Frame_Header(self)
@@ -1720,10 +1725,8 @@ class KumiteMainWindow_Ui(QWidget):
                 self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
             self.setSportsmanName(resetSportsmanFrame)
 
-    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
-                               display_coord_x1_secW, display_coord_y1_secW):
-        self.KumiteSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
-        self.KumiteSecondWindow.show()
+    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height):
+        self.KumiteSecondWindow.show_on_spectator_screen()
         self.show()
         coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
         coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2
@@ -1826,6 +1829,16 @@ class KumiteMainWindow_Ui(QWidget):
             self.btn_start.setText('► START')
         self.isShowSportsmanName()
 
+    def play_gong(self, filename):
+        path = self.gong_paths.get(filename)
+        if path is None:
+            return
+        # Асинхронный запуск оставляет таймер и кнопки доступными во время звука.
+        try:
+            winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC | winsound.SND_NODEFAULT)
+        except RuntimeError as error:
+            print(f"Кумите: не удалось воспроизвести гонг {filename}: {error}")
+
     def update_time(self):
         self.show_screen()
         self.timer.start(1000)
@@ -1834,11 +1847,10 @@ class KumiteMainWindow_Ui(QWidget):
         self.KumiteSecondWindow.lcd2.display(str(self.tics).split()[1])
 
         if self.tics == datetime.strptime(str('00:30'), '%M:%S'):
-            self.sound_gong1.play()
+            self.play_gong("gong_x2.wav")
 
         if self.tics <= datetime.strptime(str('00:00'), '%M:%S'):
             self.tics = datetime.strptime(str('00:00'), '%M:%S')
-            self.sound_gong2.play()
             self.timer.stop()
             self.btn_start.setText('Раунд\nзавершен')
             self.lcd1.display(str(self.tics).split()[1])
@@ -1846,6 +1858,8 @@ class KumiteMainWindow_Ui(QWidget):
 
             self.winnerRed.setDisabled(False)
             self.winnerWhite.setDisabled(False)
+            # Завершаем раунд до обращения к аудиоустройству Windows.
+            self.play_gong("gong_x1.wav")
 
     def start_timer(self):
         self.show_screen()

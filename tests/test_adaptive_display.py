@@ -3,6 +3,7 @@
 import os
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -88,6 +89,53 @@ class AdaptiveDisplayTests(unittest.TestCase):
     def test_show_uses_logical_screen_size(self):
         window = self.make_window(KataQual_SecondWindow)
         self.assertEqual(window.size(), window.windowHandle().screen().geometry().size())
+
+    def test_spectator_window_follows_unplug_and_reconnect(self):
+        window = self.make_window(KataQual_SecondWindow)
+        native_screen = self.app.primaryScreen()
+        laptop = ScreenStub(QtCore.QRect(0, 0, 1366, 768))
+        tv = ScreenStub(QtCore.QRect(-1920, 120, 1920, 1080))
+        screens = [laptop, tv]
+        with patch.object(QtGui.QGuiApplication, "primaryScreen", return_value=laptop), \
+                patch.object(QtGui.QGuiApplication, "screens", return_value=screens):
+            window.show_on_spectator_screen()
+            self.assertEqual(window.geometry(), tv.geometry())
+            screens.pop()
+            self.app.screenRemoved.emit(native_screen)
+            self.app.processEvents()
+            self.assertEqual(window.geometry(), laptop.geometry())
+            # После подключения Windows может сообщить другую геометрию
+            # и позднее уточнить её, например после согласования режима HDMI.
+            tv = ScreenStub(QtCore.QRect(1366, 0, 1280, 720))
+            screens.append(tv)
+            self.app.screenAdded.emit(native_screen)
+            self.app.processEvents()
+            self.assertEqual(window.geometry(), tv.geometry())
+            tv.rect = QtCore.QRect(1366, 0, 2560, 1440)
+            tv.geometryChanged.emit(tv.rect)
+            self.assertEqual(window.geometry(), tv.geometry())
+            self.assertAlmostEqual(window.transform().m11(), 1440 / 1080)
+
+    def test_position_refresh_updates_visible_window_in_all_modes(self):
+        laptop = ScreenStub(QtCore.QRect(0, 0, 1366, 768))
+        tv = ScreenStub(QtCore.QRect(0, -1440, 2560, 1440))
+        for cls, attr in ((KumiteMainWindow_Ui, "KumiteSecondWindow"),
+                          (KataQual_MainWindow_Ui, "KataQual_SecondWindow"),
+                          (KataMainWindow_Ui, "KataSecondWindow")):
+            with self.subTest(mode=cls.__name__):
+                control = cls()
+                window = getattr(control, attr)
+                self.addCleanup(control.closeSecondWin)
+                with patch.object(QtGui.QGuiApplication, "primaryScreen", return_value=laptop), \
+                        patch.object(QtGui.QGuiApplication, "screens", return_value=[laptop, tv]):
+                    control.calc_display_moveCoord(0, 0, 1366, 768)
+                    window.label_name_red_2.setText("Александров-Константинопольский Александр")
+                    window.setGeometry(laptop.geometry())
+                    control.calc_display_moveCoord(0, 0, 1366, 768)
+                    self.assertIs(getattr(control, attr), window)
+                    self.assertEqual(window.geometry(), tv.geometry())
+                    self.assertEqual(window.label_name_red_2.text(),
+                                     "Александров-Константинопольский Александр")
 
     def test_vector_flag_retains_round_mask_and_can_change(self):
         flag = RoundedLabel()

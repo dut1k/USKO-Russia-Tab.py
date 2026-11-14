@@ -5,9 +5,9 @@ from pathlib import Path
 from PyInstaller.utils.hooks import collect_submodules
 
 project = Path(SPECPATH)
-server_root = project.parent / 'server_USKO-Russia-Tab'
+server_root = project / 'overlay_server'
 if not (server_root / 'server.py').is_file():
-    raise FileNotFoundError('Для сборки нужен соседний проект server_USKO-Russia-Tab')
+    raise FileNotFoundError('В проекте табло отсутствует overlay_server/server.py')
 
 a = Analysis(
     ['USKO-Russia-Tab.py'],

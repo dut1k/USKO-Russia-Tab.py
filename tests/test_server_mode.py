@@ -1,5 +1,8 @@
 """Сервер проверяется только на loopback и свободных портах, без Excel и OBS."""
 import ast
+import asyncio
+from contextlib import nullcontext
+from http.client import HTTPConnection
 import json
 import os
 from pathlib import Path
@@ -9,7 +12,8 @@ import sys
 import tempfile
 import time
 import unittest
-from unittest.mock import patch
+from uuid import uuid4
+from unittest.mock import Mock, patch
 from urllib.request import Request, urlopen
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
@@ -17,8 +21,9 @@ os.environ.setdefault("PYTHONDONTWRITEBYTECODE", "1")
 from PyQt5 import QtCore, QtWidgets
 from websockets.sync.client import connect
 
-from server_console import LogTail, ServerWindow
-from server_worker import ParentWatch
+from server_console import DelaySettingsDialog, LogTail, ServerWindow
+from server_worker import ParentWatch, load_backend
+from table_presence import TablePresence
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -66,8 +71,8 @@ class ServerModeTests(unittest.TestCase):
         self.addCleanup(self.dispose_window)
         return self.window
 
-    def dispose_window(self):
-        window = self.window
+    def dispose_window(self, window=None):
+        window = window or self.window
         if window.process.state() != QtCore.QProcess.NotRunning or window.pending_finish:
             window.stop_server()
             self.wait_for(lambda: window.process.state() == QtCore.QProcess.NotRunning and not window.pending_finish)
@@ -120,6 +125,7 @@ class ServerModeTests(unittest.TestCase):
             program_release_number = "test"
 
         menu = MenuHarness()
+        menu.table_presence = Mock()
         self.addCleanup(menu.deleteLater)
         menu.show()
         with patch("server_console.ServerWindow", return_value=window):
@@ -131,6 +137,8 @@ class ServerModeTests(unittest.TestCase):
         menu.open_settings_dialog()
         self.assertTrue(menu.isVisible())
         self.assertFalse(window.isVisible())
+        menu.table_presence.pause.assert_called_once()
+        menu.table_presence.resume.assert_called_once()
         menu.hide()
 
     def test_http_websocket_isolation_reset_reconnect_and_restart(self):
@@ -174,6 +182,318 @@ class ServerModeTests(unittest.TestCase):
         self.assertIn("POST /api/state", window.requests_terminal.toPlainText())
         self.assertNotIn("POST /api/state", window.terminal.toPlainText())
         self.assertNotIn("Тест А", logs)
+
+    def test_results_tab_shows_persisted_results_and_ordered_fight_events(self):
+        window = self.make_window()
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+        fight_id = uuid4().hex
+
+        def athlete(name, score="", violation=""):
+            return dict(name=name, region="", score=score, penalties=dict(hm="", j=violation))
+
+        def publish(tatami, revision, mode, kind="result", **fields):
+            event = dict(id=uuid4().hex, mode=mode, kind=kind, category="Юниоры",
+                         time="2026-11-13T14:38:21+03:00", **fields)
+            if mode == "kumite":
+                event["id"] = fight_id
+            payload = dict(tatami_id=tatami, mode=mode, overlay_seq=revision)
+            response = self.http("/api/state", dict(payload, result_event=event))
+            self.assertTrue(json.loads(response)["result_saved"])
+            return payload
+
+        with connect(f"ws://127.0.0.1:{window.port.value()}/ws/1") as socket_one:
+            overlay = publish("1", 9, "kumite", aka=athlete("Тест А", "2"),
+                              siro=athlete("№ 42", "1", "J1"), remaining_sec=0, winner="aka")
+            self.assertEqual(json.loads(socket_one.recv(timeout=4)), overlay)
+        # Исправление приходит раньше исходного события; повтор не удваивает его.
+        publish("1", 11, "kumite", aka=athlete("Тест А", "2"),
+                siro=athlete("№ 42", "1", "J1"), remaining_sec=0, winner="siro")
+        for _ in range(2):
+            publish("1", 2, "kumite", "change", aka=athlete("Тест А", "2"),
+                    siro=athlete("№ 42", "0"), remaining_sec=76)
+        publish("1", 4, "kumite", "change", aka=athlete("Тест А", "2"),
+                siro=athlete("№ 42", "1", "J1"), remaining_sec=54)
+        publish("2", 1, "kata_final", aka=dict(name="", region=""),
+                scores={f"ref{i}": v for i, v in enumerate(
+                    ("7.8", "8.2", "8.3", "8.4", "8.7", "", ""), 1)},
+                total="24.9", excluded=[1, 5])
+        publish("2", 2, "kata_qual", aka=dict(name="№ 17", region=""),
+                siro=dict(name="Тест Б", region="Орёл"), winner="aka")
+        publish("2", 5, "kumite", "change", aka=athlete("", "0"),
+                siro=athlete("№ 18", "1"), remaining_sec=34)
+
+        window.stop_server()
+        self.wait_for(lambda: window.state == "off")
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+        window._show_results()
+        panel = window.results
+        window.resize(960, 780)
+        window.show()
+        self.app.processEvents()
+        name_search = panel.search_fields["name"]
+        region_search = panel.search_fields["region"]
+        header = name_search.parentWidget()
+        self.assertEqual(header.height(), header.sizeHint().height())
+        self.assertGreater(panel.detail.height(), header.height())
+        panel.refresh()
+        self.assertEqual(panel.entries.count(), 4)
+        mode_filter = panel.filters[2][0]
+        mode_filter.setCurrentText("Кумите")
+        self.assertEqual(panel.entries.count(), 2)
+        detail = panel.detail.toPlainText()
+        for expected in ("13.11.2026", "14:38:21", "Татами 1", "№ 42", "2 : 1",
+                         "Победитель · СИРО", "+2", "01:16", "00:54", "нарушение J"):
+            self.assertIn(expected, detail)
+        self.assertEqual(detail.count("+2"), 1)
+        self.assertRegex(panel.detail.toHtml(), r'color:#bf293c[^>]*>АКА</span>')
+        self.assertRegex(panel.detail.toHtml(), r'color:#53677e[^>]*>СИРО</span>')
+        self.assertIn("АКА +2 (счёт 2) 01:16", detail.splitlines())
+        panel.entries.setCurrentRow(1)
+        self.assertIn("Без итогового решения", panel.detail.toPlainText())
+        self.assertIn("00:34", panel.detail.toPlainText())
+        mode_filter.setCurrentText("Ката финал")
+        self.assertIn("24.9", panel.detail.toPlainText())
+        self.assertEqual(panel.detail.toHtml().count("line-through"), 2)
+        mode_filter.setCurrentText("Ката по флажкам")
+        self.assertIn("Победитель · АКА", " ".join(panel.detail.toPlainText().split()))
+        html = panel.detail.toHtml()
+        self.assertRegex(html, r'color:#15803d[^>]*>АКА</span>')
+        self.assertEqual(html.count("#15803d"), 1)
+        self.assertIn("Победитель · АКА", panel.detail.toPlainText().splitlines())
+        region_search.setText("ОРЕЛ")
+        self.assertEqual(panel.entries.count(), 1)
+        name_search.setText("17")
+        self.assertEqual(panel.entries.count(), 0)
+        name_search.setText("тест")
+        self.assertEqual(panel.entries.count(), 1)
+        name_search.clear()
+        region_search.setText("тест")
+        self.assertEqual(panel.entries.count(), 0)
+
+    def test_delay_settings_by_ip_apply_to_websocket_and_survive_restart(self):
+        window = self.make_window()
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+
+        def request(path, payload=None, source="127.0.0.1", authorized=False):
+            headers = {"Content-Type": "application/json"}
+            if authorized:
+                headers["X-USKO-Delay-Token"] = window.delay_token
+            conn = HTTPConnection("127.0.0.1", window.port.value(), timeout=3,
+                                  source_address=(source, 0))
+            try:
+                conn.request("GET" if payload is None else "POST", path,
+                             None if payload is None else json.dumps(payload), headers)
+                response = conn.getresponse()
+                return response.status, json.loads(response.read())
+            finally:
+                conn.close()
+
+        ip = "127.0.0.1"
+        other_ip = "127.0.0.2"
+        self.assertEqual(request("/api/delays")[0], 403)
+        self.assertEqual(request("/api/state", {"tatami_id": 1})[0], 200)
+        self.assertEqual(request("/api/state", {"tatami_id": 2}, source=other_ip)[0], 200)
+        self.wait_for(lambda: len(window.table_rows) == 2)
+        self.assertEqual(window.table_layout.itemAt(0).widget().toolTip(),
+                         "Есть связь с компьютером татами №1\nIP: " + ip)
+        self.assertEqual(window.table_layout.itemAt(1).widget().text(), "2")
+        self.assertEqual(request("/api/delays", {"ip": ip, "delay_sec": -1}, authorized=True)[0], 422)
+
+        dialog = DelaySettingsDialog(window.port.value(), window.delay_token, window)
+        self.addCleanup(dialog.deleteLater)
+        self.wait_for(lambda: dialog.list.count() == 2)
+        self.assertTrue(dialog.windowFlags() & QtCore.Qt.FramelessWindowHint)
+        self.assertEqual(dialog.title.font().pixelSize(), 20)
+        item = dialog.list.currentItem()
+        self.assertEqual(item.text(), "")
+        self.assertEqual(item.data(QtCore.Qt.AccessibleTextRole), "Татами 1 · 1 с · 127.0.0.1")
+        tatami_label, ip_label = dialog.list.itemWidget(item).findChildren(QtWidgets.QLabel)
+        self.assertEqual((tatami_label.text(), ip_label.text()), ("Татами 1 · 1 с", "127.0.0.1"))
+        self.assertGreater(tatami_label.font().pixelSize(), ip_label.font().pixelSize())
+        self.assertEqual(dialog.delay.minimum(), 0)
+        dialog.delay.setValue(0)
+        dialog.save.click()
+        self.wait_for(lambda: dialog.rows[0]["delay_sec"] == 0)
+        self.assertEqual(dialog.rows[1]["delay_sec"], 1)
+        self.assertIn("0 с", dialog.list.item(0).data(QtCore.Qt.AccessibleTextRole))
+        self.assertIn("1 с", dialog.list.item(1).data(QtCore.Qt.AccessibleTextRole))
+
+        url = "ws://127.0.0.1:{}/ws/3".format(window.port.value())
+        pending = {"tatami_id": 3, "winner": "aka"}
+        current = {"tatami_id": 3, "winner": None}
+        request("/api/state", pending, source=other_ip)
+        with connect(url) as overlay:
+            with self.assertRaises(TimeoutError):
+                overlay.recv(timeout=0.15)
+            request("/api/state", current)
+            self.assertEqual(json.loads(overlay.recv(timeout=0.6)), current)
+            with self.assertRaises(TimeoutError):
+                overlay.recv(timeout=1.05)
+        with connect(url) as overlay:
+            self.assertEqual(json.loads(overlay.recv(timeout=1)), current)
+
+        url = "ws://127.0.0.1:{}/ws/5".format(window.port.value())
+        athlete = {"tatami_id": 5, "mode": "kata_final", "name": "Тест Ката"}
+        scores = {"tatami_id": 5, "scores": [8.0], "partial": True}
+        request("/api/state", athlete, source=other_ip)
+        request("/api/state", scores)
+        with connect(url) as overlay:
+            with self.assertRaises(TimeoutError):
+                overlay.recv(timeout=0.15)
+            self.assertEqual(json.loads(overlay.recv(timeout=2)), athlete)
+            self.assertEqual(json.loads(overlay.recv(timeout=1)), scores)
+        with connect(url) as overlay:
+            self.assertEqual(json.loads(overlay.recv(timeout=1)), dict(athlete, scores=[8.0]))
+
+        dialog.timer.stop()
+        self.wait_for(lambda: len(window.table_rows) == 2)
+        window.stop_server()
+        self.wait_for(lambda: window.state == "off")
+        self.assertEqual(len(window.table_rows), 2)
+        self.assertTrue(all(not row["active"] and row["disconnected_at"] for row in window.table_rows))
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+        status, rows = request("/api/delays", authorized=True)
+        self.assertEqual(status, 200)
+        self.assertEqual(rows, [
+            {"ip": ip, "tatami_id": "5", "delay_sec": 0, "active": False},
+            {"ip": other_ip, "tatami_id": "5", "delay_sec": 1, "active": False},
+        ])
+        self.assertEqual(request("/api/session-tables", authorized=True), (200, []))
+        status, rows = request("/api/delays", {"ip": ip, "delete": True}, authorized=True)
+        self.assertEqual(status, 200)
+        self.assertEqual([row["ip"] for row in rows], [other_ip])
+        request("/api/state", {"tatami_id": 4})
+        _, rows = request("/api/delays", authorized=True)
+        self.assertEqual(rows[0], {"ip": ip, "tatami_id": "4", "delay_sec": 1, "active": True})
+
+    def test_table_strip_scrolls_without_growing_journal_header(self):
+        window = self.make_window()
+        window.resize(window.minimumSize())
+        window.show()
+        self.app.processEvents()
+        header_height = window.tables_scroll.height()
+        window._set_table_rows([
+            {"ip": "192.0.2.{}".format(number), "tatami_id": str(number), "active": number > 25}
+            for number in range(1, 51)
+        ])
+        self.app.processEvents()
+        bar = window.tables_scroll.horizontalScrollBar()
+        self.assertGreater(bar.maximum(), 0)
+        self.assertLessEqual(bar.height(), 4)
+        self.assertEqual(window.tables_scroll.height(), header_height)
+        first = window.table_layout.itemAt(0).widget()
+        self.assertEqual(first.text(), "26")
+        self.assertEqual(first.toolTip(), "Есть связь с компьютером татами №26\nIP: 192.0.2.26")
+        inactive = window.table_layout.itemAt(25).widget()
+        self.assertEqual(inactive.text(), "1")
+        self.assertEqual(inactive.toolTip(), "Связь с компьютером татами №1 потеряна\nIP: 192.0.2.1")
+
+    def test_idle_table_heartbeat_and_shutdown_update_the_server(self):
+        window = self.make_window()
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+        presence = TablePresence(window)
+        self.assertEqual(presence.timer.interval(), 5000)
+        presence.configure("127.0.0.1", window.port.value(), 9)
+        self.wait_for(lambda: window.table_rows and window.table_rows[0]["active"])
+        old_session = presence.session_id
+        self.assertEqual(window.table_rows[0]["tatami_id"], "9")
+        self.assertEqual(json.loads(self.http("/health"))["tatami_states"], 0)
+        presence.shutdown()
+        self.wait_for(lambda: not window.table_rows[0]["active"])
+        self.assertIn("Отключение:", window.table_layout.itemAt(0).widget().toolTip())
+
+        presence.resume()
+        self.addCleanup(presence.shutdown)
+        self.wait_for(lambda: window.table_rows[0]["active"])
+        self.assertNotEqual(presence.session_id, old_session)
+        self.http("/api/presence/disconnect", dict(tatami_id="9", session_id=old_session))
+        self.http("/api/presence/heartbeat", dict(tatami_id="1", session_id=old_session))
+        self.assertEqual(window.table_rows[0]["tatami_id"], "9")
+        window.stop_server()
+        self.wait_for(lambda: window.state == "off")
+        window.start_server()
+        self.wait_for(lambda: window.state == "running")
+        # Табло остаётся открытым и обнаруживает вернувшийся сервер само.
+        self.wait_for(lambda: window.table_rows and window.table_rows[0]["active"])
+        presence.shutdown()
+        self.wait_for(lambda: not window.table_rows[0]["active"])
+
+    def test_heartbeat_expiry_and_late_messages_with_simulated_clock(self):
+        backend = load_backend()
+        now = [100.0]
+        ip = "127.0.0.1"
+        request = type("Request", (), {"client": type("Client", (), {"host": ip})(),
+                                       "headers": {"X-USKO-Delay-Token": "test"}})()
+        backend.delay_token = "test"
+        first = dict(tatami_id="1", session_id="a" * 32)
+        second = dict(tatami_id="2", session_id="b" * 32)
+
+        async def verify():
+            request.headers["X-USKO-Presence"] = "1"
+            await backend.set_state({"tatami_id": 6}, request)
+            self.assertEqual(await backend.session_tables(request), [
+                dict(ip=ip, tatami_id="6", active=True),
+            ])
+            await backend.update_presence("heartbeat", first, request)
+            now[0] = 119.0
+            self.assertTrue((await backend.session_tables(request))[0]["active"])
+            now[0] = 120.0
+            offline = (await backend.session_tables(request))[0]
+            self.assertFalse(offline["active"])
+            self.assertIn("disconnected_at", offline)
+            request.headers["X-USKO-Session"] = first["session_id"]
+            await backend.set_state({"tatami_id": 1}, request)
+            self.assertTrue((await backend.session_tables(request))[0]["active"])
+            await backend.update_presence("heartbeat", second, request)
+            await backend.update_presence("disconnect", first, request)
+            await backend.update_presence("heartbeat", first, request)
+            self.assertEqual(await backend.session_tables(request), [
+                dict(ip=ip, tatami_id="2", active=True),
+            ])
+            await backend.update_presence("disconnect", second, request)
+            await backend.update_presence("heartbeat", second, request)
+            request.headers["X-USKO-Session"] = second["session_id"]
+            await backend.set_state({"tatami_id": 2}, request)
+            self.assertFalse((await backend.list_delays(request))[0]["active"])
+
+        with patch.object(backend, "monotonic", side_effect=lambda: now[0]):
+            asyncio.run(verify())
+
+    def test_second_server_is_blocked_even_on_another_port(self):
+        first = self.make_window()
+        first.start_server()
+        self.wait_for(lambda: first.state == "running")
+        second = ServerWindow(first.log_dir, first.worker_command)
+        self.addCleanup(self.dispose_window, second)
+        second.port.setValue(free_port())
+        self.assertNotEqual(first.port.value(), second.port.value())
+
+        second.start_button.click()
+        dialog = self.app.activeModalWidget()
+        self.assertIsNotNone(dialog, (second.state, list(second.queue)))
+        self.assertEqual(dialog.windowTitle(), "Сервер уже запущен")
+        dialog.accept()
+        self.assertEqual(second.process.state(), QtCore.QProcess.NotRunning)
+        self.assertIsNone(second.session)
+
+        # При гонке обе проверки в окнах могут пройти, но второй worker
+        # всё равно должен остановиться до открытия порта.
+        with patch("server_console.server_instance_lock", return_value=nullcontext(True)):
+            with patch.object(second, "_show_server_already_running") as notice:
+                second.start_server()
+                self.wait_for(lambda: notice.called)
+        self.assertEqual(second.state, "off")
+        self.assertTrue(json.loads(self.http("/health"))["ok"])
+
+        first.stop_server()
+        self.wait_for(lambda: first.state == "off")
+        second.start_server()
+        self.wait_for(lambda: second.state == "running")
 
     def test_occupied_port_reports_error_without_stopping_existing_listener(self):
         window = self.make_window()
@@ -219,11 +539,21 @@ class ServerModeTests(unittest.TestCase):
         window.show()
         window.start_server()
         self.wait_for(lambda: window.state == "running")
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.No):
-            self.assertFalse(window.close())
+        buttons = []
+
+        def click_confirmation(text):
+            dialog = self.app.activeModalWidget()
+            box = dialog.findChild(QtWidgets.QDialogButtonBox)
+            buttons[:] = [(button.text(), button.isDefault(), button.font().family())
+                          for button in box.buttons()]
+            next(button for button in box.buttons() if button.text() == text).click()
+
+        QtCore.QTimer.singleShot(0, lambda: click_confirmation("Нет"))
+        self.assertFalse(window.close())
+        self.assertIn(("Нет", True, "Gotham-Light"), buttons)
         self.assertEqual(window.state, "running")
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.Yes):
-            self.assertFalse(window.close())
+        QtCore.QTimer.singleShot(0, lambda: click_confirmation("Да"))
+        self.assertFalse(window.close())
         self.wait_for(lambda: window.process.state() == QtCore.QProcess.NotRunning)
         self.assertFalse(window.isVisible())
 
@@ -330,10 +660,10 @@ class ServerModeTests(unittest.TestCase):
         window.start_server()
         self.wait_for(lambda: window.state == "running")
         returned = []
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.No):
+        with patch.object(window, "_confirm", return_value=False):
             window.request_table_mode(lambda: returned.append(True))
         self.assertEqual(window.state, "running")
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.Yes):
+        with patch.object(window, "_confirm", return_value=True):
             window.request_table_mode(lambda: returned.append(True))
         self.assertEqual(returned, [])
         self.wait_for(lambda: bool(returned))
@@ -345,10 +675,10 @@ class ServerModeTests(unittest.TestCase):
         self.wait_for(lambda: window.state == "running")
         self.assertEqual(window.start_button.text(), "Остановить сервер")
         self.assertFalse(window.port.isEnabled())
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.No):
+        with patch.object(window, "_confirm", return_value=False):
             window.start_button.click()
         self.assertEqual(window.state, "running")
-        with patch.object(QtWidgets.QMessageBox, "question", return_value=QtWidgets.QMessageBox.Yes):
+        with patch.object(window, "_confirm", return_value=True):
             window.start_button.click()
         self.assertFalse(window.start_button.isEnabled())
         self.wait_for(lambda: window.state == "off")
