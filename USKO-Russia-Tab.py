@@ -63,8 +63,8 @@ class Worker(QThread):
 
 class Ui_Form0(object):
     def __init__(self):
-        self.year = '2026-10-11'
-        self.program_release_number = 'rev-006'
+        self.year = '2026-11-14'
+        self.program_release_number = 'rev-008'
 
     def setupUi0(self, Form0):
         Form0.setObjectName("Form0")
