@@ -1228,10 +1228,13 @@ class KumiteMainWindow_Ui(QWidget):
         self.lcd1.setStyleSheet("background-color: None; border: None")
 
         self.plus2sec.setGeometry(QtCore.QRect(520, 10, 40, 18))
+        # Фиксируем размер в пикселях, чтобы подпись с рамкой помещалась в 40 px.
+        self.plus2sec.setFont(css.font_m_11)
         self.plus2sec.setStyleSheet(grey_style_btn_plus)
         self.plus2sec.setObjectName("plus2sec")
 
         self.minus2sec.setGeometry(QtCore.QRect(520, 40, 40, 18))
+        self.minus2sec.setFont(css.font_m_11)
         self.minus2sec.setStyleSheet(grey_style_btn_minus)
         self.minus2sec.setObjectName("minus2sec")
 
@@ -1498,16 +1501,17 @@ class KumiteMainWindow_Ui(QWidget):
         self.frame_sex.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_sex.setObjectName("frame_sex")
 
-        self.male.setGeometry(QtCore.QRect(20, 0, 40, 25))
-        self.male.setFont(self.font_m_20)
+        # При высоком DPI индикатор и отступ Qt оставляют меньше места для буквы.
+        self.male.setGeometry(QtCore.QRect(20, 0, 56, 25))
+        self.male.setFont(css.font_m_16)
         self.male.setObjectName("male")
 
-        self.female.setGeometry(QtCore.QRect(90, 0, 40, 25))
-        self.female.setFont(self.font_m_20)
+        self.female.setGeometry(QtCore.QRect(90, 0, 56, 25))
+        self.female.setFont(css.font_m_16)
         self.female.setObjectName("female")
 
         self.sex_1.setGeometry(QtCore.QRect(330, 0, 50, 13))
-        self.sex_1.setFont(self.font_b_13)
+        self.sex_1.setFont(css.font_b_13)
         self.sex_1.setStyleSheet("color: black;")
         self.sex_1.setAlignment(QtCore.Qt.AlignCenter)
         self.sex_1.setObjectName("sex_1")
@@ -1725,8 +1729,10 @@ class KumiteMainWindow_Ui(QWidget):
                 self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
             self.setSportsmanName(resetSportsmanFrame)
 
-    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height):
-        self.KumiteSecondWindow.show_on_spectator_screen()
+    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
+                               display_coord_x1_secW, display_coord_y1_secW):
+        self.KumiteSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
+        self.KumiteSecondWindow.show()
         self.show()
         coord_x1 = display_coord_x1 + (display_width - self.size().width()) // 2
         coord_y1 = display_coord_y1 + (display_height - self.size().height()) // 2

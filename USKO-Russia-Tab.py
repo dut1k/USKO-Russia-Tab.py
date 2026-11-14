@@ -13,6 +13,7 @@ from PyQt5.QtSvg import QSvgRenderer
 from PyQt5.QtWidgets import QWidget, QFileDialog, QComboBox
 import pandas as pd
 # import numpy as np
+from screeninfo import get_monitors
 from Kata_final import KataMainWindow_Ui, KataSecondWindow  # KataSecondWindow
 from Kata_qual import KataQual_MainWindow_Ui  # KataQual_SecondWindow
 from Kumite import KumiteMainWindow_Ui  # KumiteSecondWindow
@@ -407,6 +408,17 @@ class MenuWindow(QWidget, Ui_Form0):
 
         self.setupUi0(self)
         self.overlay_status_changed.connect(self.overlay_status_frame, QtCore.Qt.QueuedConnection)
+        # Определяем размеры мониторов
+        self.display_coord_x1_secW = 'undefined'
+        for m in get_monitors():
+            self.list_monitor = str(m).split(', ')
+            self.calc_monitor_coord()
+        if self.display_coord_x1_secW == 'undefined':
+            self.display_coord_x1_secW = self.display_coord_x1
+            self.display_width_secW = self.display_width
+            self.display_coord_y1_secW = self.display_coord_y1
+            self.display_height_secW = self.display_height
+
         # Создаем словари, множества для формирования списков участник в индивидуальных кумите и ката + муж/жен
         self.TempSet = set()
         self.df_Single_list = []
@@ -621,12 +633,11 @@ class MenuWindow(QWidget, Ui_Form0):
         # Кнопки и списки из окна Ката по флажкам,
         # отображаются только в случае, если загружен список участников из Excel
 
-        # Кнопки (QRadioButton) "Мужчины" и "Женщины" - первый этап соритровки списков
+        # Оба переключателя читаются при клике, чтобы список соответствовал
+        # текущему полу и формату соревнования без повторных подключений сигналов.
         self.ui_kataQual.pers_com_qbx.clicked.connect(self.pers_com_qbxKataQual)
-        self.ui_kataQual.male.clicked.connect(lambda: self.useExportDataKataQual(
-            load_date=self.individ_kata_male_dict))
-        self.ui_kataQual.female.clicked.connect(lambda: self.useExportDataKataQual(
-            load_date=self.individ_kata_female_dict))
+        self.ui_kataQual.male.clicked.connect(self.pers_com_qbxKataQual)
+        self.ui_kataQual.female.clicked.connect(self.pers_com_qbxKataQual)
         # Выбор списка участников по возрасту, выбранная возрастная категория передается в comboBox_name
         self.ui_kataQual.comboBox_age.activated[str].connect(self.calcTabKataSpotrsmansRed)
         self.ui_kataQual.comboBox_age.activated[str].connect(self.calcTabKataSpotrsmansWhite)
@@ -646,20 +657,16 @@ class MenuWindow(QWidget, Ui_Form0):
         self.ui_kataFinal.Clear_Button.clicked.connect(self.clearData)
         # Кнопки и списки из окна Ката финал, принцип, как в Ката по флажкам
         self.ui_kataFinal.pers_com_qbx.clicked.connect(self.pers_com_qbxKataFinal)
-        self.ui_kataFinal.male.clicked.connect(lambda: self.useExportDataKataFinal(
-            load_date=self.individ_kata_male_dict))
-        self.ui_kataFinal.female.clicked.connect(lambda: self.useExportDataKataFinal(
-            load_date=self.individ_kata_female_dict))
+        self.ui_kataFinal.male.clicked.connect(self.pers_com_qbxKataFinal)
+        self.ui_kataFinal.female.clicked.connect(self.pers_com_qbxKataFinal)
         self.ui_kataFinal.comboBox_age.activated[str].connect(self.calcTabKataFinalSpotrsmansRed)
         self.ui_kataFinal.comboBox_name_red_1.activated[str].connect(self.setLabelRedKataFinal)
 
         # Кнопки и списки из окна Кумите, принцип, как в Ката по флажкам
         # Кнопка (QCheckBox) "Личн./Ком." - подгружаем личный или командрый список
         self.ui_kumite.pers_com_qbx.clicked.connect(self.pers_com_qbxKumite)
-        self.ui_kumite.male.clicked.connect(lambda: self.useExportDataKumite(
-            load_date=self.individ_kumite_male_dict))
-        self.ui_kumite.female.clicked.connect(lambda: self.useExportDataKumite(
-            load_date=self.individ_kumite_female_dict))
+        self.ui_kumite.male.clicked.connect(self.pers_com_qbxKumite)
+        self.ui_kumite.female.clicked.connect(self.pers_com_qbxKumite)
         self.ui_kumite.comboBox_age.activated[str].connect(self.calcTab_kumite)
         self.ui_kumite.comboBox_name_red_1.activated[str].connect(self.setLabelRedKumite)
         self.ui_kumite.comboBox_name_white_1.activated[str].connect(self.setLabelWhiteKumite)
@@ -1220,21 +1227,60 @@ class MenuWindow(QWidget, Ui_Form0):
 
         if sender == 'ui_kumite':
             sender = self.ui_kumite
+            spectator_attr = 'KumiteSecondWindow'
         elif sender == 'ui_kataQual':
             sender = self.ui_kataQual
+            spectator_attr = 'KataQual_SecondWindow'
         elif sender == 'ui_kataFinal':
             sender = self.ui_kataFinal
+            spectator_attr = 'KataSecondWindow'
         else:
             return
 
-        # Основное и зрительское окна используют одну систему координат Qt,
-        # в том числе при разном системном масштабе на ноутбуке и телевизоре.
-        primary = QtGui.QGuiApplication.primaryScreen()
-        if primary is not None:
-            geometry = primary.geometry()
+        # 1. заново получаем список мониторов
+        monitors = get_monitors()
+
+        # 2. сбрасываем координаты
+        self.display_coord_x1 = None
+        self.display_coord_y1 = None
+        self.display_width = None
+        self.display_height = None
+
+        self.display_coord_x1_secW = None
+        self.display_coord_y1_secW = None
+        self.display_width_secW = None
+        self.display_height_secW = None
+
+        # 3. перерасчитываем
+        primary_monitor = secondary_monitor = None
+        for monitor in monitors:
+            if monitor.is_primary:
+                primary_monitor = monitor
+                self.display_coord_x1 = monitor.x
+                self.display_coord_y1 = monitor.y
+                self.display_width = monitor.width
+                self.display_height = monitor.height
+            else:
+                secondary_monitor = monitor
+                self.display_coord_x1_secW = monitor.x
+                self.display_coord_y1_secW = monitor.y
+                self.display_width_secW = monitor.width
+                self.display_height_secW = monitor.height
+
+        # 4. если найден основной монитор — центрируем
+        if self.display_coord_x1 is not None:
             sender.calc_display_moveCoord(
-                geometry.x(), geometry.y(), geometry.width(), geometry.height()
+                self.display_coord_x1,
+                self.display_coord_y1,
+                self.display_width,
+                self.display_height,
+                self.display_coord_x1_secW or self.display_coord_x1,
+                self.display_coord_y1_secW or self.display_coord_y1
             )
+            # Берём размер того же монитора, который выбрал старый код
+            # переноса, даже если Qt пока считает окно открытым на ноутбуке.
+            monitor = secondary_monitor or primary_monitor
+            getattr(sender, spectator_attr).refresh_screen_size(monitor)
 
     def _post_overlay_async(self, url, payload, is_tick=False, session_id=None):
         try:
@@ -1263,8 +1309,14 @@ class MenuWindow(QWidget, Ui_Form0):
         combo_box.setEditable(True)
         combo_box.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
 
-        combo_box.lineEdit().setPlaceholderText(placeholder)
-        combo_box.lineEdit().setAlignment(QtCore.Qt.AlignCenter)
+        editor = combo_box.lineEdit()
+        editor.setPlaceholderText(placeholder)
+        # Редактируемый список рисует выбранное ФИО через отдельное поле ввода.
+        editor.setFont(combo_box.font())
+        editor.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        # После выбора длинного ФИО показываем его начало. При наборе текста
+        # пользователь по-прежнему может свободно перемещать курсор.
+        combo_box.currentIndexChanged[int].connect(lambda _: editor.setCursorPosition(0))
 
         completer = QtWidgets.QCompleter(combo_box.model(), combo_box)
         completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
@@ -2402,45 +2454,21 @@ class MenuWindow(QWidget, Ui_Form0):
         self.colNum_dict = dict(zip(colNum.columns.tolist(), sss))
         return self.colNum_dict
 
+    def update_personal_team_labels(self, ui, team):
+        active, inactive = (ui.com_lbl, ui.pers_lbl) if team else (ui.pers_lbl, ui.com_lbl)
+        active.setFont(self.font_b_13)
+        active.setStyleSheet("color: black;")
+        inactive.setFont(self.font_l_13)
+        inactive.setStyleSheet("color: grey;")
+
     def pers_com_qbxKataQual(self):
-        try:
-            pers_com_qbx = self.ui_kataQual.pers_com_qbx
-            if not pers_com_qbx.isChecked():
-                self.ui_kataQual.pers_lbl.setFont(self.font_b_13)
-                self.ui_kataQual.pers_lbl.setStyleSheet("color: black;")
-                self.ui_kataQual.com_lbl.setFont(self.font_l_13)
-                self.ui_kataQual.com_lbl.setStyleSheet("color: grey;")
-
-                self.ui_kataQual.male.clicked.connect(
-                    lambda: self.useExportDataKataQual(load_date=self.individ_kata_male_dict))
-                self.ui_kataQual.female.clicked.connect(
-                    lambda: self.useExportDataKataQual(load_date=self.individ_kata_female_dict))
-                if self.ui_kataQual.male.isChecked():
-                    self.useExportDataKataQual(load_date=self.individ_kata_male_dict)
-                elif self.ui_kataQual.female.isChecked():
-                    self.useExportDataKataQual(load_date=self.individ_kata_female_dict)
-                else:
-                    self.ui_kataQual.male.setChecked(True)
-                    self.useExportDataKataQual(load_date=self.individ_kata_male_dict)
-            else:
-                self.ui_kataQual.com_lbl.setFont(self.font_b_13)
-                self.ui_kataQual.com_lbl.setStyleSheet("color: black;")
-                self.ui_kataQual.pers_lbl.setFont(self.font_l_13)
-                self.ui_kataQual.pers_lbl.setStyleSheet("color: grey;")
-
-                self.ui_kataQual.male.clicked.connect(
-                    lambda: self.useExportDataKataQual(load_date=self.team_kata_male_dict))
-                self.ui_kataQual.female.clicked.connect(
-                    lambda: self.useExportDataKataQual(load_date=self.team_kata_female_dict))
-                if self.ui_kataQual.male.isChecked():
-                    self.useExportDataKataQual(load_date=self.team_kata_male_dict)
-                elif self.ui_kataQual.female.isChecked():
-                    self.useExportDataKataQual(load_date=self.team_kata_female_dict)
-                else:
-                    self.ui_kataQual.male.setChecked(True)
-                    self.useExportDataKataQual(load_date=self.team_kata_male_dict)
-        except Exception as e:
-            print(e)
+        ui = self.ui_kataQual
+        team = ui.pers_com_qbx.isChecked()
+        self.update_personal_team_labels(ui, team)
+        if ui.male.isChecked():
+            self.useExportDataKataQual(self.team_kata_male_dict if team else self.individ_kata_male_dict)
+        elif ui.female.isChecked():
+            self.useExportDataKataQual(self.team_kata_female_dict if team else self.individ_kata_female_dict)
 
     def useExportDataKataQual(self, load_date):
         dict_KataOrKumite = load_date
@@ -2454,41 +2482,13 @@ class MenuWindow(QWidget, Ui_Form0):
                                    name_white_1, comboBox_name_red_1, comboBox_name_white_1)
 
     def pers_com_qbxKataFinal(self):
-        pers_com_qbx = self.ui_kataFinal.pers_com_qbx
-        if not pers_com_qbx.isChecked():
-            self.ui_kataFinal.pers_lbl.setFont(self.font_b_13)
-            self.ui_kataFinal.pers_lbl.setStyleSheet("color: black;")
-            self.ui_kataFinal.com_lbl.setFont(self.font_l_13)
-            self.ui_kataFinal.com_lbl.setStyleSheet("color: grey;")
-
-            self.ui_kataFinal.male.clicked.connect(
-                lambda: self.useExportDataKataFinal(load_date=self.individ_kata_male_dict))
-            self.ui_kataFinal.female.clicked.connect(
-                lambda: self.useExportDataKataFinal(load_date=self.individ_kata_female_dict))
-            if self.ui_kataFinal.male.isChecked():
-                self.useExportDataKataFinal(load_date=self.individ_kata_male_dict)
-            elif self.ui_kataFinal.female.isChecked():
-                self.useExportDataKataFinal(load_date=self.individ_kata_female_dict)
-            else:
-                self.ui_kataFinal.male.setChecked(True)
-                self.useExportDataKataFinal(load_date=self.individ_kata_male_dict)
-        else:
-            self.ui_kataFinal.com_lbl.setFont(self.font_b_13)
-            self.ui_kataFinal.com_lbl.setStyleSheet("color: black;")
-            self.ui_kataFinal.pers_lbl.setFont(self.font_l_13)
-            self.ui_kataFinal.pers_lbl.setStyleSheet("color: grey;")
-
-            self.ui_kataFinal.male.clicked.connect(
-                lambda: self.useExportDataKataFinal(load_date=self.team_kata_male_dict))
-            self.ui_kataFinal.female.clicked.connect(
-                lambda: self.useExportDataKataFinal(load_date=self.team_kata_female_dict))
-            if self.ui_kataFinal.male.isChecked():
-                self.useExportDataKataFinal(load_date=self.team_kata_male_dict)
-            elif self.ui_kataFinal.female.isChecked():
-                self.useExportDataKataFinal(load_date=self.team_kata_female_dict)
-            else:
-                self.ui_kataFinal.male.setChecked(True)
-                self.useExportDataKataFinal(load_date=self.team_kata_male_dict)
+        ui = self.ui_kataFinal
+        team = ui.pers_com_qbx.isChecked()
+        self.update_personal_team_labels(ui, team)
+        if ui.male.isChecked():
+            self.useExportDataKataFinal(self.team_kata_male_dict if team else self.individ_kata_male_dict)
+        elif ui.female.isChecked():
+            self.useExportDataKataFinal(self.team_kata_female_dict if team else self.individ_kata_female_dict)
 
     def useExportDataKataFinal(self, load_date):
         dict_KataOrKumite = load_date
@@ -2502,41 +2502,13 @@ class MenuWindow(QWidget, Ui_Form0):
                                    name_white_1, comboBox_name_red_1, comboBox_name_white_1)
 
     def pers_com_qbxKumite(self):
-        pers_com_qbx = self.ui_kumite.pers_com_qbx
-        if not pers_com_qbx.isChecked():
-            self.ui_kumite.pers_lbl.setFont(self.font_b_13)
-            self.ui_kumite.pers_lbl.setStyleSheet("color: black;")
-            self.ui_kumite.com_lbl.setFont(self.font_l_13)
-            self.ui_kumite.com_lbl.setStyleSheet("color: grey;")
-
-            self.ui_kumite.male.clicked.connect(
-                lambda: self.useExportDataKumite(load_date=self.individ_kumite_male_dict))
-            self.ui_kumite.female.clicked.connect(
-                lambda: self.useExportDataKumite(load_date=self.individ_kumite_female_dict))
-            if self.ui_kumite.male.isChecked():
-                self.useExportDataKumite(load_date=self.individ_kumite_male_dict)
-            elif self.ui_kumite.female.isChecked():
-                self.useExportDataKumite(load_date=self.individ_kumite_female_dict)
-            else:
-                self.ui_kumite.male.setChecked(True)
-                self.useExportDataKumite(load_date=self.individ_kumite_male_dict)
-        else:
-            self.ui_kumite.com_lbl.setFont(self.font_b_13)
-            self.ui_kumite.com_lbl.setStyleSheet("color: black;")
-            self.ui_kumite.pers_lbl.setFont(self.font_l_13)
-            self.ui_kumite.pers_lbl.setStyleSheet("color: grey;")
-
-            self.ui_kumite.male.clicked.connect(
-                lambda: self.useExportDataKumite(load_date=self.team_kumite_male_dict))
-            self.ui_kumite.female.clicked.connect(
-                lambda: self.useExportDataKumite(load_date=self.team_kumite_female_dict))
-            if self.ui_kumite.male.isChecked():
-                self.useExportDataKumite(load_date=self.team_kumite_male_dict)
-            elif self.ui_kumite.female.isChecked():
-                self.useExportDataKumite(load_date=self.team_kumite_female_dict)
-            else:
-                self.ui_kumite.male.setChecked(True)
-                self.useExportDataKumite(load_date=self.team_kumite_male_dict)
+        ui = self.ui_kumite
+        team = ui.pers_com_qbx.isChecked()
+        self.update_personal_team_labels(ui, team)
+        if ui.male.isChecked():
+            self.useExportDataKumite(self.team_kumite_male_dict if team else self.individ_kumite_male_dict)
+        elif ui.female.isChecked():
+            self.useExportDataKumite(self.team_kumite_female_dict if team else self.individ_kumite_female_dict)
 
     def useExportDataKumite(self, load_date):
         dict_KataOrKumite = load_date
@@ -3267,6 +3239,18 @@ class MenuWindow(QWidget, Ui_Form0):
 
     def closeEvent(self, event):
         super().closeEvent(event)
+
+    def calc_monitor_coord(self):
+        if self.list_monitor[7] == 'is_primary=True)':
+            self.display_coord_x1 = int(self.list_monitor[0].replace('Monitor(x=', ''))
+            self.display_width = int(self.list_monitor[2].replace('width=', ''))
+            self.display_coord_y1 = int(self.list_monitor[1].replace('y=', ''))
+            self.display_height = int(self.list_monitor[3].replace('height=', ''))
+        if self.list_monitor[7] == 'is_primary=False)' and self.display_coord_x1_secW == 'undefined':
+            self.display_coord_x1_secW = int(self.list_monitor[0].replace('Monitor(x=', ''))
+            self.display_width_secW = int(self.list_monitor[2].replace('width=', ''))
+            self.display_coord_y1_secW = int(self.list_monitor[1].replace('y=', ''))
+            self.display_height_secW = int(self.list_monitor[3].replace('height=', ''))
 
     def setSportsmanName(self):
         try:

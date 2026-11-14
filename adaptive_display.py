@@ -13,13 +13,6 @@ class AdaptiveDisplay(QtWidgets.QGraphicsView):
         self.canvas.setFixedSize(1920, 1080)
         self._display_screen = None
         self._screen_signal_connected = False
-        self._follow_spectator_screen = False
-        app = QtGui.QGuiApplication.instance()
-        # После смены состава экранов Windows может ещё переносить окно.
-        # Обновляем геометрию после обработки текущих событий Qt.
-        app.screenAdded.connect(self._screen_layout_changed, QtCore.Qt.QueuedConnection)
-        app.screenRemoved.connect(self._screen_layout_changed, QtCore.Qt.QueuedConnection)
-        app.primaryScreenChanged.connect(self._screen_layout_changed, QtCore.Qt.QueuedConnection)
         self.setWindowFlags(QtCore.Qt.Window | QtCore.Qt.FramelessWindowHint)
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
@@ -64,34 +57,27 @@ class AdaptiveDisplay(QtWidgets.QGraphicsView):
         handle = self.windowHandle()
         if handle is not None:
             if not self._screen_signal_connected:
-                handle.screenChanged.connect(self._window_screen_changed)
+                handle.screenChanged.connect(self._use_screen)
                 self._screen_signal_connected = True
-            if self._follow_spectator_screen:
-                self._update_screen_layout()
-            else:
-                self._use_screen(QtGui.QGuiApplication.screenAt(self.pos()) or handle.screen())
+            self.refresh_screen_size()
 
-    def show_on_spectator_screen(self):
-        self._follow_spectator_screen = True
-        self._update_screen_layout()
-        self.show()
+    def refresh_screen_size(self, monitor=None):
+        if monitor is not None:
+            # По имени находим геометрию в координатах Qt с учётом масштаба.
+            # Если Qt ещё не видит экран после подключения, используем
+            # размеры из свежего списка мониторов Windows.
+            for screen in QtGui.QGuiApplication.screens():
+                if screen.name() == monitor.name:
+                    self._use_screen(screen)
+                    return
+            self.resize(monitor.width, monitor.height)
+            return
 
-    @QtCore.pyqtSlot()
-    def _screen_layout_changed(self):
-        if self._follow_spectator_screen and self.isVisible():
-            self._update_screen_layout()
-
-    def _update_screen_layout(self):
-        primary = QtGui.QGuiApplication.primaryScreen()
-        # Сохраняем прежний выбор последнего дополнительного монитора.
-        screen = next((screen for screen in reversed(QtGui.QGuiApplication.screens())
-                       if screen is not primary), primary)
-        self._use_screen(screen)
-
-    def _window_screen_changed(self, screen):
-        # При отключении телевизора оконный менеджер может временно назначить
-        # окну другой экран. Для табло экран выбираем по списку подключённых.
-        if not self._follow_spectator_screen:
+        handle = self.windowHandle()
+        if handle is not None:
+            # После move() Qt может ещё сообщать экран ноутбука через
+            # windowHandle().screen(). Сначала смотрим экран по новой позиции.
+            screen = QtGui.QGuiApplication.screenAt(self.pos()) or handle.screen()
             self._use_screen(screen)
 
     def _use_screen(self, screen):
@@ -112,8 +98,4 @@ class AdaptiveDisplay(QtWidgets.QGraphicsView):
         # QScreen уже учитывает масштаб Windows. Дополнительное умножение на
         # devicePixelRatio привело бы к выходу окна за границы телевизора.
         if self._display_screen is not None:
-            geometry = self._display_screen.geometry()
-            if self._follow_spectator_screen:
-                self.setGeometry(geometry)
-            else:
-                self.resize(geometry.size())
+            self.resize(self._display_screen.geometry().size())

@@ -516,16 +516,17 @@ class KataMainWindow_Ui(QWidget):
         self.frame_sex.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame_sex.setObjectName("frame_sex")
 
-        self.male.setGeometry(QtCore.QRect(20, 0, 40, 25))
-        self.male.setFont(self.font_b_20)
+        # При высоком DPI индикатор и отступ Qt оставляют меньше места для буквы.
+        self.male.setGeometry(QtCore.QRect(20, 0, 56, 25))
+        self.male.setFont(css.font_m_16)
         self.male.setObjectName("male")
 
-        self.female.setGeometry(QtCore.QRect(90, 0, 40, 25))
-        self.female.setFont(self.font_b_20)
+        self.female.setGeometry(QtCore.QRect(90, 0, 56, 25))
+        self.female.setFont(css.font_m_16)
         self.female.setObjectName("female")
 
         self.sex_1.setGeometry(QtCore.QRect(200, 0, 150, 13))
-        self.sex_1.setFont(self.font_b_13)
+        self.sex_1.setFont(css.font_b_13)
         self.sex_1.setStyleSheet("color: black;")
         self.sex_1.setAlignment(QtCore.Qt.AlignCenter)
         self.sex_1.setObjectName("sex_1")
@@ -538,7 +539,7 @@ class KataMainWindow_Ui(QWidget):
 
         self.comboBox_name_red_1.setEnabled(False)
         self.comboBox_name_red_1.setGeometry(QtCore.QRect(510, 20, 350, 25))
-        self.comboBox_name_red_1.setFont(self.font_l_13)
+        self.comboBox_name_red_1.setFont(self.font_l_12)
         self.comboBox_name_red_1.setObjectName("comboBox_name_red_1")
 
         self.name_red_1.setGeometry(QtCore.QRect(510, 0, 350, 16))
@@ -799,10 +800,12 @@ class KataMainWindow_Ui(QWidget):
                 self.label_name_red_1.text() == "ФАМИЛИЯ" and self.label_region_red_1.text() == "регион":
             self.setSportsmanName()
 
-    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height):
+    def calc_display_moveCoord(self, display_coord_x1, display_coord_y1, display_width, display_height,
+                               display_coord_x1_secW, display_coord_y1_secW):
         try:
-            # Кнопка меняет геометрию текущего окна, сохраняя выставленные оценки.
-            self.KataSecondWindow.show_on_spectator_screen()
+            self.KataSecondWindow = KataSecondWindow()
+            self.KataSecondWindow.move(display_coord_x1_secW, display_coord_y1_secW)
+            self.KataSecondWindow.show()
             self.show()
             coord_x1 = display_coord_x1 + (display_width - self.size().width())//2
             coord_y1 = display_coord_y1 + (display_height - self.size().height())//2

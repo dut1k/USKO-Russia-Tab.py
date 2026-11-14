@@ -449,6 +449,10 @@ font_l_13 = QtGui.QFont()
 font_l_13.setFamily("Gotham-Light")
 font_l_13.setPixelSize(13)
 
+font_m_11 = QtGui.QFont()
+font_m_11.setFamily("Gotham-Medium")
+font_m_11.setPixelSize(11)
+
 font_m_13 = QtGui.QFont()
 font_m_13.setFamily("Gotham-Medium")
 font_m_13.setPixelSize(13)
