@@ -503,28 +503,7 @@ function render() {
   // ---------- СКРЫТИЕ СИРО В КАТА ФИНАЛ ----------
   const siroRow = document.getElementById("siro_row");
 
-  if (state.mode === "kata_final") {
-    // скрываем СИРО
-    if (siroRow) siroRow.style.display = "none";
-
-    // центрируем АКА (чтобы не прилипал к левому краю)
-    const akaRow = document.getElementById("aka_row");
-    if (akaRow) {
-      // akaRow.style.flex = "1 1 100%";
-      // akaRow.style.justifyContent = "center";
-      akaRow.style.color = "#f1f2f6";
-    }
-  } else {
-    // во всех остальных режимах показываем СИРО обратно
-    if (siroRow) siroRow.style.display = "flex";
-
-    const akaRow = document.getElementById("aka_row");
-    if (akaRow) {
-      // akaRow.style.flex = "1 1 40%";
-      // akaRow.style.justifyContent = "flex-start";
-      akaRow.style.color = "#ff6b6b";
-    }
-  }
+  if (siroRow) siroRow.style.display = state.mode === "kata_final" ? "none" : "flex";
 
 
   // ---------- ШТРАФЫ (только для кумите) ----------

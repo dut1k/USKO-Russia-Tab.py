@@ -181,6 +181,7 @@
   /* AKA: сначала счёт, потом имя, всё слева */          /* ← изменено */
   .fighter.aka {
     justify-content: flex-start;
+    background: rgba(255, 107, 107, 0.34);
   }
   .fighter.aka .score {                                   /* ← изменено */
     margin-right: 8px;
@@ -225,7 +226,8 @@
     align-items: flex-end;
   }
 
-  .aka { color: #ff6b6b; }
+  /* Красный фон обозначает АКА, цвет текста общий для обеих сторон. */
+  .aka,
   .siro { color: #f1f2f6; }
 
   .name {
